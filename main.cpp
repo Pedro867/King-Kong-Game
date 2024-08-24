@@ -3,9 +3,11 @@
 #include "Chao.hpp"
 #include "Parede.hpp"
 #include <iostream>
+#include "Bombas.hpp"
 
 int main(int argc, char **argv) {
-	sf::VideoMode video(720, 480);
+	setbuf(stdout, NULL);
+	sf::VideoMode video(1000, 800);
 	sf::RenderWindow window(video, "King Kong");
 	window.setFramerateLimit(60);
 
@@ -20,8 +22,9 @@ int main(int argc, char **argv) {
 	sf::Event evento;
 
 	Player player(window);
-	Chao chao;
-	Parede paredeDireita(650), paredeEsquerda(70);
+	Bombas bomba(window);
+	Chao chao1(500, 585, 1000), chao2(200, 300, 1000);
+	Parede paredeDireita(950), paredeEsquerda(40);
 
 	while (window.isOpen()) {
 
@@ -33,21 +36,41 @@ int main(int argc, char **argv) {
 
 		window.clear();
 
-		//Move os objetos
-		/*parede.isColliding(&player);
-		chao.isColliding(&player);*/
+		if (((player.testaColisaoChao(chao1))
+				|| (player.testaColisaoChao(chao2))) == true) {
+			player.setVelY(0);
+		} else {
+			player.setVelY(1);
 
-		player.testaColisaoChao(chao);
+		}
 		player.testaColisaoParede(paredeDireita);
 		player.testaColisaoParede(paredeEsquerda);
 		player.move(evento);
 
+		/*mesma logica da colisão do player com ambiente e a movimentação da bomba*/
+		if (((bomba.testaColisaoChao(chao2)) || (bomba.testaColisaoChao(chao1)))== true) {
+
+			if((bomba.testaColisaoParede(paredeDireita))||(bomba.testaColisaoParede(paredeEsquerda))== true){
+				bomba.setVel(-bomba.getVelX(),0);
+			}else{
+				bomba.setVel(bomba.getVelX(),0);
+			}
+		} else {
+			bomba.setVel(0,1);
+
+		}
+
+
+		bomba.mover();
+
 		//Desenha
 		window.draw(fundo);
 		window.draw(player.getPlayer());
+		window.draw(bomba.getBombaNormal());
 		window.draw(paredeDireita.getParede());
 		window.draw(paredeEsquerda.getParede());
-		window.draw(chao.getChao());
+		window.draw(chao2.getChao());
+		window.draw(chao1.getChao());
 
 		window.display();
 	}

@@ -12,10 +12,10 @@ class Chao {
 private:
 	sf::RectangleShape chao;
 public:
-	Chao(){
-		chao.setSize(sf::Vector2f(720, 30));
-		chao.setOrigin(360,15);
-		chao.setPosition(360, 465);
+	Chao(float posicaoX,float posicaoY,float tamanho){
+		chao.setSize(sf::Vector2f(tamanho, 30));
+		chao.setOrigin(500,15);
+		chao.setPosition(posicaoX, posicaoY);
 		chao.setFillColor(sf::Color::Red);
 	}
 
