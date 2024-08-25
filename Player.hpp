@@ -15,8 +15,6 @@
 
 using namespace std;
 
-#define gravity 1
-
 class Player {
 private:
 
@@ -26,7 +24,7 @@ private:
 	sf::RenderWindow &window;
 	float velX, velY;
 	float posX, posY;
-	bool bateu;
+	bool bateu, podeMover;
 
 public:
 
@@ -42,53 +40,56 @@ public:
 		player.setTexture(texturePlayer);
 		player.setTextureRect(hitbox);
 		velX = 0;
-		velY = 2;
+		velY = 0;
 		posX = 360;
-		posY = 10;
+		posY = 150;
 		player.setScale(3, 3);
 		player.setOrigin(16, 16); //metade do tamanho do player;
 		player.setPosition(posX, posY);
 		bateu = false;
+		podeMover = true;
 	}
 
 	/*bool testaColisaoChao(sf::RectangleShape chao) {
-		sf::FloatRect hitboxChao = chao.getGlobalBounds();
+	 sf::FloatRect hitboxChao = chao.getGlobalBounds();
 
-		if (playerBounds().intersects(hitboxChao)) {
-			velY = 0;
-			return true;
-		}
-		return false;
-	}*/
+	 if (playerBounds().intersects(hitboxChao)) {
+	 velY = 0;
+	 return true;
+	 }
+	 return false;
+	 }*/
 
 	/*bool testaColisaoParede(sf::RectangleShape parede) {
-		sf::FloatRect hitboxParede = parede.getGlobalBounds();
-		if (playerBounds().intersects(hitboxParede)) {
-			bateu = true;
+	 sf::FloatRect hitboxParede = parede.getGlobalBounds();
+	 if (playerBounds().intersects(hitboxParede)) {
+	 bateu = true;
+	 player.move(-velX, 0);
+	 return true;
+	 }
+	 return false;
+	 }*/
+
+	void moverX(sf::Event evento) {
+
+		if (podeMover) {
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+				velX = -5;
+				posX += velX;
+			} else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+				velX = 5;
+				posX += -velX;
+			} else {
+				velX = 0;
+			}
+			player.move(velX, 0);
+		}else{
 			player.move(-velX, 0);
-			return true;
 		}
-		return false;
-	}*/
-
-	void mover(sf::Event evento) {
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-			velX = -3;
-			posX += velX;
-		} else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-			velX = 3;
-			posX += velX;
-		} else {
-			velX = 0;
-		}
-
-		//cout << "Vy = " << velY<< endl;
-		player.move(velX, velY);
 	}
 
-	void moverY(){
-		player.move(0,velY);
+	void moverY() {
+		player.move(0, velY);
 	}
 
 	void setGravity(int x) {
@@ -103,6 +104,22 @@ public:
 
 	float getVelX() {
 		return velX;
+	}
+
+	float getVelY() {
+		return velY;
+	}
+
+	void setVelX(int vx) {
+		velX = vx;
+	}
+
+	void setPodeMover(int valor) {
+		if (valor == 1) {
+			podeMover = true;
+		} else if (valor == 0) {
+			podeMover = false;
+		}
 	}
 
 	sf::Sprite getPlayer() {

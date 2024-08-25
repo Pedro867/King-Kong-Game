@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
 
 	Player player(window);
 	Bomba bomba(window);
-	Cenario cenario;
+	Cenario cenario(player);
 
 	while (window.isOpen()) {
 
@@ -43,16 +43,7 @@ int main(int argc, char **argv) {
 
 		window.clear();
 
-		/*if (((player.testaColisaoChao(cenario.getChao()))
-		 || (player.testaColisaoChao(cenario.getChao()))) == true) {
-		 player.setVelY(0);
-		 } else {
-		 player.setVelY(1);
-		 }
-		 player.testaColisaoParede(cenario.getParede1());
-		 player.testaColisaoParede(cenario.getParede2());*/
-
-		/*mesma logica da colisão do player com ambiente e a movimentação da bomba*/
+		/*mesma logica da colisï¿½o do player com ambiente e a movimentaï¿½ï¿½o da bomba*/
 		/*if (((bomba.testaColisaoChao(chao2)) || (bomba.testaColisaoChao(chao1)))== true) {
 
 		 if((bomba.testaColisaoParede(paredeDireita))||(bomba.testaColisaoParede(paredeEsquerda))== true){
@@ -69,10 +60,11 @@ int main(int argc, char **argv) {
 		//bomba.mover();
 		//Desenha
 		window.draw(fundo);
-		cenario.desenhaCenario(&window, &player);
-		player.mover(evento);
+		cenario.desenhaCenario(&window);//colisoes dentro dessa funcao
+		player.moverY();
+		player.moverX(evento);
 		window.draw(player.getPlayer());
-		window.draw(bomba.getBombaNormal());
+		//window.draw(bomba.getBombaNormal());
 
 		window.display();
 		sf::sleep(sf::milliseconds(20.f));
