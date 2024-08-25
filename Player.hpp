@@ -24,16 +24,15 @@ private:
 	sf::RenderWindow &window;
 	float velX, velY;
 	float posX, posY;
-	bool bateu, podeMover;
+	bool bateu, podeMover, moveuEsquerda;
 
 public:
 
 	Player(sf::RenderWindow &window) :
 			window(window) {
-		texturePlayer.loadFromFile("assets/Player.png");
+		texturePlayer.loadFromFile("assets/playerParado.png");
 		//hitbox
-		hitbox.left = 0;
-		hitbox.top = 0;
+		hitbox.left = hitbox.top = 0;
 		hitbox.height = 16;
 		hitbox.width = 7;
 		//-----
@@ -42,60 +41,67 @@ public:
 		velX = 0;
 		velY = 0;
 		posX = 360;
-		posY = 150;
+		posY = 200;
 		player.setScale(3, 3);
-		player.setOrigin(16, 16); //metade do tamanho do player;
+		player.setOrigin(hitbox.width / 2, hitbox.height / 2); //metade do tamanho do player;
 		player.setPosition(posX, posY);
 		bateu = false;
 		podeMover = true;
+		moveuEsquerda = false;
 	}
-
-	/*bool testaColisaoChao(sf::RectangleShape chao) {
-	 sf::FloatRect hitboxChao = chao.getGlobalBounds();
-
-	 if (playerBounds().intersects(hitboxChao)) {
-	 velY = 0;
-	 return true;
-	 }
-	 return false;
-	 }*/
-
-	/*bool testaColisaoParede(sf::RectangleShape parede) {
-	 sf::FloatRect hitboxParede = parede.getGlobalBounds();
-	 if (playerBounds().intersects(hitboxParede)) {
-	 bateu = true;
-	 player.move(-velX, 0);
-	 return true;
-	 }
-	 return false;
-	 }*/
 
 	void moverX(sf::Event evento) {
 
+		player.setScale(3, 3);
 		if (podeMover) {
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+
 				velX = -5;
 				posX += velX;
+
+				hitbox.width = 9;
+				player.setTextureRect(hitbox);
+
+				player.setOrigin(hitbox.width / 2, hitbox.height / 2);
+				texturePlayer.loadFromFile("assets/playerCorrendoEsquerda.png");
+				moveuEsquerda = true;
+
 			} else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+
 				velX = 5;
 				posX += -velX;
+
+				hitbox.width = 9;
+				player.setTextureRect(hitbox);
+
+				player.setOrigin(hitbox.width / 2, hitbox.height / 2);
+				texturePlayer.loadFromFile("assets/playerCorrendoDireita.png");
+				moveuEsquerda = false;
+
 			} else {
 				velX = 0;
+
+				hitbox.width = 7;
+				player.setTextureRect(hitbox);
+
+				player.setOrigin(hitbox.width / 2, hitbox.height / 2);
+				texturePlayer.loadFromFile("assets/playerParado.png");
+
+				if (moveuEsquerda) {
+					player.setScale(-3, 3);
+				}else{
+					player.setScale(3, 3);
+				}
+
 			}
 			player.move(velX, 0);
-		}else{
+		} else {
 			player.move(-velX, 0);
 		}
 	}
 
 	void moverY() {
 		player.move(0, velY);
-	}
-
-	void setGravity(int x) {
-		this->velY = x;
-		posY += velY;
-		player.move(velX, velY);
 	}
 
 	void setVelY(float vy) {
