@@ -11,6 +11,7 @@ using namespace std;
 
 class Player {
 private:
+
 	sf::IntRect hitbox;
 	sf::Sprite player;
 	sf::Texture texturePlayer;
@@ -18,7 +19,9 @@ private:
 	float velX, velY;
 	float posX, posY;
 	bool bateu;
+
 public:
+
 	Player(sf::RenderWindow &window) :
 			window(window) {
 		texturePlayer.loadFromFile("assets/Player.png");
@@ -31,17 +34,53 @@ public:
 		player.setTexture(texturePlayer);
 		player.setTextureRect(hitbox);
 		velX = 0;
-		velY = 1;
+		velY = 2;
 		posX = 360;
-		posY = 440;
-		player.setScale(5, 5);
+		posY = 10;
+		player.setScale(3, 3);
 		player.setOrigin(16, 16); //metade do tamanho do player;
 		player.setPosition(posX, posY);
 		bateu = false;
 	}
 
-	sf::FloatRect playerBounds() {
-		return player.getGlobalBounds();
+	bool testaColisaoChao(sf::RectangleShape chao) {
+		sf::FloatRect hitboxChao = chao.getGlobalBounds();
+
+		if (playerBounds().intersects(hitboxChao)) {
+			velY = 0;
+			return true;
+		}
+		return false;
+	}
+
+	bool testaColisaoParede(sf::RectangleShape parede) {
+		sf::FloatRect hitboxParede = parede.getGlobalBounds();
+		if (playerBounds().intersects(hitboxParede)) {
+			bateu = true;
+			player.move(-velX, 0);
+			return true;
+		}
+		return false;
+	}
+
+	void mover(sf::Event evento) {
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+			velX = -3;
+			posX += velX;
+		} else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+			velX = 3;
+			posX += velX;
+		} else {
+			velX = 0;
+		}
+
+		//cout << "Vy = " << velY<< endl;
+		player.move(velX, velY);
+	}
+
+	void moverY(){
+		player.move(0,velY);
 	}
 
 	void setGravity(int x) {
@@ -50,44 +89,20 @@ public:
 		player.move(velX, velY);
 	}
 
-	void testaColisaoChao(Chao chao) {
-		sf::FloatRect hitboxChao = chao.getChao().getGlobalBounds();
-
-		if (playerBounds().intersects(hitboxChao)) {
-			velY = 0;
-		} else {
-			velY = 1;
-		}
-	}
-	void testaColisaoParede(Parede parede) {
-		sf::FloatRect hitboxParede = parede.getParede().getGlobalBounds();
-		if (playerBounds().intersects(hitboxParede)) {
-			bateu = true;
-			player.move(-velX, 0);
-		} else {
-			bateu = false;
-		}
+	void setVelY(float vy) {
+		this->velY = vy;
 	}
 
-	void move(sf::Event evento) {
-		if (bateu) {
-			velX = 0;
-		} else {
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-				velX = -3;
-				posX += velX;
-			} else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-				velX = 3;
-				posX += velX;
-			} else {
-				velX = 0;
-			}
-		}
-		player.move(velX, velY);
+	float getVelX() {
+		return velX;
 	}
 
 	sf::Sprite getPlayer() {
 		return player;
+	}
+
+	sf::FloatRect playerBounds() {
+		return player.getGlobalBounds();
 	}
 };
 #endif
