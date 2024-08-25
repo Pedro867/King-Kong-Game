@@ -1,8 +1,15 @@
+/*
+ * Bomba.hpp
+ *
+ *  Created on: 25 de ago. de 2024
+ *      Author: Rafael
+ */
+
 #ifndef BOMBA_HPP_
 #define BOMBA_HPP_
 #include <SFML/Graphics.hpp>
-#include "Chao.hpp"
-#include "Parede.hpp"
+//#include "Chao.hpp"
+//#include "Parede.hpp"
 #include "Player.hpp"
 #include <iostream>
 
@@ -67,7 +74,7 @@ public:
 		velX = -velX;
 	}
 
-	bool testaColisaoChao(Chao chao) {
+	/*bool testaColisaoChao(Chao chao) {
 		sf::FloatRect hitboxChao = chao.getChao().getGlobalBounds();
 
 		if (getBombaNormalBounds().intersects(hitboxChao)) {
@@ -79,7 +86,7 @@ public:
 		 velY = 0;
 		 } else {
 		 velY = 1;
-		 }*/
+		 }
 	}
 
 	bool testaColisaoParede(Parede parede) {
@@ -91,8 +98,8 @@ public:
 		/*if (getBombaEspecialBounds().intersects(hitboxParede)) {
 
 		 bombaEspecial.move(-velX, 0);
-		 }*/
-	}
+		 }
+	}*/
 
 	void setVelY(float x) {
 		velY = x;

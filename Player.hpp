@@ -1,8 +1,16 @@
+/*
+ * Player.hpp
+ *
+ *  Created on: 25 de ago. de 2024
+ *      Author: Rafael
+ */
+
 #ifndef PLAYER_HPP_
 #define PLAYER_HPP_
 #include <SFML/Graphics.hpp>
-#include "Chao.hpp"
-#include "Parede.hpp"
+//#include "Chao.hpp"
+//#include "Parede.hpp"
+//#include "Cenario.hpp"
 #include <iostream>
 
 using namespace std;
@@ -43,7 +51,7 @@ public:
 		bateu = false;
 	}
 
-	bool testaColisaoChao(sf::RectangleShape chao) {
+	/*bool testaColisaoChao(sf::RectangleShape chao) {
 		sf::FloatRect hitboxChao = chao.getGlobalBounds();
 
 		if (playerBounds().intersects(hitboxChao)) {
@@ -51,9 +59,9 @@ public:
 			return true;
 		}
 		return false;
-	}
+	}*/
 
-	bool testaColisaoParede(sf::RectangleShape parede) {
+	/*bool testaColisaoParede(sf::RectangleShape parede) {
 		sf::FloatRect hitboxParede = parede.getGlobalBounds();
 		if (playerBounds().intersects(hitboxParede)) {
 			bateu = true;
@@ -61,7 +69,7 @@ public:
 			return true;
 		}
 		return false;
-	}
+	}*/
 
 	void mover(sf::Event evento) {
 
@@ -105,4 +113,5 @@ public:
 		return player.getGlobalBounds();
 	}
 };
-#endif
+#endif /* PLAYER_HPP_ */
+

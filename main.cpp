@@ -1,8 +1,16 @@
+//============================================================================
+// Name        : Donkey.cpp
+// Author      : 
+// Version     :
+// Copyright   : Your copyright notice
+// Description : Hello World in C++, Ansi-style
+//============================================================================
+
 #include <SFMl\Graphics.hpp>
 #include <iostream>
 #include "Player.hpp"
-#include "Chao.hpp"
-#include "Parede.hpp"
+//#include "Chao.hpp"
+//#include "Parede.hpp"
 #include "Bomba.hpp"
 #include "Cenario.hpp"
 
@@ -44,7 +52,7 @@ int main(int argc, char **argv) {
 		 player.testaColisaoParede(cenario.getParede1());
 		 player.testaColisaoParede(cenario.getParede2());*/
 
-		/*mesma logica da colis√£o do player com ambiente e a movimenta√ß√£o da bomba*/
+		/*mesma logica da colis„o do player com ambiente e a movimentaÁ„o da bomba*/
 		/*if (((bomba.testaColisaoChao(chao2)) || (bomba.testaColisaoChao(chao1)))== true) {
 
 		 if((bomba.testaColisaoParede(paredeDireita))||(bomba.testaColisaoParede(paredeEsquerda))== true){
