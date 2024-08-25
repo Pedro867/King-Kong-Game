@@ -5,6 +5,13 @@
  *      Author: Rafael
  */
 
+/*
+ * Cenario.hpp
+ *
+ *  Created on: 23 de ago. de 2024
+ *      Author: Rafael
+ */
+
 #ifndef CENARIO_HPP_
 #define CENARIO_HPP_
 #include <iostream>
@@ -19,6 +26,8 @@ private:
 	sf::Vector2<float> dimensoesChao;
 	sf::Vector2<float> dimensoesParedes;
 	Player &player;
+	float alturaLinha; //determina a altura de cada linha (tamanho y da janela / num de linhas)
+	float larguraColuna;
 
 public:
 	//Declaracao das funcoes
@@ -27,6 +36,7 @@ public:
 	void desenhaEscada(sf::RenderWindow *window, float larguraColuna,
 			float alturaLinha, int j, int i);
 	bool testaColisao(int *bateuNaParede);
+	bool iniciarKong(sf::RenderWindow *window);
 	//---------------------
 };
 
@@ -36,39 +46,36 @@ inline Cenario::Cenario(Player &player) :
 
 inline void Cenario::desenhaCenario(sf::RenderWindow *window) {
 
-	//int cenarioMatriz[9][40];
+	//int cenarioMatriz[10][40];
 
-	float alturaLinha = (window->getSize().y) / 9; //determina a altura de cada linha (tamanho y da janela / num de linhas)
-	float larguraColuna = (window->getSize().x) / 40; //determina a largura de cada coluna (tamanho x da janela / num de colunas)
+	alturaLinha = (window->getSize().y) / 10.0f; //determina a altura de cada linha (tamanho y da janela / num de linhas)
+	larguraColuna = (window->getSize().x) / 40.0f; //determina a largura de cada coluna (tamanho x da janela / num de colunas)
 
 	int bateuNoChao = 0;
 	int bateuNaParede = 0;
 
-	for (int i = 0; i < 9; i++) {
+	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 40; j++) {
 			if (i == 0) {
-				dimensoesChao.x = (window->getSize().x)
-						- (4 * larguraColuna) * 2; //declarar isso ali em cima
-				dimensoesChao.y = 5.f;
+				dimensoesChao.x = (window->getSize().x) - (4 * larguraColuna) * 2; //declarar isso ali em cima
+				dimensoesChao.y = 5.0f;
 				chao.setSize(dimensoesChao);
-				chao.setPosition(larguraColuna * 4,
-						alturaLinha + alturaLinha * i); //desenha no chao da linha na 5 coluna
+				chao.setPosition(larguraColuna * 4, alturaLinha + alturaLinha * i); //desenha no chao da linha na 5 coluna
 				chao.setFillColor(sf::Color::Magenta);
 				window->draw(chao);
-			} else if (i == 1) {
+			}
+			else if (i == 1) {
 				if (j == 20 || j == 21) {
 					desenhaEscada(window, larguraColuna, alturaLinha, j, i);
 				}
-				dimensoesChao.x = (window->getSize().x)
-						- (4 * larguraColuna) * 2;
-				dimensoesChao.y = 5.f;
+				dimensoesChao.x = (window->getSize().x) - (4 * larguraColuna) * 2;
+				dimensoesChao.y = 5.0f;
 				chao.setSize(dimensoesChao);
-				chao.setPosition(larguraColuna * 4,
-						alturaLinha + alturaLinha * i); //desenha no chao da linha na 5 coluna
+				chao.setPosition(larguraColuna * 4, alturaLinha + alturaLinha * i); //desenha no chao da linha na 5 coluna
 				chao.setFillColor(sf::Color::Magenta);
 				window->draw(chao);
 
-				dimensoesParedes.x = (window->getSize().x) * 1 / 40;
+				dimensoesParedes.x = larguraColuna;
 				dimensoesParedes.y = alturaLinha;
 
 				parede1.setSize(dimensoesParedes);
@@ -78,24 +85,22 @@ inline void Cenario::desenhaCenario(sf::RenderWindow *window) {
 
 				parede2.setSize(dimensoesParedes);
 				parede2.setOrigin(dimensoesParedes.x, 0);
-				parede2.setPosition(window->getSize().x - larguraColuna * 4,
-						alturaLinha * i); //desenha a parede na 5 coluna
+				parede2.setPosition(window->getSize().x - larguraColuna * 4, alturaLinha * i); //desenha a parede na 5 coluna
 				parede2.setFillColor(sf::Color::Magenta);
 				window->draw(parede2);
-			} else if (i == 2) {
+			}
+			else if (i == 2) {
 				if (j == 6 || j == 7 || j == 34 || j == 35) {
 					desenhaEscada(window, larguraColuna, alturaLinha, j, i);
 				}
-				dimensoesChao.x = (window->getSize().x)
-						- (3 * larguraColuna) * 2;
-				dimensoesChao.y = 5.f;
+				dimensoesChao.x = (window->getSize().x) - (3 * larguraColuna) * 2;
+				dimensoesChao.y = 5.0f;
 				chao.setSize(dimensoesChao);
-				chao.setPosition(larguraColuna * 3,
-						alturaLinha + alturaLinha * i);
+				chao.setPosition(larguraColuna * 3, alturaLinha + alturaLinha * i);
 				chao.setFillColor(sf::Color::Magenta);
 				window->draw(chao);
 
-				dimensoesParedes.x = (window->getSize().x) * 1 / 40;
+				dimensoesParedes.x = larguraColuna;
 				dimensoesParedes.y = alturaLinha; // declarar isso la em cima
 
 				parede1.setSize(dimensoesParedes);
@@ -105,11 +110,11 @@ inline void Cenario::desenhaCenario(sf::RenderWindow *window) {
 
 				parede2.setSize(dimensoesParedes);
 				parede2.setOrigin(dimensoesParedes.x, 0);
-				parede2.setPosition(window->getSize().x - larguraColuna * 3,
-						alturaLinha * i);
+				parede2.setPosition(window->getSize().x - larguraColuna * 3, alturaLinha * i);
 				parede2.setFillColor(sf::Color::Magenta);
 				window->draw(parede2);
-			} else if (i > 2 && i < 9) {
+			}
+			else if (i > 2 && i < 9) {
 				if (i % 2 == 0) {
 					if (j == 4 || j == 5 || j == 36 || j == 37) {
 						desenhaEscada(window, larguraColuna, alturaLinha, j, i);
@@ -120,16 +125,14 @@ inline void Cenario::desenhaCenario(sf::RenderWindow *window) {
 						desenhaEscada(window, larguraColuna, alturaLinha, j, i);
 					}
 				}
-				dimensoesChao.x = (window->getSize().x)
-						- (2 * larguraColuna) * 2;
-				dimensoesChao.y = 5.f;
+				dimensoesChao.x = (window->getSize().x) - (2 * larguraColuna) * 2;
+				dimensoesChao.y = 5.0f;
 				chao.setSize(dimensoesChao);
-				chao.setPosition(larguraColuna * 2,
-						alturaLinha + alturaLinha * i);
+				chao.setPosition(larguraColuna * 2, alturaLinha + alturaLinha * i);
 				chao.setFillColor(sf::Color::Magenta);
 				window->draw(chao);
 
-				dimensoesParedes.x = (window->getSize().x) * 1 / 40;
+				dimensoesParedes.x = larguraColuna;
 				dimensoesParedes.y = alturaLinha; // declarar isso la em cima
 
 				parede1.setSize(dimensoesParedes);
@@ -139,11 +142,11 @@ inline void Cenario::desenhaCenario(sf::RenderWindow *window) {
 
 				parede2.setSize(dimensoesParedes);
 				parede2.setOrigin(dimensoesParedes.x, 0);
-				parede2.setPosition(window->getSize().x - larguraColuna * 2,
-						alturaLinha * i);
+				parede2.setPosition(window->getSize().x - larguraColuna * 2, alturaLinha * i);
 				parede2.setFillColor(sf::Color::Magenta);
 				window->draw(parede2);
 			}
+
 			bateuNoChao += testaColisao(&bateuNaParede);
 		} //for j
 	} //for i
@@ -211,6 +214,24 @@ inline bool Cenario::testaColisao(int *bateuNaParede) {
 	}
 
 	return bateuNoChao;
+}
+
+inline bool Cenario::iniciarKong(sf::RenderWindow *window){
+
+	sf::Texture kongTexture;
+	kongTexture.loadFromFile("assets/donkey.png");//fazer tudo isso em uma outra funcao para nao precisar declarar dnv quando colocar ele la embaixo no mid game
+	sf::Sprite kong;
+	kong.setTexture(kongTexture);
+	kong.setOrigin(0, 28); //seta a posição no pé dele
+	kong.setPosition(larguraColuna * 7, alturaLinha * 9);
+	kong.setScale(2.5, 2.5);
+	window->draw(kong);
+
+
+
+	//kong.move();
+
+	return true;
 }
 
 #endif /* CENARIO_HPP_ */
