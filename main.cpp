@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
 
 	Player player(window);
 	Bomba bomba(window);
-	Cenario cenario(player, bomba, &window);
+	Cenario cenario(player, &window);
 
 	while (window.isOpen()) {
 
@@ -43,24 +43,9 @@ int main(int argc, char **argv) {
 
 		window.clear();
 
-		/*mesma logica da colis�o do player com ambiente e a movimenta��o da bomba*/
-		/*if (((bomba.testaColisaoChao(chao2)) || (bomba.testaColisaoChao(chao1)))== true) {
-
-		 if((bomba.testaColisaoParede(paredeDireita))||(bomba.testaColisaoParede(paredeEsquerda))== true){
-		 bomba.inverteVelX();
-		 }
-
-		 bomba.moverX();
-
-		 } else {
-		 bomba.moverY();
-		 }*/
-
-		//inutil com as funcoes moverY, moverX, etc
-		//bomba.mover();
 		//Desenha
 		window.draw(fundo);
-		cenario.desenhaCenario(&window);//colisoes dentro dessa funcao
+		cenario.desenhaCenario(&window, bomba);//colisoes dentro dessa funcao
 		player.moverY();
 		player.moverX(evento);
 		window.draw(player.getPlayer());

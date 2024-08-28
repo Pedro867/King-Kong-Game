@@ -8,7 +8,6 @@
 #ifndef BOMBA_HPP_
 #define BOMBA_HPP_
 #include <SFML/Graphics.hpp>
-#include "Cenario.hpp"
 #include "Player.hpp"
 //#include "Chao.hpp"
 //#include "Parede.hpp"
@@ -45,7 +44,7 @@ public:
 		velX = 2;
 		velY = 1;
 		posX = 600;
-		posY = 90;
+		posY = 75;
 		escala = 2.5;
 		bombaNormal.setScale(escala, escala);
 		bombaNormal.setOrigin(16, 16); //metade do tamanho do player;
@@ -56,10 +55,6 @@ public:
 	sf::FloatRect getBombaNormalBounds() {
 		return bombaNormal.getGlobalBounds();
 	}
-
-	/*Projeto futuro sf::FloatRect getBombaEspecialBounds() {
-	 return bombaEspecial.getGlobalBounds();
-	 }*/
 
 	void mover() {
 		bombaNormal.move(velX, velY);
@@ -77,38 +72,6 @@ public:
 		velX = -velX;
 	}
 
-	void testaColisaoChao(Chao chao) {
-		sf::FloatRect hitboxChao = chao.getChao().getGlobalBounds();
-
-		if (getBombaNormalBounds().intersects(hitboxChao)) {
-			moverX();
-		} else {
-			moverY();
-		}
-
-		/*if (getBombaEspecialBounds().intersects(hitboxChao)) {
-		 velY = 0;
-		 } else {
-		 velY = 1;
-		 }*/
-	}
-
-	void testaColisaoParede(Parede paredes) {
-		sf::FloatRect hitboxParede1 = paredes.getParede1().getGlobalBounds();
-		sf::FloatRect hitboxParede2 = paredes.getParede2().getGlobalBounds();
-		if (getBombaNormalBounds().intersects(hitboxParede1)) {
-			inverteVelX();
-		}
-
-		if (getBombaNormalBounds().intersects(hitboxParede2)) {
-			inverteVelX();
-		}
-		/*if (getBombaEspecialBounds().intersects(hitboxParede)) {
-
-		 bombaEspecial.move(-velX, 0);
-		 }*/
-	}
-
 	void setVelY(float x) {
 		velY = x;
 
@@ -123,10 +86,6 @@ public:
 	sf::Sprite getBombaNormal() {
 		return bombaNormal;
 	}
-
-	/*sf::Sprite getBombaEspecial() {
-	 return bombaEspecial;
-	 }*/
 
 	float getVelX() const {
 		return velX;
