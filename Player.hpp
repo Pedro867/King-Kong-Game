@@ -24,6 +24,7 @@ private:
 	sf::RenderWindow &window;
 	float velX, velY;
 	float posX, posY;
+	float escala;
 	bool bateu, podeMover, moveuEsquerda;
 
 public:
@@ -41,8 +42,9 @@ public:
 		velX = 0;
 		velY = 0;
 		posX = 360;
-		posY = 200;
-		player.setScale(3, 3);
+		posY = 195;
+		escala = 2.5;
+		player.setScale(escala, escala);
 		player.setOrigin(hitbox.width / 2, hitbox.height / 2); //metade do tamanho do player;
 		player.setPosition(posX, posY);
 		bateu = false;
@@ -52,7 +54,7 @@ public:
 
 	void moverX(sf::Event evento) {
 
-		player.setScale(3, 3);
+		player.setScale(escala, escala);
 		if (podeMover) {
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
 
@@ -88,9 +90,9 @@ public:
 				texturePlayer.loadFromFile("assets/playerParado.png");
 
 				if (moveuEsquerda) {
-					player.setScale(-3, 3);
+					player.setScale(-escala, escala);
 				}else{
-					player.setScale(3, 3);
+					player.setScale(escala, escala);
 				}
 
 			}

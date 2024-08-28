@@ -19,6 +19,8 @@ public:
 	//Parede();
 	void iniciarParede(float larguraColuna, float alturaLinha, int i, sf::RenderWindow *window);
 	void draw(sf::RenderWindow *window);
+	sf::RectangleShape getParede1();
+	sf::RectangleShape getParede2();
 };
 
 inline void Parede::iniciarParede(float larguraColuna, float alturaLinha, int i, sf::RenderWindow *window){
@@ -63,6 +65,14 @@ inline void Parede::iniciarParede(float larguraColuna, float alturaLinha, int i,
 inline void Parede::draw(sf::RenderWindow *window) {
 	window->draw(parede1);
 	window->draw(parede2);
+}
+
+inline sf::RectangleShape Parede::getParede1() {
+	return parede1;
+}
+
+inline sf::RectangleShape Parede::getParede2() {
+	return parede2;
 }
 
 #endif /* PAREDE_HPP_ */

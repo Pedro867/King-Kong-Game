@@ -14,12 +14,14 @@
 
 #ifndef CENARIO_HPP_
 #define CENARIO_HPP_
+#include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>
 
 #include "Player.hpp"
 #include "Chao.hpp"
 #include "Parede.hpp"
+//#include "Bomba.hpp"
 
 class Cenario {
 private:
@@ -32,25 +34,26 @@ private:
 	//fazer tudo isso em uma outra funcao para nao precisar declarar dnv quando colocar ele la embaixo no mid game
 	sf::Sprite kong;
 	Player &player;
+	Bomba &bomba;
 	float alturaLinha; //determina a altura de cada linha (tamanho y da janela / num de linhas)
 	float larguraColuna;
 
 
 public:
 	//Declaracao das funcoes
-	Cenario(Player &player, sf::RenderWindow *window);
+	Cenario(Player &player, Bomba &bomba, sf::RenderWindow *window);
 
 	void desenhaCenario(sf::RenderWindow *window);
 	void desenhaEscada(sf::RenderWindow *window, float larguraColuna, float alturaLinha, int j, int i);
 	void desenhaChao(sf::RenderWindow *window);
 	void desenhaParede(sf::RenderWindow *window);
 
-	bool testaColisao(int *bateuNaParede);
+	bool testaColisao(int *bateuNaParede, int i);
 	bool iniciarKong(sf::RenderWindow *window);
 	//---------------------
 };
 
-inline Cenario::Cenario(Player &player, sf::RenderWindow *window) : player(player) {
+inline Cenario::Cenario(Player &player, Bomba &bomba, sf::RenderWindow *window) : player(player), bomba(bomba) {
 	alturaLinha = (window->getSize().y) / 10.0f; //determina a altura de cada linha (tamanho y da janela / num de linhas)
 	larguraColuna = (window->getSize().x) / 40.0f; //determina a largura de cada coluna (tamanho x da janela / num de colunas)
 
@@ -125,7 +128,9 @@ inline void Cenario::desenhaCenario(sf::RenderWindow *window) {
 				}
 			}
 
-			//bateuNoChao += testaColisao(&bateuNaParede);
+			bateuNoChao += testaColisao(&bateuNaParede, i);
+			bomba.testaColisaoChao(chao[i]);
+			bomba.testaColisaoParede(paredes[i]);
 		} //for j
 	} //for i
 	  //logica: se ele bateu em algum chao, bateuNoChao>0
@@ -166,7 +171,7 @@ inline void Cenario::desenhaChao(sf::RenderWindow *window){
 inline void Cenario::desenhaParede(sf::RenderWindow *window) {
 }
 
-/*inline bool Cenario::testaColisao(int *bateuNaParede) {
+inline bool Cenario::testaColisao(int *bateuNaParede, int i) {
 
 	int bateuNoChao = 0;
 	sf::FloatRect hitboxChao;
@@ -174,9 +179,9 @@ inline void Cenario::desenhaParede(sf::RenderWindow *window) {
 	sf::FloatRect hitboxParede2;
 	sf::FloatRect hitboxPlayer = player.playerBounds();
 
-	hitboxChao = chao.getGlobalBounds();
-	hitboxParede1 = parede1.getGlobalBounds();
-	hitboxParede2 = parede2.getGlobalBounds();
+	hitboxChao = chao[i].getChao().getGlobalBounds();
+	hitboxParede1 = paredes[i].getParede1().getGlobalBounds();
+	hitboxParede2 = paredes[i].getParede2().getGlobalBounds();
 
 	if (hitboxPlayer.intersects(hitboxChao)) {
 		bateuNoChao = 1;

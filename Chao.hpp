@@ -26,6 +26,7 @@ public:
 	void iniciarBuraco(float larguraColuna, float alturaLinha, int i);
 	void drawChao(sf::RenderWindow *window);
 	void drawBuraco(sf::RenderWindow *window);
+	sf::RectangleShape getChao();
 };
 
 inline void Chao::iniciarChao(float larguraColuna, float alturaLinha, int i) {
@@ -85,6 +86,10 @@ inline void Chao::drawBuraco(sf::RenderWindow *window){
 
 	window->draw(this->buraco1);
 	window->draw(this->buraco2);
+}
+
+inline sf::RectangleShape Chao::getChao() {
+	return chao;
 }
 
 #endif /* CHAO_HPP_ */

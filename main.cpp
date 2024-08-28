@@ -31,7 +31,7 @@ int main(int argc, char **argv) {
 
 	Player player(window);
 	Bomba bomba(window);
-	Cenario cenario(player);
+	Cenario cenario(player, bomba, &window);
 
 	while (window.isOpen()) {
 
@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
 		player.moverY();
 		player.moverX(evento);
 		window.draw(player.getPlayer());
-		//window.draw(bomba.getBombaNormal());
+		window.draw(bomba.getBombaNormal());
 
 		window.display();
 		sf::sleep(sf::milliseconds(20.f));
