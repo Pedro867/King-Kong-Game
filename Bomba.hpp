@@ -1,10 +1,3 @@
-/*
- * Bomba.hpp
- *
- *  Created on: 25 de ago. de 2024
- *      Author: Rafael
- */
-
 #ifndef BOMBA_HPP_
 #define BOMBA_HPP_
 #include <SFML/Graphics.hpp>
@@ -27,7 +20,7 @@ private:
 	float velX, velY;
 	float posX, posY;
 	float escala;
-	bool bateu;
+	bool bateu = false;
 
 public:
 
@@ -44,7 +37,7 @@ public:
 		velX = 2;
 		velY = 1;
 		posX = 600;
-		posY = 75;
+		posY = 190;
 		escala = 2.5;
 		bombaNormal.setScale(escala, escala);
 		bombaNormal.setOrigin(16, 16); //metade do tamanho do player;
@@ -57,15 +50,25 @@ public:
 	}
 
 	void mover() {
-		bombaNormal.move(velX, velY);
+
+		if(bateu == true) {
+			bombaNormal.move(velX, 0);
+		}else{
+			bombaNormal.move(0, velY);
+
+		}
 	}
 
 	void moverY() {
-		bombaNormal.move(0, velY);
+		if (bateu == true) {
+			bombaNormal.move(0, velY);
+		}
 	}
 
 	void moverX() {
-		bombaNormal.move(velX, 0);
+		if (bateu == true) {
+			bombaNormal.move(velX, 0);
+		}
 	}
 
 	void inverteVelX() {
@@ -90,6 +93,14 @@ public:
 	float getVelX() const {
 		return velX;
 	}
+	void setPodeMover(int valor) {
+		if (valor == 1) {
+			bateu = true;
+		} else if (valor == 0) {
+			bateu = false;
+		}
+	}
+
 };
 #endif
 

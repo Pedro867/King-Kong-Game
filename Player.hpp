@@ -42,7 +42,7 @@ public:
 		velX = 0;
 		velY = 0;
 		posX = 360;
-		posY = 190;
+		posY = 250;
 		escala = 2.5;
 		player.setScale(escala, escala);
 		player.setOrigin(hitbox.width / 2, hitbox.height / 2); //metade do tamanho do player;
@@ -79,6 +79,7 @@ public:
 				player.setOrigin(hitbox.width / 2, hitbox.height / 2);
 				texturePlayer.loadFromFile("assets/playerCorrendoDireita.png");
 				moveuEsquerda = false;
+
 
 			} else {
 				velX = 0;

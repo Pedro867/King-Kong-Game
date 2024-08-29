@@ -1,16 +1,4 @@
-/*
- * Cenario.hpp
- *
- *  Created on: 23 de ago. de 2024
- *      Author: Rafael
- */
 
-/*
- * Cenario.hpp
- *
- *  Created on: 23 de ago. de 2024
- *      Author: Rafael
- */
 
 #ifndef CENARIO_HPP_
 #define CENARIO_HPP_
@@ -144,10 +132,15 @@ inline void Cenario::desenhaCenario(sf::RenderWindow *window, Bomba &bomba) {
 	}
 
 	if(playerBateuNoChao > 0){
-		player.setPodeMover(0);
-	}else{
 		player.setPodeMover(1);
+	}else{
+		player.setPodeMover(0);
 	}
+	if(bombaBateuNoChao > 0){
+			bomba.setPodeMover(1);
+		}else{
+			bomba.setPodeMover(0);
+		}
 } //fim func
 
 
@@ -206,6 +199,8 @@ inline bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede, in
 
 	if (hitboxBomba.intersects(hitboxChao)) {
 		bateuNoChao = 1;
+
+
 	}
 
 	if (hitboxBomba.intersects(hitboxParede1)) {
@@ -213,6 +208,7 @@ inline bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede, in
 	}
 	if (hitboxBomba.intersects(hitboxParede2)) {
 		*bombaBateuNaParede = 1;
+
 	}
 
 	return bateuNoChao;
@@ -231,7 +227,7 @@ inline bool Cenario::iniciarKong(sf::RenderWindow *window){
 		kong.move(velX, velY);
 	}
 	else if(kong.getPosition().x >= larguraColuna * 9){
-		velX = velX * -1;
+		velX = -velX;
 		kong.move(velX, velY);
 	}
 	else{

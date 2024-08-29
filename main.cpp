@@ -45,10 +45,12 @@ int main(int argc, char **argv) {
 
 		//Desenha
 		window.draw(fundo);
-		cenario.desenhaCenario(&window, bomba);//colisoes dentro dessa funcao
+		cenario.desenhaCenario(&window, bomba); //colisoes dentro dessa funcao
 		player.moverY();
 		player.moverX(evento);
+		bomba.mover();
 		window.draw(player.getPlayer());
+
 		window.draw(bomba.getBombaNormal());
 
 		window.display();
