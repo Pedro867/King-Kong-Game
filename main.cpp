@@ -32,6 +32,8 @@ int main(int argc, char **argv) {
 	Player player(window);
 	Bomba bomba(window);
 	Cenario cenario(player, &window);
+	cenario.setPlayerLayer();
+	cenario.setaAndarBomba(bomba);
 
 	while (window.isOpen()) {
 
@@ -43,14 +45,18 @@ int main(int argc, char **argv) {
 
 		window.clear();
 
-		//Desenha
+		//Desenha cenario e fundo
 		window.draw(fundo);
 		cenario.desenhaCenario(&window, bomba); //colisoes dentro dessa funcao
+		//cenario.iniciarKong(&window);
+
+		//movimenta elementos
 		player.moverY();
 		player.moverX(evento);
 		bomba.mover();
-		window.draw(player.getPlayer());
 
+		//desenha elementos
+		window.draw(player.getPlayer());
 		window.draw(bomba.getBombaNormal());
 
 		window.display();

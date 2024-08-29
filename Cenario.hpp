@@ -1,4 +1,3 @@
-
 #ifndef CENARIO_HPP_
 #define CENARIO_HPP_
 #include <SFML/Graphics.hpp>
@@ -37,10 +36,12 @@ public:
 	bool playerTestaColisao(int *playerBateuNaParede, int i);
 	bool bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede, int i);
 	bool iniciarKong(sf::RenderWindow *window);
+	void setaAndarBomba(Bomba &bomba);
+	void setPlayerLayer();
 	//---------------------
 };
 
-inline Cenario::Cenario(Player &player, sf::RenderWindow *window) :
+Cenario::Cenario(Player &player, sf::RenderWindow *window) :
 		player(player) {
 	alturaLinha = (window->getSize().y) / 10.0f; //determina a altura de cada linha (tamanho y da janela / num de linhas)
 	larguraColuna = (window->getSize().x) / 40.0f; //determina a largura de cada coluna (tamanho x da janela / num de colunas)
@@ -69,9 +70,7 @@ inline Cenario::Cenario(Player &player, sf::RenderWindow *window) :
 	//iniciarKong(window);
 }
 
-inline void Cenario::desenhaCenario(sf::RenderWindow *window, Bomba &bomba) {
-
-	//int cenarioMatriz[10][40];
+void Cenario::desenhaCenario(sf::RenderWindow *window, Bomba &bomba) {
 
 	bool playerBateuNoChao = false;
 	int playerBateuNaParede = 0;
@@ -145,8 +144,8 @@ inline void Cenario::desenhaCenario(sf::RenderWindow *window, Bomba &bomba) {
 	}
 } //fim func
 
-inline void Cenario::desenhaEscada(sf::RenderWindow *window,
-		float larguraColuna, float alturaLinha, int j, int i) { //int j para desenhar exatamente na chunk
+void Cenario::desenhaEscada(sf::RenderWindow *window, float larguraColuna,
+		float alturaLinha, int j, int i) { //int j para desenhar exatamente na chunk
 
 	sf::Texture texturaEscada;
 	sf::Sprite escada;
@@ -159,7 +158,7 @@ inline void Cenario::desenhaEscada(sf::RenderWindow *window,
 	window->draw(escada);
 }
 
-inline bool Cenario::playerTestaColisao(int *playerBateuNaParede, int i) {
+bool Cenario::playerTestaColisao(int *playerBateuNaParede, int i) {
 
 	int bateuNoChao = 0;
 	sf::FloatRect hitboxChao;
@@ -185,8 +184,7 @@ inline bool Cenario::playerTestaColisao(int *playerBateuNaParede, int i) {
 	return bateuNoChao;
 }
 
-inline bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
-		int i) {
+bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede, int i) {
 
 	int bateuNoChao = 0;
 	sf::FloatRect hitboxChao;
@@ -213,31 +211,40 @@ inline bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
 	return bateuNoChao;
 }
 
-/*inline bool Cenario::iniciarKong(sf::RenderWindow *window){
+/*bool Cenario::iniciarKong(sf::RenderWindow *window) {
 
- //kong.move(5, 5);
- //window->draw(kong);
+	int velX = larguraColuna / 10.0;
+	int velY = -alturaLinha / 25.0;
 
- int velX;
- int velY = -alturaLinha / 5.0;
+	if (kong.getPosition().x <= larguraColuna * 7) {
+		velX = -velX;
+	} else if (kong.getPosition().x >= larguraColuna * 9) {
+		//Bug ta nesse else if
+		velX = -velX;
+		int y = kong.getPosition().y;
+		int x = kong.getPosition().x;
+		kong.setPosition(x - velX, y);
+	}
 
- if(kong.getPosition().x <= larguraColuna * 7){
- velX = larguraColuna / 5.0;
- kong.move(velX, velY);
- }
- else if(kong.getPosition().x >= larguraColuna * 9){
- velX = -velX;
- kong.move(velX, velY);
- }
- else{
- kong.move(velX, velY);
- }
+	kong.move(velX, velY);
 
- window->draw(kong);
+	window->draw(kong);
 
- //kong.move();
+	return true;
+}*/
 
- return true;
- }*/
+void Cenario::setaAndarBomba(Bomba &bomba) {
+	float altura, largura;
+	altura = (alturaLinha * 2) - 13;
+	largura = 7 * larguraColuna - 13;
+	bomba.setPosXPosY(largura, altura);
+}
+
+void Cenario::setPlayerLayer() {
+	float altura, largura;
+	altura = (alturaLinha * 9) - 16;
+	largura = 20 * larguraColuna - 16;
+	player.setPosXPosY(largura, altura);
+}
 
 #endif /* CENARIO_HPP_ */

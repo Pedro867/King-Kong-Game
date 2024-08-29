@@ -138,6 +138,12 @@ public:
 	sf::FloatRect playerBounds() {
 		return player.getGlobalBounds();
 	}
+
+	void setPosXPosY(float x,float y){
+		posX = x;
+		posY = y;
+		player.setPosition(posX, posY);
+	}
 };
 #endif /* PLAYER_HPP_ */
 

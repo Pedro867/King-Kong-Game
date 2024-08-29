@@ -34,7 +34,7 @@ public:
 		hitbox.width = 13;
 		//fim da hitbox
 		bombaNormal.setTexture(texturaBombaNormal);
-		velX = 2;
+		velX = 5;
 		velY = 1;
 		posX = 600;
 		posY = 190;
@@ -51,9 +51,9 @@ public:
 
 	void mover() {
 
-		if(bateu == true) {
+		if (bateu == true) {
 			bombaNormal.move(velX, 0);
-		}else{
+		} else {
 			bombaNormal.move(0, velY);
 
 		}
@@ -93,6 +93,7 @@ public:
 	float getVelX() const {
 		return velX;
 	}
+
 	void setPodeMover(int valor) {
 		if (valor == 1) {
 			bateu = true;
@@ -101,6 +102,11 @@ public:
 		}
 	}
 
+	void setPosXPosY(float x, float y) {
+		posX = x;
+		posY = y;
+		bombaNormal.setPosition(posX, posY);
+	}
 };
 #endif
 
