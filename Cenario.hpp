@@ -1,5 +1,4 @@
 
-
 #ifndef CENARIO_HPP_
 #define CENARIO_HPP_
 #include <SFML/Graphics.hpp>
@@ -25,13 +24,13 @@ private:
 	float alturaLinha; //determina a altura de cada linha (tamanho y da janela / num de linhas)
 	float larguraColuna;
 
-
 public:
 	//Declaracao das funcoes
 	Cenario(Player &player, sf::RenderWindow *window);
 
 	void desenhaCenario(sf::RenderWindow *window, Bomba &bomba);
-	void desenhaEscada(sf::RenderWindow *window, float larguraColuna, float alturaLinha, int j, int i);
+	void desenhaEscada(sf::RenderWindow *window, float larguraColuna,
+			float alturaLinha, int j, int i);
 	void desenhaChao(sf::RenderWindow *window);
 	void desenhaParede(sf::RenderWindow *window);
 
@@ -41,7 +40,8 @@ public:
 	//---------------------
 };
 
-inline Cenario::Cenario(Player &player, sf::RenderWindow *window) : player(player){
+inline Cenario::Cenario(Player &player, sf::RenderWindow *window) :
+		player(player) {
 	alturaLinha = (window->getSize().y) / 10.0f; //determina a altura de cada linha (tamanho y da janela / num de linhas)
 	larguraColuna = (window->getSize().x) / 40.0f; //determina a largura de cada coluna (tamanho x da janela / num de colunas)
 
@@ -49,49 +49,46 @@ inline Cenario::Cenario(Player &player, sf::RenderWindow *window) : player(playe
 	buraco.resize(10); //queria que fosse 6....
 	paredes.resize(16); // Um elemento por linha
 
-	for(int i = 0; i < 10; i++){
-		chao[i].iniciarChao(larguraColuna,alturaLinha, i);
+	for (int i = 0; i < 10; i++) {
+		chao[i].iniciarChao(larguraColuna, alturaLinha, i);
 	}
 
 	for (int i = 0; i < 10; i++) {
 		buraco[i].iniciarBuraco(larguraColuna, alturaLinha, i);
 	}
 
-	for(int i = 0; i < 16; i++){ //8 linhas com 2 paredes = 16 paredes no total
-		paredes[i].iniciarParede(larguraColuna,alturaLinha, i, window);
+	for (int i = 0; i < 16; i++) { //8 linhas com 2 paredes = 16 paredes no total
+		paredes[i].iniciarParede(larguraColuna, alturaLinha, i, window);
 	}
-
 
 	kongTexture.loadFromFile("assets/donkey.png");
 	kong.setTexture(kongTexture);
 	kong.setOrigin(0, 28); //seta a posi��o no p� dele
 	kong.setPosition(larguraColuna * 7, alturaLinha * 9);
 	kong.setScale(2.5, 2.5);
-	iniciarKong(window);
+	//iniciarKong(window);
 }
 
 inline void Cenario::desenhaCenario(sf::RenderWindow *window, Bomba &bomba) {
 
 	//int cenarioMatriz[10][40];
 
-	int playerBateuNoChao = 0;
+	bool playerBateuNoChao = false;
 	int playerBateuNaParede = 0;
-	int bombaBateuNoChao = 0;
+	bool bombaBateuNoChao = false;
 	int bombaBateuNaParede = 0;
 
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 40; j++) {
 			if (i == 0) {
 				chao[i].drawChao(window);
-			}
-			else if (i == 1) {
+			} else if (i == 1) {
 				if (j == 20 || j == 21) {
 					desenhaEscada(window, larguraColuna, alturaLinha, j, i);
 				}
 				chao[i].drawChao(window);
 				paredes[i].draw(window);
-			}
-			else if (i == 2) {
+			} else if (i == 2) {
 				if (j == 6 || j == 7 || j == 34 || j == 35) {
 					desenhaEscada(window, larguraColuna, alturaLinha, j, i);
 				}
@@ -99,8 +96,7 @@ inline void Cenario::desenhaCenario(sf::RenderWindow *window, Bomba &bomba) {
 				chao[i].drawChao(window);
 				buraco[i].drawBuraco(window);
 				paredes[i].draw(window);
-			}
-			else if (i > 2 && i < 9) {
+			} else if (i > 2 && i < 9) {
 				if (i % 2 == 0) {
 					if (j == 4 || j == 5 || j == 36 || j == 37) {
 						desenhaEscada(window, larguraColuna, alturaLinha, j, i);
@@ -114,36 +110,40 @@ inline void Cenario::desenhaCenario(sf::RenderWindow *window, Bomba &bomba) {
 				chao[i].drawChao(window);
 				paredes[i].draw(window);
 
-				if(i == 4 || i == 6){
+				if (i == 4 || i == 6) {
 					buraco[i].drawBuraco(window);
 				}
 			}
 
 			playerBateuNoChao += playerTestaColisao(&playerBateuNaParede, i);
-			bombaBateuNoChao += bombaTestaColisao(bomba, &bombaBateuNaParede, i);
+			bombaBateuNoChao += bombaTestaColisao(bomba, &bombaBateuNaParede,
+					i);
 		} //for j
 	} //for i
 	  //logica: se ele bateu em algum chao, bateuNoChao>0
 	  //entao ele zera a velocidade
-	if (playerBateuNoChao > 0) {
+	if (playerBateuNoChao == true) {
 		player.setVelY(0);
 	} else {
 		player.setVelY(5);
 	}
 
-	if(playerBateuNoChao > 0){
-		player.setPodeMover(1);
-	}else{
+	if (playerBateuNaParede > 0) {
 		player.setPodeMover(0);
+	} else {
+		player.setPodeMover(1);
 	}
-	if(bombaBateuNoChao > 0){
-			bomba.setPodeMover(1);
-		}else{
-			bomba.setPodeMover(0);
-		}
+
+	//Bomba
+	if (bombaBateuNoChao == true) {
+		bomba.setPodeMover(1);
+	} else {
+		bomba.setPodeMover(0);
+	}
+	if (bombaBateuNaParede > 0) {
+		bomba.inverteVelX();
+	}
 } //fim func
-
-
 
 inline void Cenario::desenhaEscada(sf::RenderWindow *window,
 		float larguraColuna, float alturaLinha, int j, int i) { //int j para desenhar exatamente na chunk
@@ -185,7 +185,8 @@ inline bool Cenario::playerTestaColisao(int *playerBateuNaParede, int i) {
 	return bateuNoChao;
 }
 
-inline bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede, int i) {
+inline bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
+		int i) {
 
 	int bateuNoChao = 0;
 	sf::FloatRect hitboxChao;
@@ -199,8 +200,6 @@ inline bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede, in
 
 	if (hitboxBomba.intersects(hitboxChao)) {
 		bateuNoChao = 1;
-
-
 	}
 
 	if (hitboxBomba.intersects(hitboxParede1)) {
@@ -214,32 +213,31 @@ inline bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede, in
 	return bateuNoChao;
 }
 
-inline bool Cenario::iniciarKong(sf::RenderWindow *window){
+/*inline bool Cenario::iniciarKong(sf::RenderWindow *window){
 
-	//kong.move(5, 5);
-	//window->draw(kong);
+ //kong.move(5, 5);
+ //window->draw(kong);
 
-	int velX;
-	int velY = -alturaLinha / 5.0;
+ int velX;
+ int velY = -alturaLinha / 5.0;
 
-	if(kong.getPosition().x <= larguraColuna * 7){
-		velX = larguraColuna / 5.0;
-		kong.move(velX, velY);
-	}
-	else if(kong.getPosition().x >= larguraColuna * 9){
-		velX = -velX;
-		kong.move(velX, velY);
-	}
-	else{
-		kong.move(velX, velY);
-	}
+ if(kong.getPosition().x <= larguraColuna * 7){
+ velX = larguraColuna / 5.0;
+ kong.move(velX, velY);
+ }
+ else if(kong.getPosition().x >= larguraColuna * 9){
+ velX = -velX;
+ kong.move(velX, velY);
+ }
+ else{
+ kong.move(velX, velY);
+ }
 
-	window->draw(kong);
+ window->draw(kong);
 
-	//kong.move();
+ //kong.move();
 
-	return true;
-}
-
+ return true;
+ }*/
 
 #endif /* CENARIO_HPP_ */
