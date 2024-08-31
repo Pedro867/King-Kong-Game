@@ -25,7 +25,7 @@ private:
 	float velX, velY;
 	float posX, posY;
 	float escala;
-	bool bateu, podeMover, moveuEsquerda;
+	bool bateu, caiu, podeMover, podeSubir, moveuEsquerda;
 
 public:
 
@@ -48,7 +48,9 @@ public:
 		player.setOrigin(hitbox.width / 2, hitbox.height / 2); //metade do tamanho do player;
 		player.setPosition(posX, posY);
 		bateu = false;
+		caiu = false;
 		podeMover = true;
+		podeSubir = false;
 		moveuEsquerda = false;
 	}
 
@@ -103,8 +105,21 @@ public:
 		}
 	}
 
-	void moverY() {
-		player.move(0, velY);
+	void moverY(sf::Event evento) {
+		if(podeSubir){
+			if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)){
+				velY = -5;
+				player.move(0, velY);
+			}
+			/*if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)){
+				velY = 5;
+				player.move(0, velY);
+			}*/
+		}
+		else{
+			velY = 0;
+			player.move(0, velY);
+		}
 	}
 
 	void setVelY(float vy) {
@@ -131,6 +146,15 @@ public:
 		}
 	}
 
+	void setPodeSubir(int valor) {
+		if (valor == 1) {
+			podeSubir = true;
+		} else if (valor == 0) {
+			podeSubir = false;
+		}
+	}
+
+
 	sf::Sprite getPlayer() {
 		return player;
 	}
@@ -144,6 +168,14 @@ public:
 		posY = y;
 		player.setPosition(posX, posY);
 	}
+
+	void GameOver(float alturaLinha){
+		float queda = 0;
+		while(queda < alturaLinha){
+			player.move(0, velY);
+			queda += velY;
+		}
+
+	}
 };
 #endif /* PLAYER_HPP_ */
-

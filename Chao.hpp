@@ -17,6 +17,7 @@ private:
 	sf::Vector2<float> dimensoesChao;
 	sf::Sprite buraco1;
 	sf::Sprite buraco2;
+	sf::FloatRect hitboxBuraco;
 	sf::Vector2<float> dimensoesBuraco;
 	sf::Texture texturaBuraco;
 
@@ -27,6 +28,8 @@ public:
 	void drawChao(sf::RenderWindow *window);
 	void drawBuraco(sf::RenderWindow *window);
 	sf::RectangleShape getChao();
+	sf::Sprite getBuraco1();
+	sf::Sprite getBuraco2();
 };
 
 inline void Chao::iniciarChao(float larguraColuna, float alturaLinha, int i) {
@@ -53,9 +56,12 @@ inline void Chao::iniciarChao(float larguraColuna, float alturaLinha, int i) {
 }
 
 inline void Chao::iniciarBuraco(float larguraColuna, float alturaLinha, int i){
-	this->dimensoesBuraco.x = larguraColuna / 512.00f; //x = largura / 512 == x . 512 = largura
-	this->dimensoesBuraco.y = 5.0f / 512.00f; //y = 512 / 5 == x . 512 = 5
+	this->dimensoesBuraco.x = larguraColuna / 512.00f; //x = largura / 512 logo x . 512 = largura
+	this->dimensoesBuraco.y = 5.0f / 512.00f; //y = 512 / 5 logo x . 512 = 5
 
+	hitboxBuraco.left = hitboxBuraco.top = 0;
+	hitboxBuraco.height = 16;
+	hitboxBuraco.width = 7;
 
 	this->texturaBuraco.loadFromFile("assets/background.png");
 	this->buraco1.setTexture(texturaBuraco);
@@ -90,6 +96,14 @@ inline void Chao::drawBuraco(sf::RenderWindow *window){
 
 inline sf::RectangleShape Chao::getChao() {
 	return chao;
+}
+
+inline sf::Sprite Chao::getBuraco1() {
+	return buraco1;
+}
+
+inline sf::Sprite Chao::getBuraco2() {
+	return buraco2;
 }
 
 #endif /* CHAO_HPP_ */

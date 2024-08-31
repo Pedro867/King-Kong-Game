@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
 		//cenario.iniciarKong(&window);
 
 		//movimenta elementos
-		player.moverY();
+		player.moverY(evento);
 		player.moverX(evento);
 		bomba.mover();
 
