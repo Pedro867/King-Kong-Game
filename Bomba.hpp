@@ -34,8 +34,8 @@ public:
 		hitbox.width = 13;
 		//fim da hitbox
 		bombaNormal.setTexture(texturaBombaNormal);
-		velX = 5;
-		velY = 1;
+		velX = 8;
+		velY = 2;
 		posX = 600;
 		posY = 550;
 		escala = 2.5;

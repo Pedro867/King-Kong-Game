@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
 				window.close();
 			}
 		}
-
+		sf::sleep(sf::milliseconds(20.f));
 		window.clear();
 
 		//Desenha cenario e fundo
@@ -53,6 +53,7 @@ int main(int argc, char **argv) {
 		//movimenta elementos
 		player.moverY(evento);
 		player.moverX(evento);
+		player.colideBomba(bomba);
 		bomba.mover();
 
 		//desenha elementos
@@ -60,7 +61,6 @@ int main(int argc, char **argv) {
 		window.draw(bomba.getBombaNormal());
 
 		window.display();
-		sf::sleep(sf::milliseconds(20.f));
 	}
 
 	return 0;

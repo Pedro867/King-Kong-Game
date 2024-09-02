@@ -11,6 +11,7 @@
 //#include "Chao.hpp"
 //#include "Parede.hpp"
 //#include "Cenario.hpp"
+#include "Bomba.hpp"
 #include <iostream>
 
 using namespace std;
@@ -26,10 +27,28 @@ private:
 	float posX, posY;
 	float escala;
 	bool bateu, caiu, podeMover, podeSubir, moveuEsquerda;
+	const int gravity = 5;
 
 public:
 
-	Player(sf::RenderWindow &window) :
+	Player(sf::RenderWindow &window);
+	void moverX(sf::Event evento);
+	void moverY(sf::Event evento);
+	void setPodeMover(int valor);
+	void setPodeSubir(int valor);
+	void setCaiu(bool caiu);
+	void setVelY(float vy);
+	void setVelX(float vx);
+	float getVelY();
+	float getVelX();
+	sf::Sprite getPlayer();
+	sf::FloatRect bounds();
+	void setPosXPosY(float x, float y);
+	void GameOver(float alturaLinha);
+	bool colideBomba(Bomba &bomba);
+};
+
+	Player::Player(sf::RenderWindow &window) :
 			window(window) {
 		texturePlayer.loadFromFile("assets/playerParado.png");
 		//hitbox
@@ -54,7 +73,7 @@ public:
 		moveuEsquerda = false;
 	}
 
-	void moverX(sf::Event evento) {
+	void Player::moverX(sf::Event evento) {
 
 		player.setScale(escala, escala);
 		if (podeMover) {
@@ -82,7 +101,6 @@ public:
 				texturePlayer.loadFromFile("assets/playerCorrendoDireita.png");
 				moveuEsquerda = false;
 
-
 			} else {
 				velX = 0;
 
@@ -94,7 +112,7 @@ public:
 
 				if (moveuEsquerda) {
 					player.setScale(-escala, escala);
-				}else{
+				} else {
 					player.setScale(escala, escala);
 				}
 
@@ -105,40 +123,34 @@ public:
 		}
 	}
 
-	void moverY(sf::Event evento) {
-		if(podeSubir){
-			if(sf::Keyboard::isKeyPressed(sf::Keyboard::W)){
+	void Player::moverY(sf::Event evento) {
+
+		if (caiu == true && podeSubir == false) {
+			player.move(0, gravity);
+		}
+		if (podeSubir == true) {
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
 				velY = -5;
 				player.move(0, velY);
 			}
-			/*if(sf::Keyboard::isKeyPressed(sf::Keyboard::S)){
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
 				velY = 5;
 				player.move(0, velY);
-			}*/
+			}
 		}
-		else{
+		if (podeSubir == false) {
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+				velY = -5;
+				player.move(0, velY);
+				//player.move(0, gravity);
+			}
+		} else {
 			velY = 0;
 			player.move(0, velY);
 		}
 	}
 
-	void setVelY(float vy) {
-		this->velY = vy;
-	}
-
-	float getVelX() {
-		return velX;
-	}
-
-	float getVelY() {
-		return velY;
-	}
-
-	void setVelX(int vx) {
-		velX = vx;
-	}
-
-	void setPodeMover(int valor) {
+	void Player::setPodeMover(int valor) {
 		if (valor == 1) {
 			podeMover = true;
 		} else if (valor == 0) {
@@ -146,7 +158,8 @@ public:
 		}
 	}
 
-	void setPodeSubir(int valor) {
+	//por enquanto sao iguais
+	void Player::setPodeSubir(int valor) {
 		if (valor == 1) {
 			podeSubir = true;
 		} else if (valor == 0) {
@@ -154,28 +167,57 @@ public:
 		}
 	}
 
+	void Player::setCaiu(bool caiu) {
+		this->caiu = caiu;
+	}
 
-	sf::Sprite getPlayer() {
+	void Player::setVelY(float vy) {
+		this->velY = vy / 3.0;
+	}
+
+	void Player::setVelX(float vx) {
+		velX = vx;
+	}
+
+	float Player::getVelY() {
+		return velY;
+	}
+
+	float Player::getVelX() {
+		return velX;
+	}
+
+	sf::Sprite Player::getPlayer() {
 		return player;
 	}
 
-	sf::FloatRect playerBounds() {
+	sf::FloatRect Player::bounds() {
 		return player.getGlobalBounds();
 	}
 
-	void setPosXPosY(float x,float y){
+	void Player::setPosXPosY(float x, float y) {
+		//Funcao para setar o andar
 		posX = x;
 		posY = y;
 		player.setPosition(posX, posY);
 	}
 
-	void GameOver(float alturaLinha){
+	void Player::GameOver(float alturaLinha) {
 		float queda = 0;
-		while(queda < alturaLinha){
+		while (queda < alturaLinha) {
 			player.move(0, velY);
 			queda += velY;
 		}
 
+}
+
+bool Player::colideBomba(Bomba &bomba) {
+	sf::FloatRect hitboxPlayer = bounds();
+	sf::FloatRect hitboxBomba = bomba.getBombaNormalBounds();
+	if(hitboxPlayer.intersects(hitboxBomba)){
+		cout << "BATEU" << endl;
 	}
-};
+	return true;
+}
+
 #endif /* PLAYER_HPP_ */

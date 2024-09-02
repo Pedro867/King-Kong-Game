@@ -12,7 +12,7 @@
 
 class Cenario {
 private:
-
+	//Atributos
 	std::vector<Chao> chao;
 	std::vector<Chao> buraco;
 	std::vector<Parede> paredes;
@@ -22,21 +22,21 @@ private:
 	//fazer tudo isso em uma outra funcao para nao precisar declarar dnv quando colocar ele la embaixo no mid game
 	sf::Sprite kong;
 	Player &player;
-	float alturaLinha; //determina a altura de cada linha (tamanho y da janela / num de linhas)
-	float larguraColuna;
+	float alturaLinha, larguraColuna; //determina a altura de cada linha (tamanho y da janela / num de linhas)
 
 public:
 	//Declaracao das funcoes
 	Cenario(Player &player, sf::RenderWindow *window);
 
 	void desenhaCenario(sf::RenderWindow *window, Bomba &bomba);
-	void desenhaChao(sf::RenderWindow *window);
-	void desenhaParede(sf::RenderWindow *window);
-
 	bool playerTestaColisao(int *playerBateuNaParede, int *PlayerBateuNaEscada,
 			int *playerCaiuNoBuraco, int i);
 	bool bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
 			int *BombaBateuNaEscada, int i);
+	void playerUpdate(bool playerBateuNoChao, int playerBateuNaParede,
+			int playerBateuNaEscada, int playerCaiuNoBuraco);
+	void bombaUpdate(Bomba &bomba, bool bombaBateuNoChao,
+			int bombaBateuNaParede, int bombaBateuNaEscada);
 	bool iniciarKong(sf::RenderWindow *window);
 	void setaAndarBomba(Bomba &bomba);
 	void setPlayerLayer();
@@ -78,14 +78,13 @@ Cenario::Cenario(Player &player, sf::RenderWindow *window) :
 }
 
 void Cenario::desenhaCenario(sf::RenderWindow *window, Bomba &bomba) {
-	vector<sf::FloatRect> teste;
-	bool playerBateuNoChao = false;
-	int playerCaiuNoBuraco = 0;
-	int playerBateuNaParede = 0;
-	bool bombaBateuNoChao = false;
-	int bombaBateuNaParede = 0;
-	int BombaBateuNaEscada = 0;
-	int PlayerBateuNaEscada = 0;
+	bool playerBateuNoChao, bombaBateuNoChao;
+	playerBateuNoChao = bombaBateuNoChao = false;
+	int playerCaiuNoBuraco, playerBateuNaParede, playerBateuNaEscada;
+	playerCaiuNoBuraco = playerBateuNaParede = playerBateuNaEscada = 0;
+	//falta bombaCaiuNoBuraco
+	int bombaBateuNaParede, bombaBateuNaEscada;
+	bombaBateuNaParede = bombaBateuNaEscada = 0;
 
 	for (int i = 0; i < 10; i++) {
 		for (int j = 0; j < 40; j++) {
@@ -126,67 +125,31 @@ void Cenario::desenhaCenario(sf::RenderWindow *window, Bomba &bomba) {
 				}
 			}
 
-			playerBateuNoChao += playerTestaColisao(&playerBateuNaParede,&PlayerBateuNaEscada, &playerCaiuNoBuraco, i);
-			bombaBateuNoChao += bombaTestaColisao(bomba, &bombaBateuNaParede,&BombaBateuNaEscada, i);
+			playerBateuNoChao += playerTestaColisao(&playerBateuNaParede,
+					&playerBateuNaEscada, &playerCaiuNoBuraco, i);
+			bombaBateuNoChao += bombaTestaColisao(bomba, &bombaBateuNaParede,
+					&bombaBateuNaEscada, i);
 		} //for j
 	} //for i
-	  //logica: se ele bateu em algum chao, bateuNoChao>0
-	  //entao ele zera a velocidade
-	if (playerCaiuNoBuraco > 0) {
-		player.setVelY(5);
-		cout << "fhpdsf";
-		player.GameOver(alturaLinha);
-	} else {
-		player.setVelY(0);
-	}
 
-	if (playerBateuNaParede > 0) {
-		player.setPodeMover(0);
-	} else {
-		player.setPodeMover(1);
-	}
+	playerUpdate(playerBateuNoChao, playerBateuNaParede, playerBateuNaEscada,
+			playerCaiuNoBuraco);
+	bombaUpdate(bomba, bombaBateuNoChao, bombaBateuNaParede,
+			bombaBateuNaEscada);
 
-	if (PlayerBateuNaEscada > 0) {
-		player.setPodeSubir(1);
-	} else {
-		player.setPodeSubir(0);
-	}
-
-	//Bomba
-	if (bombaBateuNoChao == true) {
-		bomba.setPodeMover(1);
-	} else {
-		bomba.setPodeMover(0);
-	}
-	if (bombaBateuNaParede > 0) {
-		bomba.inverteVelX();
-	}
-	if (BombaBateuNaEscada > 0) {
-		bomba.setPodeDescer(1);
-		bomba.DescerEscada();
-	} else {
-		bomba.setPodeDescer(0);
-
-
-	}
 } //fim func
 
 bool Cenario::playerTestaColisao(int *playerBateuNaParede,
 		int *PlayerBateuNaEscada, int *playerCaiuNoBuraco, int i) {
 
 	int bateuNoChao = 0;
-	sf::FloatRect hitboxChao;
-	sf::FloatRect hitboxBuraco1;
-	sf::FloatRect hitboxBuraco2;
-	sf::FloatRect hitboxParede1;
-	sf::FloatRect hitboxParede2;
-	sf::FloatRect hitboxEscada1;
-	sf::FloatRect hitboxEscada2;
-	sf::FloatRect hitboxPlayer = player.playerBounds();
+	sf::FloatRect hitboxChao, hitboxBuraco1, hitboxBuraco2, hitboxParede1,
+			hitboxParede2, hitboxEscada1, hitboxEscada2, hitboxPlayer;
+	hitboxPlayer = player.bounds();
 
 	hitboxChao = chao[i].getChao().getGlobalBounds();
 	hitboxBuraco1 = buraco[i].getBuraco1().getGlobalBounds();
-	hitboxBuraco2 = buraco[i].getBuraco1().getGlobalBounds();
+	hitboxBuraco2 = buraco[i].getBuraco2().getGlobalBounds();
 	hitboxParede1 = paredes[i].getParede1().getGlobalBounds();
 	hitboxParede2 = paredes[i].getParede2().getGlobalBounds();
 	hitboxEscada1 = escada[i].getEscada1().getGlobalBounds();
@@ -194,6 +157,8 @@ bool Cenario::playerTestaColisao(int *playerBateuNaParede,
 
 	if (hitboxPlayer.intersects(hitboxChao)) {
 		bateuNoChao = 1;
+	} else {
+		bateuNoChao = 0;
 	}
 
 	if (hitboxPlayer.intersects(hitboxParede1)
@@ -220,6 +185,7 @@ bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
 	sf::FloatRect hitboxParede2;
 	sf::FloatRect hitboxEscada1;
 	sf::FloatRect hitboxEscada2;
+	//float meio1 = 0, meio2 = 0;
 	sf::FloatRect hitboxBomba = bomba.getBombaNormalBounds();
 
 	hitboxChao = chao[i].getChao().getGlobalBounds();
@@ -227,11 +193,10 @@ bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
 	hitboxParede2 = paredes[i].getParede2().getGlobalBounds();
 	hitboxEscada1 = escada[i].getEscada1().getGlobalBounds();
 	hitboxEscada2 = escada[i].getEscada2().getGlobalBounds();
-	hitboxEscada1.height=hitboxEscada1.height - 30;
-	hitboxEscada1.width=hitboxEscada1.width - 50;
-	hitboxEscada2.height=hitboxEscada2.height - 30;
-		hitboxEscada2.width=hitboxEscada2.width - 30;
-
+	/*meio1 = escada[i].meioEscada1();
+	 meio2 = escada[i].meioEscada2();*/
+	hitboxEscada1.height = hitboxEscada1.height - 30;
+	hitboxEscada2.height = hitboxEscada2.height - 30;
 
 	if (hitboxBomba.intersects(hitboxChao)) {
 		bateuNoChao = 1;
@@ -244,14 +209,78 @@ bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
 		*bombaBateuNaParede = 1;
 
 	}
-	if (hitboxBomba.intersects(hitboxEscada1)) {
-		*BombaBateuNaEscada = 1;
-	}
-	if (hitboxBomba.intersects(hitboxEscada2)) {
-			*BombaBateuNaEscada = 1;
-		}
+
+	/*if (bomba.getVelX() > 0) {
+	 meio1 += escada[i].getEscada1().getPosition().x;
+	 hitboxEscada1.width += meio1;
+	 meio2 += escada[i].getEscada2().getPosition().x;
+	 hitboxEscada2.width += meio2;
+	 } else {
+	 meio1 -= escada[i].getEscada1().getPosition().x;
+	 hitboxEscada1.width -= meio1;
+	 meio2 += escada[i].getEscada2().getPosition().x;
+	 hitboxEscada2.width += meio2;
+	 }
+
+	 if (hitboxBomba.intersects(hitboxEscada1)) {
+	 if ((bomba.getBombaNormal().getPosition().x <= meio1 || bomba.getBombaNormal().getPosition().x > meio1)) {
+	 *BombaBateuNaEscada = 1;
+	 }
+	 }
+	 if (hitboxBomba.intersects(hitboxEscada2)) {
+	 if (bomba.getBombaNormal().getPosition().x <= meio2 || bomba.getBombaNormal().getPosition().x > meio2) {
+	 *BombaBateuNaEscada = 1;
+	 }
+	 }*/
 
 	return bateuNoChao;
+}
+
+void Cenario::playerUpdate(bool playerBateuNoChao, int playerBateuNaParede,
+		int playerBateuNaEscada, int playerCaiuNoBuraco) {
+	if (playerBateuNoChao > 0) {
+		player.setCaiu(false);
+	} else {
+		player.setCaiu(true);
+	}
+
+	if (playerCaiuNoBuraco > 0) {
+		player.setVelY(5);
+		player.GameOver(alturaLinha);
+	} else {
+		player.setVelY(0);
+	}
+
+	if (playerBateuNaParede > 0) {
+		player.setPodeMover(0);
+	} else {
+		player.setPodeMover(1);
+	}
+
+	if (playerBateuNaEscada > 0) {
+		player.setPodeSubir(1);
+	} else {
+		player.setPodeSubir(0);
+	}
+}
+
+void Cenario::bombaUpdate(Bomba &bomba, bool bombaBateuNoChao,
+		int bombaBateuNaParede, int bombaBateuNaEscada) {
+	if (bombaBateuNoChao == true) {
+		bomba.setPodeMover(1);
+	} else {
+		bomba.setPodeMover(0);
+	}
+	if (bombaBateuNaParede > 0) {
+		bomba.inverteVelX();
+	}
+	if (bombaBateuNaEscada > 0) {
+		bomba.setPodeDescer(1);
+		bomba.DescerEscada();
+	} else {
+		bomba.setPodeDescer(0);
+
+	}
 }
 
 /*bool Cenario::iniciarKong(sf::RenderWindow *window) {
@@ -278,14 +307,14 @@ bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
 
 void Cenario::setaAndarBomba(Bomba &bomba) {
 	float altura, largura;
-	altura = (alturaLinha * 1) - 13;
+	altura = (alturaLinha * 2) - 13;
 	largura = 7 * larguraColuna - 13;
 	bomba.setPosXPosY(largura, altura);
 }
 
 void Cenario::setPlayerLayer() {
 	float altura, largura;
-	altura = (alturaLinha * 9) - 16;
+	altura = (alturaLinha * 5) - 16;
 	largura = 20 * larguraColuna - 16;
 	player.setPosXPosY(largura, altura);
 }

@@ -20,6 +20,8 @@ public:
 	void draw(sf::RenderWindow *window, float larguraColuna, float alturaLinha, int i, int j);
 	sf::Sprite getEscada1();
 	sf::Sprite getEscada2();
+	float meioEscada1();
+	float meioEscada2();
 };
 
 inline void Escada::iniciarEscada(float larguraColuna, float alturaLinha) {
@@ -56,6 +58,16 @@ inline sf::Sprite Escada::getEscada1() {
 
 inline sf::Sprite Escada::getEscada2() {
 	return escada2;
+}
+
+inline float Escada::meioEscada1() {
+	float meio1 = escada1.getPosition().x + escada1.getScale().x/2;
+	return meio1;
+}
+
+inline float Escada::meioEscada2() {
+	float meio2 = escada2.getPosition().x + escada2.getScale().x/2;
+	return meio2;
 }
 
 #endif /* ESCADA_HPP_ */
