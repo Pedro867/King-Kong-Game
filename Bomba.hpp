@@ -20,7 +20,7 @@ private:
 	float velX, velY;
 	float posX, posY;
 	float escala;
-	bool bateu = false;
+	bool bateu, escada, cair;
 
 public:
 
@@ -37,12 +37,14 @@ public:
 		velX = 5;
 		velY = 1;
 		posX = 600;
-		posY = 190;
+		posY = 550;
 		escala = 2.5;
 		bombaNormal.setScale(escala, escala);
 		bombaNormal.setOrigin(16, 16); //metade do tamanho do player;
 		bombaNormal.setPosition(posX, posY);
 		bateu = false;
+		cair = false;
+		escada = false;
 	}
 
 	sf::FloatRect getBombaNormalBounds() {
@@ -60,31 +62,20 @@ public:
 	}
 
 	void moverY() {
-		if (bateu == true) {
 			bombaNormal.move(0, velY);
-		}
+
 	}
 
 	void moverX() {
-		if (bateu == true) {
+
 			bombaNormal.move(velX, 0);
-		}
+
 	}
 
 	void inverteVelX() {
 		velX = -velX;
 	}
 
-	void setVelY(float x) {
-		velY = x;
-
-	}
-
-	void setVel(float x, float y) {
-		velY = y;
-		velX = x;
-
-	}
 
 	sf::Sprite getBombaNormal() {
 		return bombaNormal;
@@ -102,6 +93,24 @@ public:
 		}
 	}
 
+
+
+	void DescerEscada(){
+
+		if(escada == true){
+			bateu = false;
+			mover();
+		}else{
+			escada = false;
+		}
+	}
+	void setPodeDescer(int valor) {
+		if (valor == 1) {
+			escada = true;
+		} else if (valor == 0) {
+			escada = false;
+		}
+	}
 	void setPosXPosY(float x, float y) {
 		posX = x;
 		posY = y;
