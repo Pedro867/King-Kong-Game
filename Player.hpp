@@ -27,7 +27,7 @@ private:
 	float posX, posY;
 	float escala;
 	bool bateu, caiu, podeMover, podeSubir, moveuEsquerda;
-	const int gravity = 5;
+	const int gravity = 1;
 
 public:
 
@@ -37,6 +37,7 @@ public:
 	void setPodeMover(int valor);
 	void setPodeSubir(int valor);
 	void setCaiu(bool caiu);
+	void setBateu(bool bateu);
 	void setVelY(float vy);
 	void setVelX(float vx);
 	float getVelY();
@@ -46,6 +47,7 @@ public:
 	void setPosXPosY(float x, float y);
 	void GameOver(float alturaLinha);
 	bool colideBomba(Bomba &bomba);
+	bool gameOver();
 };
 
 	Player::Player(sf::RenderWindow &window) :
@@ -138,15 +140,11 @@ public:
 				player.move(0, velY);
 			}
 		}
-		if (podeSubir == false) {
+		if (podeSubir == false && caiu == false) {
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-				velY = -5;
+				velY = -40;
 				player.move(0, velY);
-				//player.move(0, gravity);
 			}
-		} else {
-			velY = 0;
-			player.move(0, velY);
 		}
 	}
 
@@ -169,6 +167,10 @@ public:
 
 	void Player::setCaiu(bool caiu) {
 		this->caiu = caiu;
+	}
+
+	void Player::setBateu(bool bateu) {
+		this->bateu = bateu;
 	}
 
 	void Player::setVelY(float vy) {
@@ -203,12 +205,7 @@ public:
 	}
 
 	void Player::GameOver(float alturaLinha) {
-		float queda = 0;
-		while (queda < alturaLinha) {
-			player.move(0, velY);
-			queda += velY;
-		}
-
+		player.move(0, velY);
 }
 
 bool Player::colideBomba(Bomba &bomba) {
@@ -219,5 +216,6 @@ bool Player::colideBomba(Bomba &bomba) {
 	}
 	return true;
 }
+
 
 #endif /* PLAYER_HPP_ */

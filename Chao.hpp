@@ -13,97 +13,105 @@
 class Chao{
 private:
 
-	sf::RectangleShape chao;
+	vector<sf::RectangleShape> chao;
 	sf::Vector2<float> dimensoesChao;
-	sf::Sprite buraco1;
-	sf::Sprite buraco2;
-	sf::FloatRect hitboxBuraco;
-	sf::Vector2<float> dimensoesBuraco;
-	sf::Texture texturaBuraco;
 
 public:
 
+	Chao();
 	void iniciarChao(float larguraColuna, float alturaLinha, int i);
-	void iniciarBuraco(float larguraColuna, float alturaLinha, int i);
 	void drawChao(sf::RenderWindow *window);
-	void drawBuraco(sf::RenderWindow *window);
-	sf::RectangleShape getChao();
-	sf::Sprite getBuraco1();
-	sf::Sprite getBuraco2();
+	sf::RectangleShape getChao1();
+	sf::RectangleShape getChao2();
+	sf::RectangleShape getChao3();
 };
 
-inline void Chao::iniciarChao(float larguraColuna, float alturaLinha, int i) {
-	if(i == 0 || i == 1){
-		this->dimensoesChao.x = 32 * larguraColuna;
-		this->dimensoesChao.y = 5.0f;
-		this->chao.setSize(dimensoesChao);
-		this->chao.setPosition(larguraColuna * 4, alturaLinha + alturaLinha * i); //desenha no chao da linha na 5 coluna
-	}
-	if(i == 2){
-		this->dimensoesChao.x = 34 * larguraColuna; //só muda aqui
-		this->dimensoesChao.y = 5.0f;
-		this->chao.setSize(dimensoesChao);
-		this->chao.setPosition(larguraColuna * 3, alturaLinha + alturaLinha * i); //desenha no chao da linha na 5 coluna
-	}
-	if(i > 2 && i < 9){
-		this->dimensoesChao.x = 36 * larguraColuna; //só muda aqui
-		this->dimensoesChao.y = 5.0f;
-		this->chao.setSize(dimensoesChao);
-		this->chao.setPosition(larguraColuna * 2, alturaLinha + alturaLinha * i); //desenha no chao da linha na 5 coluna
-	}
-
-	this->chao.setFillColor(sf::Color::Magenta);
+inline Chao::Chao() {
+	chao.resize(3); //tem no max 3 chaos (ou choes kkkkk) por andar
 }
 
-inline void Chao::iniciarBuraco(float larguraColuna, float alturaLinha, int i){
-	this->dimensoesBuraco.x = larguraColuna / 512.00f; //x = largura / 512 logo x . 512 = largura
-	this->dimensoesBuraco.y = 5.0f / 512.00f; //y = 512 / 5 logo x . 512 = 5
+inline void Chao::iniciarChao(float larguraColuna, float alturaLinha, int i) {
 
-	hitboxBuraco.left = hitboxBuraco.top = 0;
-	hitboxBuraco.height = 16;
-	hitboxBuraco.width = 7;
-
-	this->texturaBuraco.loadFromFile("assets/background.png");
-	this->buraco1.setTexture(texturaBuraco);
-	this->buraco1.setScale(dimensoesBuraco);
-
-	this->buraco2.setTexture(texturaBuraco);
-	this->buraco2.setScale(dimensoesBuraco);
-
-	if(i == 2){
-		this->buraco1.setPosition(larguraColuna * 13, alturaLinha + alturaLinha * i);
-		this->buraco2.setPosition(larguraColuna * 26, alturaLinha + alturaLinha * i);
+	if(i == 1 || i == 2 || i == 4 || i == 6){
+		this->dimensoesChao.x = 36 * larguraColuna;
+		this->dimensoesChao.y = 5.0f;
+		this->chao[0].setSize(dimensoesChao);
+		this->chao[0].setPosition(larguraColuna * 2, alturaLinha + alturaLinha * (9 - i)); //desenha no chao da linha na 3 coluna
+		this->chao[0].setFillColor(sf::Color::Magenta);
 	}
-	if(i == 4){
-		this->buraco1.setPosition(larguraColuna * 10, alturaLinha + alturaLinha * i);
-		this->buraco2.setPosition(larguraColuna * 29, alturaLinha + alturaLinha * i);
+	if(i == 3){
+		this->dimensoesChao.x = 12 * larguraColuna;
+		this->dimensoesChao.y = 5.0f;
+		this->chao[0].setSize(dimensoesChao);
+		this->chao[0].setPosition(larguraColuna * 2, alturaLinha + alturaLinha * (9 - i));
+		this->chao[0].setFillColor(sf::Color::Magenta);
+		this->chao[2].setSize(dimensoesChao);
+		this->chao[2].setPosition(larguraColuna * 26, alturaLinha + alturaLinha * (9 - i));
+		this->chao[2].setFillColor(sf::Color::Magenta);
+
+		this->dimensoesChao.x = 10 * larguraColuna;
+		this->dimensoesChao.y = 5.0f;
+		this->chao[1].setSize(dimensoesChao);
+		this->chao[1].setPosition(larguraColuna * 15, alturaLinha + alturaLinha * (9 - i));
+		this->chao[1].setFillColor(sf::Color::Magenta);
 	}
-	if(i == 6){
-		this->buraco1.setPosition(larguraColuna * 14, alturaLinha + alturaLinha * i);
-		this->buraco2.setPosition(larguraColuna * 25, alturaLinha + alturaLinha * i);
+	if (i == 5) {
+		this->dimensoesChao.x = 8 * larguraColuna;
+		this->dimensoesChao.y = 5.0f;
+		this->chao[0].setSize(dimensoesChao);
+		this->chao[0].setPosition(larguraColuna * 2, alturaLinha + alturaLinha * (9 - i));
+		this->chao[0].setFillColor(sf::Color::Magenta);
+		this->chao[2].setSize(dimensoesChao);
+		this->chao[2].setPosition(larguraColuna * 30, alturaLinha + alturaLinha * (9 - i));
+		this->chao[2].setFillColor(sf::Color::Magenta);
+
+		this->dimensoesChao.x = 18 * larguraColuna;
+		this->dimensoesChao.y = 5.0f;
+		this->chao[1].setSize(dimensoesChao);
+		this->chao[1].setPosition(larguraColuna * 11, alturaLinha + alturaLinha * (9 - i));
+		this->chao[1].setFillColor(sf::Color::Magenta);
+	}
+	if(i == 7){
+		this->dimensoesChao.x = 10 * larguraColuna;
+		this->dimensoesChao.y = 5.0f;
+		this->chao[0].setSize(dimensoesChao);
+		this->chao[0].setPosition(larguraColuna * 3, alturaLinha + alturaLinha * (9 - i));
+		this->chao[0].setFillColor(sf::Color::Magenta);
+		this->chao[2].setSize(dimensoesChao);
+		this->chao[2].setPosition(larguraColuna * 27, alturaLinha + alturaLinha * (9 - i));
+		this->chao[2].setFillColor(sf::Color::Magenta);
+
+		this->dimensoesChao.x = 12 * larguraColuna;
+		this->dimensoesChao.y = 5.0f;
+		this->chao[1].setSize(dimensoesChao);
+		this->chao[1].setPosition(larguraColuna * 14, alturaLinha + alturaLinha * (9 - i));
+		this->chao[1].setFillColor(sf::Color::Magenta);
+	}
+	if(i == 8 || i == 9){
+		this->dimensoesChao.x = 32 * larguraColuna;
+		this->dimensoesChao.y = 5.0f;
+		this->chao[0].setSize(dimensoesChao);
+		this->chao[0].setPosition(larguraColuna * 4, alturaLinha + alturaLinha * (9 - i)); //desenha no chao da linha na 3 coluna
+		this->chao[0].setFillColor(sf::Color::Magenta);
 	}
 }
 
 inline void Chao::drawChao(sf::RenderWindow *window){
-	window->draw(this->chao);
+	window->draw(this->chao[0]);
+	window->draw(this->chao[1]);
+	window->draw(this->chao[2]);
 }
 
-inline void Chao::drawBuraco(sf::RenderWindow *window){
-
-	window->draw(this->buraco1);
-	window->draw(this->buraco2);
+inline sf::RectangleShape Chao::getChao1() {
+	return chao[0];
 }
 
-inline sf::RectangleShape Chao::getChao() {
-	return chao;
+inline sf::RectangleShape Chao::getChao2() {
+	return chao[1];
 }
 
-inline sf::Sprite Chao::getBuraco1() {
-	return buraco1;
-}
-
-inline sf::Sprite Chao::getBuraco2() {
-	return buraco2;
+inline sf::RectangleShape Chao::getChao3() {
+	return chao[2];
 }
 
 #endif /* CHAO_HPP_ */

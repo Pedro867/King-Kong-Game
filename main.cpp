@@ -16,7 +16,7 @@
 
 int main(int argc, char **argv) {
 	setbuf(stdout, NULL);
-	sf::VideoMode video(1366, 700);
+	sf::VideoMode video(1366, 900);
 	sf::RenderWindow window(video, "King Kong");
 
 	sf::Texture background;
@@ -41,6 +41,7 @@ int main(int argc, char **argv) {
 			if (evento.type == sf::Event::Closed) {
 				window.close();
 			}
+
 		}
 		sf::sleep(sf::milliseconds(20.f));
 		window.clear();
