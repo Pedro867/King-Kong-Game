@@ -16,7 +16,7 @@
 
 int main(int argc, char **argv) {
 	setbuf(stdout, NULL);
-	sf::VideoMode video(1366, 900);
+	sf::VideoMode video(1200, 600);
 	sf::RenderWindow window(video, "King Kong");
 
 	sf::Texture background;

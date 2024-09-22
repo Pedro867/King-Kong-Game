@@ -34,11 +34,11 @@ public:
 		hitbox.width = 13;
 		//fim da hitbox
 		bombaNormal.setTexture(texturaBombaNormal);
-		velX = 8;
-		velY = 2;
+		velX = window.getSize().x / 250.0f; //velocidade responsiva
+		velY = window.getSize().y / 500.0f; //imita a gravidade
 		posX = 600;
 		posY = 550;
-		escala = 2.5;
+		escala = window.getSize().y / 275.0f; //escala responsiva
 		bombaNormal.setScale(escala, escala);
 		bombaNormal.setOrigin(16, 16); //metade do tamanho do player;
 		bombaNormal.setPosition(posX, posY);

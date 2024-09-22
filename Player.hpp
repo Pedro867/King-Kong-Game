@@ -26,8 +26,8 @@ private:
 	float velX, velY;
 	float posX, posY;
 	float escala;
-	bool bateu, caiu, podeMover, podeSubir, moveuEsquerda;
-	const int gravity = 1;
+	bool bateu, caiu, podeMover, podeSubir, subindo, moveuEsquerda;
+	int gravity;
 
 public:
 
@@ -64,7 +64,8 @@ public:
 		velY = 0;
 		posX = 360;
 		posY = 250;
-		escala = 2.5;
+		escala = window.getSize().y / 275.0f; //escala responsiva
+		gravity = window.getSize().y / 500.0f;
 		player.setScale(escala, escala);
 		player.setOrigin(hitbox.width / 2, hitbox.height / 2); //metade do tamanho do player;
 		player.setPosition(posX, posY);
@@ -73,6 +74,9 @@ public:
 		podeMover = true;
 		podeSubir = false;
 		moveuEsquerda = false;
+		subindo = false;
+		//essa aqui bugou tudo, mas eh necessaria
+		//pro player nao poder mover na escada
 	}
 
 	void Player::moverX(sf::Event evento) {
@@ -128,21 +132,26 @@ public:
 	void Player::moverY(sf::Event evento) {
 
 		if (caiu == true && podeSubir == false) {
+			//subindo = false;
 			player.move(0, gravity);
 		}
 		if (podeSubir == true) {
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-				velY = -5;
+				//subindo = true;
+				velY = -gravity;
 				player.move(0, velY);
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-				velY = 5;
+				//subindo = true;
+				velY = gravity;
 				player.move(0, velY);
 			}
 		}
 		if (podeSubir == false && caiu == false) {
+			//subindo = false;
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-				velY = -40;
+				velY = window.getSize().y / 40.0f; //pulo responsivo
+				velY = -velY;
 				player.move(0, velY);
 			}
 		}
