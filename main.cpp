@@ -41,7 +41,6 @@ int main(int argc, char **argv) {
 			if (evento.type == sf::Event::Closed) {
 				window.close();
 			}
-
 		}
 		sf::sleep(sf::milliseconds(20.f));
 		window.clear();

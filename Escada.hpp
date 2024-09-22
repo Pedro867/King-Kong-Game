@@ -16,8 +16,8 @@ private:
 
 public:
 	Escada();
-	void iniciarEscada(float larguraColuna, float alturaLinha);
-	void draw(sf::RenderWindow *window, float larguraColuna, float alturaLinha, int i, int j);
+	void iniciarEscada(float larguraColuna, float alturaLinha, int i);
+	void draw(sf::RenderWindow *window);
 	sf::Sprite getEscada1();
 	sf::Sprite getEscada2();
 	float meioEscada1();
@@ -28,29 +28,36 @@ inline Escada::Escada() {
 	escada.resize(2);
 }
 
-inline void Escada::iniciarEscada(float larguraColuna, float alturaLinha) {
+inline void Escada::iniciarEscada(float larguraColuna, float alturaLinha, int i) {
 
 	texturaEscada.loadFromFile("assets/Escada.png");
 
-	for(int i = 0; i < 2; i++){
-		escada[i].setTexture(texturaEscada);
-		escada[i].setScale(larguraColuna / 4, alturaLinha / 8);
+	for(int cont = 0; cont < 2; cont++){
+		escada[cont].setTexture(texturaEscada);
+		escada[cont].setScale(larguraColuna / 4, alturaLinha / 8);
+	}
+
+	if(i == 0 || i == 9){
+		escada[0].setScale(0, 0);
+		escada[1].setScale(0, 0);
+	}
+	if(i == 1 || i == 3 || i == 5){
+		escada[0].setPosition(3 * larguraColuna, alturaLinha * (9 - i));
+		escada[1].setPosition(35 * larguraColuna, alturaLinha * (9 - i));
+	}
+	if(i == 2 || i == 4 || i == 6 || i == 8){
+		escada[0].setPosition(19 * larguraColuna, alturaLinha * (9 - i));
+		escada[1].setScale(0, 0);
+	}
+	if(i == 7){
+		escada[0].setPosition(5 * larguraColuna, alturaLinha * (9 - i));
+		escada[1].setPosition(33 * larguraColuna, alturaLinha * (9 - i));
 	}
 }
 
-inline void Escada::draw(sf::RenderWindow *window, float larguraColuna, float alturaLinha, int i, int j) {
-
-	int jAuxiliar = 0;
-
-	if(jAuxiliar < j){
-		escada[0].setPosition((j - 1) * larguraColuna, alturaLinha * (9 - i));
-		jAuxiliar = j;
+inline void Escada::draw(sf::RenderWindow *window) {
 		window->draw(escada[0]);
-	}
-	else{
-		escada[1].setPosition((j - 1) * larguraColuna, alturaLinha * (9 - i));
 		window->draw(escada[1]);
-	}
 }
 
 inline sf::Sprite Escada::getEscada1() {

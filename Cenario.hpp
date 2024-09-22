@@ -72,7 +72,7 @@ Cenario::Cenario(Player &player, sf::RenderWindow *window) :
 	}
 
 	for (int i = 0; i < 10; i++) { //8 linhas com 2 paredes = 16 paredes no total
-		escada[i].iniciarEscada(larguraColuna, alturaLinha);
+		escada[i].iniciarEscada(larguraColuna, alturaLinha, i);
 	}
 
 	kongTexture.loadFromFile("assets/donkey.png");
@@ -125,13 +125,12 @@ void Cenario::desenhaAndar1ao6(int i, sf::RenderWindow *window, Chao *chao, Pare
 	for (int j = 0; j < 40; j++) {
 		if (i % 2 == 1) {
 			if (j == 4 || j == 36) {
-				escada->draw(window, larguraColuna, alturaLinha, i, j);
+				escada->draw(window);
 			}
 		}
 		if (i % 2 == 0) {
 			if (j == 20) {
-				escada->draw(window, larguraColuna, alturaLinha, i,
-				j);
+				escada->draw(window);
 			}
 		}
 		chao->drawChao(window);
@@ -143,7 +142,7 @@ void Cenario::desenhaAndar1ao6(int i, sf::RenderWindow *window, Chao *chao, Pare
 void Cenario::desenhaAndar7(int i, sf::RenderWindow *window, Chao *chao, Parede *paredes, Escada *escada, Buraco *buraco){
 	for (int j = 0; j < 40; j++) {
 		if (j == 5 || j == 35) {
-			escada->draw(window, larguraColuna, alturaLinha, i, j);
+			escada->draw(window);
 		}
 		chao->drawChao(window);
 		paredes->draw(window);
@@ -154,7 +153,7 @@ void Cenario::desenhaAndar7(int i, sf::RenderWindow *window, Chao *chao, Parede 
 void Cenario::desenhaAndar8(int i, sf::RenderWindow *window, Chao *chao, Parede *paredes, Escada *escada, Buraco *buraco){
 	for (int j = 0; j < 40; j++) {
 		if (j == 20) {
-			escada->draw(window, larguraColuna, alturaLinha, i, j);
+			escada->draw(window);
 		}
 
 		chao->drawChao(window);
@@ -198,7 +197,6 @@ bool Cenario::playerTestaColisao(int *playerBateuNaParede,
 	if (hitboxPlayer.intersects(hitboxEscada1)
 			|| hitboxPlayer.intersects(hitboxEscada2)) {
 		*PlayerBateuNaEscada = 1;
-		cout <<"fishadfbpyuisd";
 	}
 	if (hitboxPlayer.intersects(hitboxBuraco1)
 			|| hitboxPlayer.intersects(hitboxBuraco2)) {
