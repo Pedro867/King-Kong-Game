@@ -38,7 +38,7 @@ public:
 		velY = window.getSize().y / 500.0f; //imita a gravidade
 		posX = 600;
 		posY = 550;
-		escala = window.getSize().y / 275.0f; //escala responsiva
+		escala = window.getSize().y / 400.0f; //escala responsiva
 		bombaNormal.setScale(escala, escala);
 		bombaNormal.setOrigin(16, 16); //metade do tamanho do player;
 		bombaNormal.setPosition(posX, posY);
