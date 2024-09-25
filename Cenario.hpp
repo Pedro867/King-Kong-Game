@@ -10,6 +10,7 @@
 #include "Buraco.hpp"
 #include "Parede.hpp"
 #include "Bomba.hpp"
+#include "Kong.hpp"
 
 class Cenario {
 private:
@@ -19,10 +20,10 @@ private:
 	std::vector<Parede> paredes;
 	std::vector<Escada> escada;
 
-	sf::Texture kongTexture;
 	//fazer tudo isso em uma outra funcao para nao precisar declarar dnv quando colocar ele la embaixo no mid game
-	sf::Sprite kong;
+	bool iniciouKong;
 	Player &player;
+	Kong kong;
 	float alturaLinha, larguraColuna; //determina a altura de cada linha (tamanho y da janela / num de linhas)
 
 public:
@@ -56,6 +57,8 @@ Cenario::Cenario(Player &player, sf::RenderWindow *window) :
 		player(player) {
 	alturaLinha = (window->getSize().y) / 10.0f; //determina a altura de cada linha (tamanho y da janela / num de linhas)
 	larguraColuna = (window->getSize().x) / 40.0f; //determina a largura de cada coluna (tamanho x da janela / num de colunas)
+	kong.IniciaKong(larguraColuna, alturaLinha);
+	iniciouKong = false;
 
 	chao.resize(10); //Se isso nao acontecer o jogo crasha
 	buraco.resize(10); //queria que fosse 6....
@@ -77,13 +80,6 @@ Cenario::Cenario(Player &player, sf::RenderWindow *window) :
 	for (int i = 0; i < 10; i++) { //8 linhas com 2 paredes = 16 paredes no total
 		escada[i].iniciarEscada(larguraColuna, alturaLinha, i);
 	}
-
-	kongTexture.loadFromFile("assets/donkey.png");
-	kong.setTexture(kongTexture);
-	kong.setOrigin(0, 28); //seta a posi  o no p  dele
-	kong.setPosition(larguraColuna * 7, alturaLinha * 9);
-	kong.setScale(2.5, 2.5);
-	//iniciarKong(window);
 }
 
 void Cenario::desenhaCenario(sf::RenderWindow *window, Bomba &bomba) {
@@ -94,7 +90,6 @@ void Cenario::desenhaCenario(sf::RenderWindow *window, Bomba &bomba) {
 	//falta bombaCaiuNoBuraco
 	int bombaBateuNaParede, bombaBateuNaEscada;
 	bombaBateuNaParede = bombaBateuNaEscada = 0;
-
 	//mapa [10][40]
 
 	for (int i = 0; i < 10; i++) {
@@ -108,21 +103,35 @@ void Cenario::desenhaCenario(sf::RenderWindow *window, Bomba &bomba) {
 			desenhaAndar8(i, window, &chao[i], &paredes[i], &escada[i],
 					&buraco[i]);
 		}
-
 		else if (i == 9) {
 			desenhaAndar9(window, &chao[i]);
 		}
+		//iniciouKong = kong.iniciarKong(window, larguraColuna, alturaLinha);
 
-		playerBateuNoChao += playerTestaColisao(&playerBateuNaParede,
+		if(iniciouKong == true){
+			playerBateuNoChao += playerTestaColisao(&playerBateuNaParede,
 				&playerBateuNaEscada, &playerCaiuNoBuraco, i);
-		bombaBateuNoChao += bombaTestaColisao(bomba, &bombaBateuNaParede,
+			bombaBateuNoChao += bombaTestaColisao(bomba, &bombaBateuNaParede,
 				&bombaBateuNaEscada, i);
+		}
 	} //for i
 
-	playerUpdate(playerBateuNoChao, playerBateuNaParede, playerBateuNaEscada,
-			playerCaiuNoBuraco);
-	bombaUpdate(bomba, bombaBateuNoChao, bombaBateuNaParede,
-			bombaBateuNaEscada);
+	if(iniciouKong == false){
+		iniciouKong = kong.AnimacaoInicialKong(larguraColuna, alturaLinha);
+		window->draw(kong.getKong());
+	}
+
+	if(iniciouKong == true){
+		playerUpdate(playerBateuNoChao, playerBateuNaParede, playerBateuNaEscada,
+				playerCaiuNoBuraco);
+		bombaUpdate(bomba, bombaBateuNoChao, bombaBateuNaParede,
+				bombaBateuNaEscada);
+		kong.AnimacaoKong();
+		//desenha elementos
+		window->draw(player.getPlayer());
+		window->draw(bomba.getBombaNormal());
+		window->draw(kong.getKong());
+	}
 } //fim func
 
 void Cenario::desenhaAndar1ao6(int i, sf::RenderWindow *window, Chao *chao,
@@ -328,28 +337,6 @@ void Cenario::bombaUpdate(Bomba &bomba, bool bombaBateuNoChao,
 
 	}
 }
-
-/*bool Cenario::iniciarKong(sf::RenderWindow *window) {
-
- int velX = larguraColuna / 10.0;
- int velY = -alturaLinha / 25.0;
-
- if (kong.getPosition().x <= larguraColuna * 7) {
- velX = -velX;
- } else if (kong.getPosition().x >= larguraColuna * 9) {
- //Bug ta nesse else if
- velX = -velX;
- int y = kong.getPosition().y;
- int x = kong.getPosition().x;
- kong.setPosition(x - velX, y);
- }
-
- kong.move(velX, velY);
-
- window->draw(kong);
-
- return true;
- }*/
 
 void Cenario::setaAndarBomba(Bomba &bomba) {
 	float altura, largura;

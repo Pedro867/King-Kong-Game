@@ -13,10 +13,11 @@
 //#include "Parede.hpp"
 #include "Bomba.hpp"
 #include "Cenario.hpp"
+//#include "Game.hpp"
 
 int main(int argc, char **argv) {
 	setbuf(stdout, NULL);
-	sf::VideoMode video(1200, 600);
+	sf::VideoMode video(1000, 800);
 	sf::RenderWindow window(video, "King Kong");
 
 	sf::Texture background;
@@ -28,6 +29,7 @@ int main(int argc, char **argv) {
 	fundo.setScale(6, 6);
 
 	sf::Event evento;
+	bool iniciouKong = false;
 
 	Player player(window);
 	Bomba bomba(window);
@@ -48,6 +50,7 @@ int main(int argc, char **argv) {
 		//Desenha cenario e fundo
 		window.draw(fundo);
 		cenario.desenhaCenario(&window, bomba); //colisoes dentro dessa funcao
+
 		//cenario.iniciarKong(&window);
 
 		//movimenta elementos
@@ -56,9 +59,7 @@ int main(int argc, char **argv) {
 		player.colideBomba(bomba);
 		bomba.mover();
 
-		//desenha elementos
-		window.draw(player.getPlayer());
-		window.draw(bomba.getBombaNormal());
+		//	OS ELEMENTOS ESTAVAM SENDO DESENHADOS AQUI, PASSEI PRA FUNCAO DESENHACENARIO
 
 		window.display();
 	}
