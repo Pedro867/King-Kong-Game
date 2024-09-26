@@ -106,11 +106,15 @@ public:
 	}
 	void setPodeDescer(int valor) {
 		if (valor == 1) {
+
 			escada = true;
+			DescerEscada();
+
 		} else if (valor == 0) {
 			escada = false;
 		}
 	}
+
 	void setPosXPosY(float x, float y) {
 		posX = x;
 		posY = y;

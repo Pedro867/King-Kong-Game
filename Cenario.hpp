@@ -3,6 +3,7 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>
+#include <cstdlib>
 
 #include "Player.hpp"
 #include "Escada.hpp"
@@ -42,7 +43,7 @@ public:
 	bool playerTestaColisao(int *playerBateuNaParede, int *PlayerBateuNaEscada,
 			int *playerCaiuNoBuraco, int i);
 	bool bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
-			int *BombaBateuNaEscada, int i);
+			int *BombaBateuNaEscada, int i, int tipoDesce);
 	void playerUpdate(bool playerBateuNoChao, int playerBateuNaParede,
 			int playerBateuNaEscada, int playerCaiuNoBuraco);
 	void bombaUpdate(Bomba &bomba, bool bombaBateuNoChao,
@@ -51,6 +52,7 @@ public:
 	void setaAndarBomba(Bomba &bomba);
 	void setPlayerLayer();
 	bool getIniciouKong();
+	int sorteadorDeNumeros(int andar);
 	//---------------------
 };
 
@@ -59,7 +61,7 @@ Cenario::Cenario(Player &player, sf::RenderWindow *window) :
 	alturaLinha = (window->getSize().y) / 10.0f; //determina a altura de cada linha (tamanho y da janela / num de linhas)
 	larguraColuna = (window->getSize().x) / 40.0f; //determina a largura de cada coluna (tamanho x da janela / num de colunas)
 
-	float escalaKong = window->getSize().y / 270.f; //escala kong responsiva
+	float escalaKong = window->getSize().y / 280.f; //escala kong responsiva
 	kong.IniciaKong(larguraColuna, alturaLinha, escalaKong);
 	iniciouKong = false;
 
@@ -93,6 +95,7 @@ void Cenario::desenhaCenario(sf::RenderWindow *window, Bomba &bomba) {
 	//falta bombaCaiuNoBuraco
 	int bombaBateuNaParede, bombaBateuNaEscada;
 	bombaBateuNaParede = bombaBateuNaEscada = 0;
+	int desce[4];
 	//mapa [10][40]
 
 	for (int i = 0; i < 10; i++) {
@@ -105,28 +108,28 @@ void Cenario::desenhaCenario(sf::RenderWindow *window, Bomba &bomba) {
 		} else if (i == 8) {
 			desenhaAndar8(i, window, &chao[i], &paredes[i], &escada[i],
 					&buraco[i]);
-		}
-		else if (i == 9) {
+		} else if (i == 9) {
 			desenhaAndar9(window, &chao[i]);
 		}
 		//iniciouKong = kong.iniciarKong(window, larguraColuna, alturaLinha);
 
-		if(iniciouKong == true){
+		if (iniciouKong == true) {
+			int tipoDesce = sorteadorDeNumeros(i);
 			playerBateuNoChao += playerTestaColisao(&playerBateuNaParede,
-				&playerBateuNaEscada, &playerCaiuNoBuraco, i);
+					&playerBateuNaEscada, &playerCaiuNoBuraco, i);
 			bombaBateuNoChao += bombaTestaColisao(bomba, &bombaBateuNaParede,
-				&bombaBateuNaEscada, i);
+					&bombaBateuNaEscada, i, tipoDesce);
 		}
 	} //for i
 
-	if(iniciouKong == false){
+	if (iniciouKong == false) {
 		iniciouKong = kong.AnimacaoInicialKong(larguraColuna, alturaLinha);
 		window->draw(kong.getKong());
 	}
 
-	if(iniciouKong == true){
-		playerUpdate(playerBateuNoChao, playerBateuNaParede, playerBateuNaEscada,
-				playerCaiuNoBuraco);
+	if (iniciouKong == true) {
+		playerUpdate(playerBateuNoChao, playerBateuNaParede,
+				playerBateuNaEscada, playerCaiuNoBuraco);
 		bombaUpdate(bomba, bombaBateuNoChao, bombaBateuNaParede,
 				bombaBateuNaEscada);
 		kong.AnimacaoKong();
@@ -229,19 +232,20 @@ bool Cenario::playerTestaColisao(int *playerBateuNaParede,
 }
 
 bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
-		int *BombaBateuNaEscada, int i) {
+		int *BombaBateuNaEscada, int i, int tipoDesce) {
 	int bateuNoChao = 0;
+	srand(time(NULL));
 
 	sf::FloatRect hitboxChao1;
 	sf::FloatRect hitboxChao2;
 	sf::FloatRect hitboxChao3;
 	sf::FloatRect hitboxParede1;
 	sf::FloatRect hitboxParede2;
+	sf::FloatRect Parede8;
 	sf::FloatRect hitboxEscada1;
 	sf::FloatRect hitboxEscada2;
 	sf::FloatRect meio1, meio2;
 	sf::FloatRect hitboxBomba = bomba.getBombaNormalBounds();
-
 
 	hitboxChao1 = chao[i].getChao1().getGlobalBounds();
 	hitboxChao2 = chao[i].getChao2().getGlobalBounds();
@@ -250,6 +254,7 @@ bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
 	hitboxParede2 = paredes[i].getParede2().getGlobalBounds();
 	hitboxEscada1 = escada[i].getEscada1().getGlobalBounds();
 	hitboxEscada2 = escada[i].getEscada2().getGlobalBounds();
+	Parede8 = paredes[8].getParede2().getGlobalBounds();
 //	meio1 = escada[i].meioEscada1();
 //	meio2 = escada[i].meioEscada2();
 	hitboxEscada1.height = hitboxEscada1.height - 30;
@@ -262,7 +267,9 @@ bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
 	}
 
 	if (hitboxBomba.intersects(hitboxParede1)) {
+
 		*bombaBateuNaParede = 1;
+
 	}
 	if (hitboxBomba.intersects(hitboxParede2)) {
 		*bombaBateuNaParede = 1;
@@ -272,23 +279,38 @@ bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
 	if (bomba.getVelX() > 0) {
 
 		hitboxEscada1.left = hitboxEscada1.left + hitboxEscada1.width / 2;
-		hitboxBomba.left =  hitboxBomba.left - hitboxBomba.width / 2;
+		hitboxBomba.left = hitboxBomba.left - hitboxBomba.width / 2;
 		hitboxEscada2.left = hitboxEscada2.left + hitboxEscada2.width / 2;
+
 	} else {
 		hitboxEscada1.left = hitboxEscada1.left - hitboxEscada1.width / 2;
-		hitboxBomba.left =  hitboxBomba.left + hitboxBomba.width / 2;
+		hitboxBomba.left = hitboxBomba.left + hitboxBomba.width / 2;
 		hitboxEscada2.left = hitboxEscada2.left - hitboxEscada2.width / 2;
 	}
 
-	if (hitboxBomba.intersects(hitboxEscada1)) {
-
-		*BombaBateuNaEscada = 1;
+	int random;
+	if (tipoDesce == 1) {
+		random = rand() % 2;
 
 	}
+	if (tipoDesce == 2) {
+
+		random = rand() % 3;
+	}
+	if(tipoDesce == 0){
+		random = 0;
+	}
+	cout<<random;
+	if (hitboxBomba.intersects(hitboxEscada1)) {
+		if(random == 0){
+				*BombaBateuNaEscada = 1;}
+	}
 	if (hitboxBomba.intersects(hitboxEscada2)) {
-
-		*BombaBateuNaEscada = 1;
-
+		if (tipoDesce == 1) {
+				if(random == 1){
+					*BombaBateuNaEscada = 1;
+				}
+			}
 	}
 
 	return bateuNoChao;
@@ -334,7 +356,7 @@ void Cenario::bombaUpdate(Bomba &bomba, bool bombaBateuNoChao,
 	}
 	if (bombaBateuNaEscada > 0) {
 		bomba.setPodeDescer(1);
-		bomba.DescerEscada();
+
 	} else {
 		bomba.setPodeDescer(0);
 
@@ -355,8 +377,25 @@ void Cenario::setPlayerLayer() {
 	player.setPosXPosY(largura, altura);
 }
 
-bool Cenario::getIniciouKong(){
+bool Cenario::getIniciouKong() {
 	return iniciouKong;
+}
+
+int Cenario::sorteadorDeNumeros(int andar) {
+	if (andar > 0 && andar < 9) {
+
+		if (andar % 2 == 1) {
+
+			return 2;
+		}
+		if (andar % 2 == 0) {
+
+			return 1;
+		}
+
+	}
+	return 0;
+
 }
 
 #endif /* CENARIO_HPP_ */

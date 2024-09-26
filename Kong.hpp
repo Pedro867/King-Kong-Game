@@ -68,7 +68,7 @@ bool Kong::AnimacaoInicialKong(float larguraColuna, float alturaLinha) {
 }
 
 inline void Kong::AnimacaoKong(){
-	timer++;
+	timer+= 5;
 
 	if (timer == 15) {
 		this->scaleX = -scaleX;
@@ -78,7 +78,7 @@ inline void Kong::AnimacaoKong(){
 }
 
 inline void Kong::bateNoPeito() {
-	timer++;
+	timer+= 5;
 
 	if(timer == 15){
 		this->scaleX = -scaleX;

@@ -17,7 +17,7 @@
 
 int main(int argc, char **argv) {
 	setbuf(stdout, NULL);
-	sf::VideoMode video(800, 400);
+	sf::VideoMode video(1200, 800);
 	sf::RenderWindow window(video, "King Kong");
 	sf::Event evento;
 
