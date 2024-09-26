@@ -50,6 +50,7 @@ public:
 	bool iniciarKong(sf::RenderWindow *window);
 	void setaAndarBomba(Bomba &bomba);
 	void setPlayerLayer();
+	bool getIniciouKong();
 	//---------------------
 };
 
@@ -57,7 +58,9 @@ Cenario::Cenario(Player &player, sf::RenderWindow *window) :
 		player(player) {
 	alturaLinha = (window->getSize().y) / 10.0f; //determina a altura de cada linha (tamanho y da janela / num de linhas)
 	larguraColuna = (window->getSize().x) / 40.0f; //determina a largura de cada coluna (tamanho x da janela / num de colunas)
-	kong.IniciaKong(larguraColuna, alturaLinha);
+
+	float escalaKong = window->getSize().y / 270.f; //escala kong responsiva
+	kong.IniciaKong(larguraColuna, alturaLinha, escalaKong);
 	iniciouKong = false;
 
 	chao.resize(10); //Se isso nao acontecer o jogo crasha
@@ -350,6 +353,10 @@ void Cenario::setPlayerLayer() {
 	altura = (alturaLinha * 5) - 16;
 	largura = 20 * larguraColuna - 16;
 	player.setPosXPosY(largura, altura);
+}
+
+bool Cenario::getIniciouKong(){
+	return iniciouKong;
 }
 
 #endif /* CENARIO_HPP_ */

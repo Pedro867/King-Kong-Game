@@ -14,8 +14,8 @@ private:
 	sf::Texture kongTexture;
 	float velX;
 	float velY;
-	float scaleX = 2.5;
-	float scaleY = 2.5;
+	float scaleX;
+	float scaleY;
 
 	bool concluiuRota1 = false;
 	bool concluiuRota2 = true;
@@ -26,7 +26,7 @@ private:
 
 public:
 
-	void IniciaKong(float larguraColuna, float alturaLinha);
+	void IniciaKong(float larguraColuna, float alturaLinha,float escala);
 	bool AnimacaoInicialKong(float larguraColuna, float alturaLinha);
 	void AnimacaoKong();
 	void bateNoPeito();
@@ -35,11 +35,12 @@ public:
 	sf::Sprite getKong();
 };
 
-inline void Kong::IniciaKong(float larguraColuna, float alturaLinha){
+inline void Kong::IniciaKong(float larguraColuna, float alturaLinha, float escala){
 	kongTexture.loadFromFile("assets/donkey.png");
 	kong.setTexture(kongTexture);
 	kong.setOrigin(25, 28); //seta a posicao no pe dele (28) e no centro dele (25)
 	kong.setPosition(larguraColuna * 14, alturaLinha * 9);
+	scaleX = scaleY = escala;
 	kong.setScale(scaleX, scaleY);
 
 	this->velX = larguraColuna / 10.f;
@@ -104,7 +105,7 @@ inline void Kong::rota1(float larguraColuna, float alturaLinha) {
 inline void Kong::rota2(float larguraColuna,
 		float alturaLinha) {
 
-	sf::Vector2<float> rota2(larguraColuna * 14, alturaLinha * 8); //ali tá * 8 mas tanto faz pq nn comparo ele com nada
+	sf::Vector2<float> rota2(larguraColuna * 14, alturaLinha * 8); //ali tï¿½ * 8 mas tanto faz pq nn comparo ele com nada
 	kong.move(velX, velY);
 
 	if (kong.getPosition().x >= rota2.x) {

@@ -17,9 +17,11 @@
 
 int main(int argc, char **argv) {
 	setbuf(stdout, NULL);
-	sf::VideoMode video(1000, 800);
+	sf::VideoMode video(800, 400);
 	sf::RenderWindow window(video, "King Kong");
+	sf::Event evento;
 
+	//Fundo
 	sf::Texture background;
 	background.loadFromFile("assets/background.png");
 	sf::Sprite fundo;
@@ -28,9 +30,7 @@ int main(int argc, char **argv) {
 	fundo.setPosition(window.getPosition().x / 2, window.getPosition().y / 2);
 	fundo.setScale(6, 6);
 
-	sf::Event evento;
-	bool iniciouKong = false;
-
+	//Elementos
 	Player player(window);
 	Bomba bomba(window);
 	Cenario cenario(player, &window);
@@ -53,13 +53,15 @@ int main(int argc, char **argv) {
 
 		//cenario.iniciarKong(&window);
 
-		//movimenta elementos
-		player.moverY(evento);
-		player.moverX(evento);
-		player.colideBomba(bomba);
-		bomba.mover();
+		//movimenta elementos se o kong tiver iniciado
+		if(cenario.getIniciouKong()) {
+			player.moverY(evento);
+			player.moverX(evento);
+			player.colideBomba(bomba);
+			bomba.mover();
+		}
 
-		//	OS ELEMENTOS ESTAVAM SENDO DESENHADOS AQUI, PASSEI PRA FUNCAO DESENHACENARIO
+		//	OS ELEMENTOS ESTAVAM SENDO DESENHADOS AQUI, PASSEI PRA FUNCAO DESENHA CENARIO
 
 		window.display();
 	}
