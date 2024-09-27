@@ -27,7 +27,7 @@ private:
 	float posX, posY;
 	float escala;
 	bool bateu, caiu, podeMover, podeSubir, subindo, moveuEsquerda;
-	int gravity;
+	int gravity, vidas, acabouDePular;
 
 public:
 
@@ -42,6 +42,7 @@ public:
 	void setVelX(float vx);
 	float getVelY();
 	float getVelX();
+	int getVidas();
 	sf::Sprite getPlayer();
 	sf::FloatRect bounds();
 	void setPosXPosY(float x, float y);
@@ -64,8 +65,9 @@ public:
 		velY = 0;
 		posX = 360;
 		posY = 250;
+		vidas = 100;
 		escala = window.getSize().y / 275.0f; //escala responsiva
-		gravity = window.getSize().y / 500.0f;
+		gravity = window.getSize().y / 600.0f;
 		player.setScale(escala, escala);
 		player.setOrigin(hitbox.width / 2, hitbox.height / 2); //metade do tamanho do player;
 		player.setPosition(posX, posY);
@@ -75,6 +77,7 @@ public:
 		podeSubir = false;
 		moveuEsquerda = false;
 		subindo = false;
+		acabouDePular = 0;
 		//essa aqui bugou tudo, mas eh necessaria
 		//pro player nao poder mover na escada
 	}
@@ -133,26 +136,32 @@ public:
 
 		if (caiu == true && podeSubir == false) {
 			//subindo = false;
-			player.move(0, gravity);
+			if(acabouDePular > 0){
+				player.move(0, gravity/3);
+				acabouDePular--;
+			}else{
+				player.move(0, gravity);
+			}
 		}
 		if (podeSubir == true) {
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
 				//subindo = true;
-				velY = -gravity;
+				velY = -gravity*2;
 				player.move(0, velY);
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
 				//subindo = true;
-				velY = gravity;
+				velY = gravity*2;
 				player.move(0, velY);
 			}
 		}
 		if (podeSubir == false && caiu == false) {
 			//subindo = false;
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-				velY = window.getSize().y / 40.0f; //pulo responsivo
+				velY = window.getSize().y / 30.0f; //pulo responsivo
 				velY = -velY;
 				player.move(0, velY);
+				acabouDePular = 10;
 			}
 		}
 	}
@@ -198,6 +207,10 @@ public:
 		return velX;
 	}
 
+	int Player::getVidas(){
+		return vidas;
+	}
+
 	sf::Sprite Player::getPlayer() {
 		return player;
 	}
@@ -221,7 +234,7 @@ bool Player::colideBomba(Bomba &bomba) {
 	sf::FloatRect hitboxPlayer = bounds();
 	sf::FloatRect hitboxBomba = bomba.getBombaNormalBounds();
 	if(hitboxPlayer.intersects(hitboxBomba)){
-		cout << "BATEU" << endl;
+		vidas--;
 	}
 	return true;
 }

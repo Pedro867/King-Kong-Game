@@ -95,7 +95,6 @@ void Cenario::desenhaCenario(sf::RenderWindow *window, Bomba &bomba) {
 	//falta bombaCaiuNoBuraco
 	int bombaBateuNaParede, bombaBateuNaEscada;
 	bombaBateuNaParede = bombaBateuNaEscada = 0;
-	int desce[4];
 	//mapa [10][40]
 
 	for (int i = 0; i < 10; i++) {
@@ -114,7 +113,7 @@ void Cenario::desenhaCenario(sf::RenderWindow *window, Bomba &bomba) {
 		//iniciouKong = kong.iniciarKong(window, larguraColuna, alturaLinha);
 
 		if (iniciouKong == true) {
-			int tipoDesce = sorteadorDeNumeros(i);
+			int tipoDesce = sorteadorDeNumeros(i); //sorteia escada pra bomba
 			playerBateuNoChao += playerTestaColisao(&playerBateuNaParede,
 					&playerBateuNaEscada, &playerCaiuNoBuraco, i);
 			bombaBateuNoChao += bombaTestaColisao(bomba, &bombaBateuNaParede,
@@ -267,17 +266,13 @@ bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
 	}
 
 	if (hitboxBomba.intersects(hitboxParede1)) {
-
 		*bombaBateuNaParede = 1;
-
 	}
 	if (hitboxBomba.intersects(hitboxParede2)) {
 		*bombaBateuNaParede = 1;
-
 	}
 
 	if (bomba.getVelX() > 0) {
-
 		hitboxEscada1.left = hitboxEscada1.left + hitboxEscada1.width / 2;
 		hitboxBomba.left = hitboxBomba.left - hitboxBomba.width / 2;
 		hitboxEscada2.left = hitboxEscada2.left + hitboxEscada2.width / 2;
@@ -288,29 +283,29 @@ bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
 		hitboxEscada2.left = hitboxEscada2.left - hitboxEscada2.width / 2;
 	}
 
+	//Parte da bomba descer escada
 	int random;
-	if (tipoDesce == 1) {
+	if (tipoDesce == 1) { //duas escadas
 		random = rand() % 2;
-
 	}
-	if (tipoDesce == 2) {
-
+	if (tipoDesce == 2) { //uma escada e dois buracos
 		random = rand() % 3;
 	}
-	if(tipoDesce == 0){
-		random = 0;
+	if (tipoDesce == 0) { //nem um nem outro
+		random = 8; //valor aleatório kkk
 	}
-	cout<<random;
+	cout << random;
 	if (hitboxBomba.intersects(hitboxEscada1)) {
-		if(random == 0){
-				*BombaBateuNaEscada = 1;}
+		if (random == 0) {
+			*BombaBateuNaEscada = 1;
+		}
 	}
 	if (hitboxBomba.intersects(hitboxEscada2)) {
 		if (tipoDesce == 1) {
-				if(random == 1){
-					*BombaBateuNaEscada = 1;
-				}
+			if (random == 1) {
+				*BombaBateuNaEscada = 1;
 			}
+		}
 	}
 
 	return bateuNoChao;
@@ -356,10 +351,8 @@ void Cenario::bombaUpdate(Bomba &bomba, bool bombaBateuNoChao,
 	}
 	if (bombaBateuNaEscada > 0) {
 		bomba.setPodeDescer(1);
-
 	} else {
 		bomba.setPodeDescer(0);
-
 	}
 }
 
@@ -383,16 +376,12 @@ bool Cenario::getIniciouKong() {
 
 int Cenario::sorteadorDeNumeros(int andar) {
 	if (andar > 0 && andar < 9) {
-
-		if (andar % 2 == 1) {
-
-			return 2;
-		}
 		if (andar % 2 == 0) {
-
-			return 1;
+			return 1; //uma escada e dois buracos
 		}
-
+		if (andar % 2 == 1) {
+			return 2; //duas escadas
+		}
 	}
 	return 0;
 

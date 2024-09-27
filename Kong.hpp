@@ -43,7 +43,9 @@ inline void Kong::IniciaKong(float larguraColuna, float alturaLinha, float escal
 	scaleX = scaleY = escala;
 	kong.setScale(scaleX, scaleY);
 
-	this->velX = larguraColuna / 10.f;
+	//multipliquei tudo por 3 para ir mais rapido nos testes
+	//acelerei o timer tambem
+	this->velX = (larguraColuna / 10.f);
 	this->velY = - (alturaLinha / 50.f);
 }
 
@@ -68,7 +70,7 @@ bool Kong::AnimacaoInicialKong(float larguraColuna, float alturaLinha) {
 }
 
 inline void Kong::AnimacaoKong(){
-	timer+= 5;
+	timer++;
 
 	if (timer == 15) {
 		this->scaleX = -scaleX;
@@ -78,7 +80,7 @@ inline void Kong::AnimacaoKong(){
 }
 
 inline void Kong::bateNoPeito() {
-	timer+= 5;
+	timer++;
 
 	if(timer == 15){
 		this->scaleX = -scaleX;
