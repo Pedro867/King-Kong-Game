@@ -24,14 +24,15 @@ private:
 	//fazer tudo isso em uma outra funcao para nao precisar declarar dnv quando colocar ele la embaixo no mid game
 	bool iniciouKong;
 	Player &player;
+	Bomba &bomba;
 	Kong kong;
 	float alturaLinha, larguraColuna; //determina a altura de cada linha (tamanho y da janela / num de linhas)
 
 public:
 	//Declaracao das funcoes
-	Cenario(Player &player, sf::RenderWindow *window);
+	Cenario(Player &player, Bomba &bomba, sf::RenderWindow *window);
 
-	void desenhaCenario(sf::RenderWindow *window, Bomba &bomba);
+	void desenhaCenario(sf::RenderWindow *window);
 	void desenhaAndar1ao6(int i, sf::RenderWindow *window, Chao *chao,
 			Parede *paredes, Escada *escada, Buraco *buraco);
 	void desenhaAndar7(int i, sf::RenderWindow *window, Chao *chao,
@@ -41,23 +42,23 @@ public:
 	void desenhaAndar9(sf::RenderWindow *window, Chao *chao);
 
 	bool playerTestaColisao(int *playerBateuNaParede, int *PlayerBateuNaEscada,
-			int *playerCaiuNoBuraco, int i);
+			int *playerCaiuNoBuraco, bool *playerBateuNaBomba, int i);
 	bool bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
 			int *BombaBateuNaEscada, int i, int tipoDesce);
 	void playerUpdate(bool playerBateuNoChao, int playerBateuNaParede,
-			int playerBateuNaEscada, int playerCaiuNoBuraco);
+			int playerBateuNaEscada, int playerCaiuNoBuraco, bool playerBateuNaBomba);
 	void bombaUpdate(Bomba &bomba, bool bombaBateuNoChao,
 			int bombaBateuNaParede, int bombaBateuNaEscada);
 	bool iniciarKong(sf::RenderWindow *window);
-	void setaAndarBomba(Bomba &bomba);
+	void setAndarBomba();
 	void setPlayerLayer();
 	bool getIniciouKong();
 	int sorteadorDeNumeros(int andar);
 	//---------------------
 };
 
-Cenario::Cenario(Player &player, sf::RenderWindow *window) :
-		player(player) {
+Cenario::Cenario(Player &player, Bomba &bomba, sf::RenderWindow *window) :
+		player(player), bomba(bomba){
 	alturaLinha = (window->getSize().y) / 10.0f; //determina a altura de cada linha (tamanho y da janela / num de linhas)
 	larguraColuna = (window->getSize().x) / 40.0f; //determina a largura de cada coluna (tamanho x da janela / num de colunas)
 
@@ -85,11 +86,14 @@ Cenario::Cenario(Player &player, sf::RenderWindow *window) :
 	for (int i = 0; i < 10; i++) { //8 linhas com 2 paredes = 16 paredes no total
 		escada[i].iniciarEscada(larguraColuna, alturaLinha, i);
 	}
+
+	setPlayerLayer();
+	setAndarBomba();
 }
 
-void Cenario::desenhaCenario(sf::RenderWindow *window, Bomba &bomba) {
-	bool playerBateuNoChao, bombaBateuNoChao;
-	playerBateuNoChao = bombaBateuNoChao = false;
+void Cenario::desenhaCenario(sf::RenderWindow *window) {
+	bool playerBateuNoChao, bombaBateuNoChao, playerBateuNaBomba;
+	playerBateuNoChao = bombaBateuNoChao = playerBateuNaBomba = false;
 	int playerCaiuNoBuraco, playerBateuNaParede, playerBateuNaEscada;
 	playerCaiuNoBuraco = playerBateuNaParede = playerBateuNaEscada = 0;
 	//falta bombaCaiuNoBuraco
@@ -115,7 +119,7 @@ void Cenario::desenhaCenario(sf::RenderWindow *window, Bomba &bomba) {
 		if (iniciouKong == true) {
 			int tipoDesce = sorteadorDeNumeros(i); //sorteia escada pra bomba
 			playerBateuNoChao += playerTestaColisao(&playerBateuNaParede,
-					&playerBateuNaEscada, &playerCaiuNoBuraco, i);
+					&playerBateuNaEscada, &playerCaiuNoBuraco, &playerBateuNaBomba, i);
 			bombaBateuNoChao += bombaTestaColisao(bomba, &bombaBateuNaParede,
 					&bombaBateuNaEscada, i, tipoDesce);
 		}
@@ -128,7 +132,7 @@ void Cenario::desenhaCenario(sf::RenderWindow *window, Bomba &bomba) {
 
 	if (iniciouKong == true) {
 		playerUpdate(playerBateuNoChao, playerBateuNaParede,
-				playerBateuNaEscada, playerCaiuNoBuraco);
+				playerBateuNaEscada, playerCaiuNoBuraco, playerBateuNaBomba);
 		bombaUpdate(bomba, bombaBateuNoChao, bombaBateuNaParede,
 				bombaBateuNaEscada);
 		kong.AnimacaoKong();
@@ -188,13 +192,14 @@ void Cenario::desenhaAndar9(sf::RenderWindow *window, Chao *chao) {
 }
 
 bool Cenario::playerTestaColisao(int *playerBateuNaParede,
-		int *PlayerBateuNaEscada, int *playerCaiuNoBuraco, int i) {
+		int *PlayerBateuNaEscada, int *playerCaiuNoBuraco, bool *playerBateuNaBomba, int i) {
 
 	int bateuNoChao = 0;
 	sf::FloatRect hitboxChao1, hitboxChao2, hitboxChao3, hitboxBuraco1,
 			hitboxBuraco2, hitboxParede1, hitboxParede2, hitboxEscada1,
-			hitboxEscada2, hitboxPlayer;
+			hitboxEscada2, hitboxPlayer, hitboxBomba;
 	hitboxPlayer = player.bounds();
+	hitboxBomba = bomba.getBombaNormalBounds();
 
 	hitboxChao1 = chao[i].getChao1().getGlobalBounds();
 	hitboxChao2 = chao[i].getChao2().getGlobalBounds();
@@ -225,6 +230,9 @@ bool Cenario::playerTestaColisao(int *playerBateuNaParede,
 	if (hitboxPlayer.intersects(hitboxBuraco1)
 			|| hitboxPlayer.intersects(hitboxBuraco2)) {
 		*playerCaiuNoBuraco = 1;
+	}
+	if (hitboxPlayer.intersects(hitboxBomba)) {
+		*playerBateuNaBomba = 1;
 	}
 
 	return bateuNoChao;
@@ -294,7 +302,7 @@ bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
 	if (tipoDesce == 0) { //nem um nem outro
 		random = 8; //valor aleatório kkk
 	}
-	cout << random;
+	//cout << random;
 	if (hitboxBomba.intersects(hitboxEscada1)) {
 		if (random == 0) {
 			*BombaBateuNaEscada = 1;
@@ -312,7 +320,12 @@ bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
 }
 
 void Cenario::playerUpdate(bool playerBateuNoChao, int playerBateuNaParede,
-		int playerBateuNaEscada, int playerCaiuNoBuraco) {
+		int playerBateuNaEscada, int playerCaiuNoBuraco, bool playerBateuNaBomba) {
+
+	if(playerBateuNaBomba > 0){
+		setPlayerLayer();
+		player.perdeuVidas();
+	}
 	if (playerBateuNoChao > 0) {
 		player.setCaiu(false);
 	} else {
@@ -356,7 +369,7 @@ void Cenario::bombaUpdate(Bomba &bomba, bool bombaBateuNoChao,
 	}
 }
 
-void Cenario::setaAndarBomba(Bomba &bomba) {
+void Cenario::setAndarBomba() {
 	float altura, largura;
 	altura = (alturaLinha * 2) - 13;
 	largura = 7 * larguraColuna - 13;

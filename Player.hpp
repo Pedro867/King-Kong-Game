@@ -43,6 +43,7 @@ public:
 	float getVelY();
 	float getVelX();
 	int getVidas();
+	void perdeuVidas();
 	sf::Sprite getPlayer();
 	sf::FloatRect bounds();
 	void setPosXPosY(float x, float y);
@@ -65,7 +66,7 @@ public:
 		velY = 0;
 		posX = 360;
 		posY = 250;
-		vidas = 100;
+		vidas = 3;
 		escala = window.getSize().y / 275.0f; //escala responsiva
 		gravity = window.getSize().y / 600.0f;
 		player.setScale(escala, escala);
@@ -211,6 +212,10 @@ public:
 		return vidas;
 	}
 
+	void Player::perdeuVidas(){
+		this->vidas--;
+	}
+
 	sf::Sprite Player::getPlayer() {
 		return player;
 	}
@@ -229,15 +234,5 @@ public:
 	void Player::GameOver(float alturaLinha) {
 		player.move(0, velY);
 }
-
-bool Player::colideBomba(Bomba &bomba) {
-	sf::FloatRect hitboxPlayer = bounds();
-	sf::FloatRect hitboxBomba = bomba.getBombaNormalBounds();
-	if(hitboxPlayer.intersects(hitboxBomba)){
-		vidas--;
-	}
-	return true;
-}
-
 
 #endif /* PLAYER_HPP_ */

@@ -40,9 +40,7 @@ int main(int argc, char **argv) {
 	//Elementos
 	Player player(window);
 	Bomba bomba(window);
-	Cenario cenario(player, &window);
-	cenario.setPlayerLayer();
-	cenario.setaAndarBomba(bomba);
+	Cenario cenario(player, bomba, &window);
 
 	while (window.isOpen()) {
 
@@ -56,13 +54,12 @@ int main(int argc, char **argv) {
 
 		//Desenha cenario e fundo
 		window.draw(fundo);
-		cenario.desenhaCenario(&window, bomba); //colisoes dentro dessa funcao
+		cenario.desenhaCenario(&window); //colisoes dentro dessa funcao
 
 		//movimenta elementos se o kong tiver iniciado
 		if (cenario.getIniciouKong()) {
 			player.moverY(evento);
 			player.moverX(evento);
-			player.colideBomba(bomba);
 			bomba.mover();
 		}
 
