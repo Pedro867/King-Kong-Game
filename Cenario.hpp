@@ -12,6 +12,7 @@
 #include "Parede.hpp"
 #include "Bomba.hpp"
 #include "Kong.hpp"
+#include "Princesa.hpp"
 
 class Cenario {
 private:
@@ -26,11 +27,12 @@ private:
 	Player &player;
 	Bomba &bomba;
 	Kong kong;
+	Princesa &princesa;
 	float alturaLinha, larguraColuna; //determina a altura de cada linha (tamanho y da janela / num de linhas)
 
 public:
 	//Declaracao das funcoes
-	Cenario(Player &player, Bomba &bomba, sf::RenderWindow *window);
+	Cenario(Player &player, Bomba &bomba, Princesa &princesa, sf::RenderWindow *window);
 
 	void desenhaCenario(sf::RenderWindow *window);
 	void desenhaAndar1ao6(int i, sf::RenderWindow *window, Chao *chao,
@@ -43,28 +45,27 @@ public:
 
 	bool playerTestaColisao(int *playerBateuNaParede, int *PlayerBateuNaEscada,
 			int *playerCaiuNoBuraco, bool *playerBateuNaBomba, int i);
-	bool bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
+	bool bombaTestaColisao(int *bombaBateuNaParede,
 			int *BombaBateuNaEscada, int i, int tipoDesce);
 	void playerUpdate(bool playerBateuNoChao, int playerBateuNaParede,
 			int playerBateuNaEscada, int playerCaiuNoBuraco, bool playerBateuNaBomba);
-	void bombaUpdate(Bomba &bomba, bool bombaBateuNoChao,
+	void bombaUpdate(bool bombaBateuNoChao,
 			int bombaBateuNaParede, int bombaBateuNaEscada);
 	bool iniciarKong(sf::RenderWindow *window);
 	void setAndarBomba();
-	void setPlayerLayer();
 	bool getIniciouKong();
 	int sorteadorDeNumeros(int andar);
 	//---------------------
 };
 
-Cenario::Cenario(Player &player, Bomba &bomba, sf::RenderWindow *window) :
-		player(player), bomba(bomba){
+Cenario::Cenario(Player &player, Bomba &bomba, Princesa &princesa, sf::RenderWindow *window) :
+		player(player), bomba(bomba), princesa(princesa){
 	alturaLinha = (window->getSize().y) / 10.0f; //determina a altura de cada linha (tamanho y da janela / num de linhas)
 	larguraColuna = (window->getSize().x) / 40.0f; //determina a largura de cada coluna (tamanho x da janela / num de colunas)
 
 	float escalaKong = window->getSize().y / 280.f; //escala kong responsiva
 	kong.IniciaKong(larguraColuna, alturaLinha, escalaKong);
-	iniciouKong = false;
+	iniciouKong = true;
 
 	chao.resize(10); //Se isso nao acontecer o jogo crasha
 	buraco.resize(10); //queria que fosse 6....
@@ -87,7 +88,8 @@ Cenario::Cenario(Player &player, Bomba &bomba, sf::RenderWindow *window) :
 		escada[i].iniciarEscada(larguraColuna, alturaLinha, i);
 	}
 
-	setPlayerLayer();
+	player.setLayer(alturaLinha, larguraColuna);
+	princesa.setLayer(alturaLinha, larguraColuna);
 	setAndarBomba();
 }
 
@@ -120,7 +122,7 @@ void Cenario::desenhaCenario(sf::RenderWindow *window) {
 			int tipoDesce = sorteadorDeNumeros(i); //sorteia escada pra bomba
 			playerBateuNoChao += playerTestaColisao(&playerBateuNaParede,
 					&playerBateuNaEscada, &playerCaiuNoBuraco, &playerBateuNaBomba, i);
-			bombaBateuNoChao += bombaTestaColisao(bomba, &bombaBateuNaParede,
+			bombaBateuNoChao += bombaTestaColisao(&bombaBateuNaParede,
 					&bombaBateuNaEscada, i, tipoDesce);
 		}
 	} //for i
@@ -133,58 +135,41 @@ void Cenario::desenhaCenario(sf::RenderWindow *window) {
 	if (iniciouKong == true) {
 		playerUpdate(playerBateuNoChao, playerBateuNaParede,
 				playerBateuNaEscada, playerCaiuNoBuraco, playerBateuNaBomba);
-		bombaUpdate(bomba, bombaBateuNoChao, bombaBateuNaParede,
+		bombaUpdate(bombaBateuNoChao, bombaBateuNaParede,
 				bombaBateuNaEscada);
 		kong.AnimacaoKong();
+		princesa.AnimacaoPrincesa();
 		//desenha elementos
 		window->draw(player.getPlayer());
 		window->draw(bomba.getBombaNormal());
 		window->draw(kong.getKong());
+		window->draw(princesa.getPrincesa());
 	}
 } //fim func
 
 void Cenario::desenhaAndar1ao6(int i, sf::RenderWindow *window, Chao *chao,
 		Parede *paredes, Escada *escada, Buraco *buraco) {
-	for (int j = 0; j < 40; j++) {
-		if (i % 2 == 1) {
-			if (j == 4 || j == 36) {
-				escada->draw(window);
-			}
-		}
-		if (i % 2 == 0) {
-			if (j == 20) {
-				escada->draw(window);
-			}
-		}
-		chao->drawChao(window);
-		paredes->draw(window);
-		buraco->drawBuraco(window); //s� vai desenhar nas linhas 3 e 5
-	}
+
+	escada->draw(window);
+	chao->drawChao(window);
+	paredes->draw(window);
 }
 
 void Cenario::desenhaAndar7(int i, sf::RenderWindow *window, Chao *chao,
 		Parede *paredes, Escada *escada, Buraco *buraco) {
-	for (int j = 0; j < 40; j++) {
-		if (j == 5 || j == 35) {
-			escada->draw(window);
-		}
-		chao->drawChao(window);
-		paredes->draw(window);
-		buraco->drawBuraco(window);
-	}
+
+	escada->draw(window);
+	chao->drawChao(window);
+	paredes->draw(window);
 }
 
 void Cenario::desenhaAndar8(int i, sf::RenderWindow *window, Chao *chao,
 		Parede *paredes, Escada *escada, Buraco *buraco) {
-	for (int j = 0; j < 40; j++) {
-		if (j == 20) {
-			escada->draw(window);
-		}
 
-		chao->drawChao(window);
-		buraco->drawBuraco(window);
-		paredes->draw(window);
-	}
+	escada->draw(window);
+	chao->drawChao(window);
+	paredes->draw(window);
+
 }
 
 void Cenario::desenhaAndar9(sf::RenderWindow *window, Chao *chao) {
@@ -238,7 +223,7 @@ bool Cenario::playerTestaColisao(int *playerBateuNaParede,
 	return bateuNoChao;
 }
 
-bool Cenario::bombaTestaColisao(Bomba &bomba, int *bombaBateuNaParede,
+bool Cenario::bombaTestaColisao(int *bombaBateuNaParede,
 		int *BombaBateuNaEscada, int i, int tipoDesce) {
 	int bateuNoChao = 0;
 	srand(time(NULL));
@@ -323,7 +308,7 @@ void Cenario::playerUpdate(bool playerBateuNoChao, int playerBateuNaParede,
 		int playerBateuNaEscada, int playerCaiuNoBuraco, bool playerBateuNaBomba) {
 
 	if(playerBateuNaBomba > 0){
-		setPlayerLayer();
+		player.setLayer(alturaLinha, larguraColuna);
 		player.perdeuVidas();
 	}
 	if (playerBateuNoChao > 0) {
@@ -352,7 +337,7 @@ void Cenario::playerUpdate(bool playerBateuNoChao, int playerBateuNaParede,
 	}
 }
 
-void Cenario::bombaUpdate(Bomba &bomba, bool bombaBateuNoChao,
+void Cenario::bombaUpdate(bool bombaBateuNoChao,
 		int bombaBateuNaParede, int bombaBateuNaEscada) {
 	if (bombaBateuNoChao == true) {
 		bomba.setPodeMover(1);
@@ -374,13 +359,6 @@ void Cenario::setAndarBomba() {
 	altura = (alturaLinha * 2) - 13;
 	largura = 7 * larguraColuna - 13;
 	bomba.setPosXPosY(largura, altura);
-}
-
-void Cenario::setPlayerLayer() {
-	float altura, largura;
-	altura = (alturaLinha * 5) - 16;
-	largura = 20 * larguraColuna - 16;
-	player.setPosXPosY(largura, altura);
 }
 
 bool Cenario::getIniciouKong() {

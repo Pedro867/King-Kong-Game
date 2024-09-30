@@ -15,10 +15,13 @@ private:
 	sf::Texture texturaBombaNormal;
 	//Projeto futuro sf::Texture texturaBombaEspecial;
 	sf::RenderWindow &window;
+
 	float velX, velY;
 	float posX, posY;
 	float escala;
 	bool bateu, escada, cair;
+
+	int qntMaxBombaNormal;
 
 public:
 
@@ -34,6 +37,7 @@ public:
 	float getVelX();
 	sf::FloatRect getBombaNormalBounds();
 	sf::Sprite getBombaNormal();
+	bool olhaSePodeSpawnar();
 
 };
 
@@ -58,6 +62,7 @@ Bomba::Bomba(sf::RenderWindow &window) :
 	bateu = false;
 	cair = false;
 	escada = false;
+	qntMaxBombaNormal = 10;
 }
 
 void Bomba::mover() {
@@ -122,6 +127,10 @@ sf::FloatRect Bomba::getBombaNormalBounds() {
 
 sf::Sprite Bomba::getBombaNormal() {
 	return bombaNormal;
+}
+
+inline bool Bomba::olhaSePodeSpawnar() {
+
 }
 
 #endif

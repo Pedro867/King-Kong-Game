@@ -40,13 +40,14 @@ public:
 	void setBateu(bool bateu);
 	void setVelY(float vy);
 	void setVelX(float vx);
+	void setLayer(float alturaLinha, float larguraColuna);
+	void setPosXPosY(float x, float y);
 	float getVelY();
 	float getVelX();
 	int getVidas();
 	void perdeuVidas();
 	sf::Sprite getPlayer();
 	sf::FloatRect bounds();
-	void setPosXPosY(float x, float y);
 	void GameOver(float alturaLinha);
 	bool colideBomba(Bomba &bomba);
 	bool gameOver();
@@ -64,8 +65,8 @@ public:
 		player.setTextureRect(hitbox);
 		velX = 0;
 		velY = 0;
-		posX = 360;
-		posY = 250;
+		posX = 0;
+		posY = 0;
 		vidas = 3;
 		escala = window.getSize().y / 275.0f; //escala responsiva
 		gravity = window.getSize().y / 600.0f;
@@ -200,6 +201,20 @@ public:
 		velX = vx;
 	}
 
+	inline void Player::setLayer(float alturaLinha, float larguraColuna) {
+	float altura, largura;
+	altura = (alturaLinha * 5) - 16;
+	largura = 20 * larguraColuna;
+	setPosXPosY(largura, altura);
+	}
+
+	void Player::setPosXPosY(float x, float y) {
+	//Funcao para setar o andar
+	posX = x;
+	posY = y;
+	player.setPosition(posX, posY);
+	}
+
 	float Player::getVelY() {
 		return velY;
 	}
@@ -222,13 +237,6 @@ public:
 
 	sf::FloatRect Player::bounds() {
 		return player.getGlobalBounds();
-	}
-
-	void Player::setPosXPosY(float x, float y) {
-		//Funcao para setar o andar
-		posX = x;
-		posY = y;
-		player.setPosition(posX, posY);
 	}
 
 	void Player::GameOver(float alturaLinha) {

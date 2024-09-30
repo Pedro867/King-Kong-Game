@@ -39,8 +39,9 @@ int main(int argc, char **argv) {
 
 	//Elementos
 	Player player(window);
+	Princesa princesa(window);
 	Bomba bomba(window);
-	Cenario cenario(player, bomba, &window);
+	Cenario cenario(player, bomba, princesa, &window);
 
 	while (window.isOpen()) {
 
@@ -63,7 +64,6 @@ int main(int argc, char **argv) {
 			bomba.mover();
 		}
 
-		//	OS ELEMENTOS ESTAVAM SENDO DESENHADOS AQUI, PASSEI PRA FUNCAO DESENHA CENARIO
 		string vidasString = to_string(player.getVidas());
 
 		vidas.setString("Vidas: " + vidasString);
