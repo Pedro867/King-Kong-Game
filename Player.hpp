@@ -29,6 +29,8 @@ private:
 	bool bateu, caiu, podeMover, podeSubir, subindo, moveuEsquerda;
 	int gravity, vidas, acabouDePular;
 
+	sf::SoundBuffer bufferPulo;
+	sf::Sound somPulo;
 public:
 
 	Player(sf::RenderWindow &window);
@@ -82,6 +84,9 @@ public:
 		acabouDePular = 0;
 		//essa aqui bugou tudo, mas eh necessaria
 		//pro player nao poder mover na escada
+
+		bufferPulo.loadFromFile("assets/SomPulo.ogg");
+		somPulo.setBuffer(bufferPulo);
 	}
 
 	void Player::moverX(sf::Event evento) {
@@ -164,6 +169,7 @@ public:
 				velY = -velY;
 				player.move(0, velY);
 				acabouDePular = 10;
+				somPulo.play();
 			}
 		}
 	}

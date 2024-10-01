@@ -19,10 +19,15 @@ private:
 	float escala;
 	int posX, posY;
 
+	bool concluiuRota1 = false;
+	bool concluiuRota2 = true;
+
 public:
 
 	Princesa(sf::RenderWindow &window);
-	void AnimacaoPrincesa();
+	void AnimacaoPrincesa(float larguraColuna);
+	void rota1(float larguraColuna);
+	void rota2(float larguraColuna);
 
 	sf::Sprite getPrincesa();
 	void setLayer(float alturaLinha, float larguraColuna);
@@ -45,7 +50,39 @@ Princesa::Princesa(sf::RenderWindow &window) : window(window) {
 	posY = 0;
 }
 
-void Princesa::AnimacaoPrincesa() {
+void Princesa::AnimacaoPrincesa(float larguraColuna) {
+
+	if(concluiuRota1 == false)
+	rota1(larguraColuna);
+
+	if(concluiuRota2 == false)
+	rota2(larguraColuna);
+}
+
+void Princesa::rota1(float larguraColuna) {
+
+	float rota1 = larguraColuna * 22; // o y eh descartavel pq nn comparo ele com nada
+	float velX = larguraColuna / 10.f;
+
+	princesa.move(-velX, 0);
+
+	if(princesa.getPosition().x <= rota1){
+		concluiuRota1 = true;
+		concluiuRota2 = false;
+	}
+}
+
+void Princesa::rota2(float larguraColuna) {
+
+	float rota2 = larguraColuna * 26; //ali t� * 8 mas tanto faz pq nn comparo ele com nada
+	float velX = larguraColuna / 10.f;
+
+	princesa.move(velX, 0);
+
+	if (princesa.getPosition().x >= rota2) {
+		concluiuRota1 = false;
+		concluiuRota2 = true;
+	}
 }
 
 inline sf::Sprite Princesa::getPrincesa() {
@@ -55,7 +92,7 @@ inline sf::Sprite Princesa::getPrincesa() {
 void Princesa::setLayer(float alturaLinha, float larguraColuna) {
 	float altura, largura;
 	altura = (alturaLinha * 1) - 19;
-	largura = 20 * larguraColuna;
+	largura = 22 * larguraColuna;
 	setPosXPosY(largura, altura);
 }
 

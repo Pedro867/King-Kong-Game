@@ -6,7 +6,8 @@
 // Description : Hello World in C++, Ansi-style
 //============================================================================
 
-#include <SFMl\Graphics.hpp>
+#include <SFMl/Graphics.hpp>
+#include <SFML/audio.hpp>
 #include <iostream>
 #include "Player.hpp"
 #include "Bomba.hpp"
@@ -40,8 +41,8 @@ int main(int argc, char **argv) {
 	//Elementos
 	Player player(window);
 	Princesa princesa(window);
-	Bomba bomba(window);
-	Cenario cenario(player, bomba, princesa, &window);
+	//Bomba bomba(window);
+	Cenario cenario(player, princesa, &window);
 
 	while (window.isOpen()) {
 
@@ -61,7 +62,7 @@ int main(int argc, char **argv) {
 		if (cenario.getIniciouKong()) {
 			player.moverY(evento);
 			player.moverX(evento);
-			bomba.mover();
+			//cenario.moverBombas();
 		}
 
 		string vidasString = to_string(player.getVidas());
