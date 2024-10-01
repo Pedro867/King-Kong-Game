@@ -70,7 +70,7 @@ Cenario::Cenario(Player &player, Princesa &princesa, sf::RenderWindow *window) :
 
 	float escalaKong = window->getSize().y / 280.f; //escala kong responsiva
 	kong.IniciaKong(larguraColuna, alturaLinha, escalaKong);
-	iniciouKong = false;
+	iniciouKong = true;
 
 	chao.resize(10); //Se isso nao acontecer o jogo crasha
 	buraco.resize(10); //queria que fosse 6....
@@ -349,6 +349,9 @@ void Cenario::playerUpdate(int playerBateuNoChao, int playerBateuNaParede,
 		player.setPodeSubir(1);
 	} else {
 		player.setPodeSubir(0);
+	}
+	if((player.getLayer(alturaLinha)) <= 5){
+		kong.trocaDePosicao(alturaLinha);
 	}
 }
 

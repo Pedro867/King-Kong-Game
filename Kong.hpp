@@ -27,11 +27,15 @@ private:
 public:
 
 	void IniciaKong(float larguraColuna, float alturaLinha,float escala);
+
 	bool AnimacaoInicialKong(float larguraColuna, float alturaLinha);
 	void AnimacaoKong();
 	void bateNoPeito();
+	void trocaDePosicao(float alturaLinha);
+
 	void rota1(float larguraColuna, float alturaLinha);
 	void rota2(float larguraColuna, float alturaLinha);
+
 	sf::Sprite getKong();
 };
 
@@ -69,7 +73,7 @@ bool Kong::AnimacaoInicialKong(float larguraColuna, float alturaLinha) {
 	}
 }
 
-inline void Kong::AnimacaoKong(){
+void Kong::AnimacaoKong(){
 	timer++;
 
 	if (timer == 15) {
@@ -79,7 +83,7 @@ inline void Kong::AnimacaoKong(){
 	}
 }
 
-inline void Kong::bateNoPeito() {
+void Kong::bateNoPeito() {
 	timer++;
 
 	if(timer == 15){
@@ -93,6 +97,10 @@ inline void Kong::bateNoPeito() {
 	}
 }
 
+void Kong::trocaDePosicao(float alturaLinha){
+
+}
+
 inline void Kong::rota1(float larguraColuna, float alturaLinha) {
 
 	sf::Vector2<float> rota1(larguraColuna * 9, alturaLinha * 8); // o y eh descartavel pq nn comparo ele com nada
@@ -104,7 +112,7 @@ inline void Kong::rota1(float larguraColuna, float alturaLinha) {
 	}
 }
 
-inline void Kong::rota2(float larguraColuna,
+void Kong::rota2(float larguraColuna,
 		float alturaLinha) {
 
 	sf::Vector2<float> rota2(larguraColuna * 14, alturaLinha * 8); //ali t� * 8 mas tanto faz pq nn comparo ele com nada
