@@ -1,10 +1,3 @@
-/*
- * Kong.hpp
- *
- *  Created on: 23 de set. de 2024
- *      Author: Rafael
- */
-
 #ifndef KONG_HPP_
 #define KONG_HPP_
 
@@ -26,7 +19,7 @@ private:
 
 public:
 
-	void IniciaKong(float larguraColuna, float alturaLinha,float escala);
+	void iniciaKong(float larguraColuna, float alturaLinha,float escala);
 
 	bool AnimacaoInicialKong(float larguraColuna, float alturaLinha);
 	void AnimacaoKong();
@@ -39,7 +32,7 @@ public:
 	sf::Sprite getKong();
 };
 
-inline void Kong::IniciaKong(float larguraColuna, float alturaLinha, float escala){
+inline void Kong::iniciaKong(float larguraColuna, float alturaLinha, float escala){
 	kongTexture.loadFromFile("assets/donkey.png");
 	kong.setTexture(kongTexture);
 	kong.setOrigin(25, 28); //seta a posicao no pe dele (28) e no centro dele (25)

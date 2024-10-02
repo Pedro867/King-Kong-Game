@@ -1,10 +1,3 @@
-/*
- * Player.hpp
- *
- *  Created on: 25 de ago. de 2024
- *      Author: Rafael
- */
-
 #ifndef PLAYER_HPP_
 #define PLAYER_HPP_
 #include <SFML/Graphics.hpp>
@@ -26,18 +19,20 @@ private:
 	float velX, velY;
 	float posX, posY;
 	float escala;
-	bool bateu, caiu, podeMover, podeSubir, subindo, moveuEsquerda;
+	bool bateu, caiu, podeMover, podeSubir, subindo, moveuEsquerda, perdeuVida, morreu;
 	int gravity, vidas, acabouDePular;
 
 	sf::SoundBuffer bufferPulo;
 	sf::Sound somPulo;
+	sf::SoundBuffer bufferMOrte;
+	sf::Sound somMorte;
 public:
 
 	Player(sf::RenderWindow &window);
 	void moverX(sf::Event evento);
 	void moverY(sf::Event evento);
 
-	//sets
+	//setters
 	void setPodeMover(int valor);
 	void setPodeSubir(int valor);
 	void setCaiu(bool caiu);
@@ -46,20 +41,19 @@ public:
 	void setVelX(float vx);
 	void setLayer(float alturaLinha, float larguraColuna);
 	void setPosXPosY(float x, float y);
+	void setPerdeuVida(bool valor);
 
-	//gets
+	//getters
 	float getVelY();
 	float getVelX();
 	int getVidas();
 	float getLayer(float alturaLinha);
-	void perdeuVidas();
+	bool getPerdeuVida();
 	sf::Sprite getPlayer();
 	sf::FloatRect bounds();
 
-
-	void GameOver(float alturaLinha);
-	bool colideBomba(Bomba &bomba);
-	bool gameOver();
+	void perdeuVidas(float alturaLinha, float larguraColuna);
+	void caiuBuraco(float alturaLinha);
 };
 
 Player::Player(sf::RenderWindow &window) :
@@ -82,18 +76,16 @@ Player::Player(sf::RenderWindow &window) :
 	player.setScale(escala, escala);
 	player.setOrigin(hitbox.width / 2, hitbox.height / 2); //metade do tamanho do player;
 	player.setPosition(posX, posY);
-	bateu = false;
-	caiu = false;
+	bateu = caiu = podeSubir = moveuEsquerda = subindo = perdeuVida = morreu = false;
 	podeMover = true;
-	podeSubir = false;
-	moveuEsquerda = false;
-	subindo = false;
 	acabouDePular = 0;
 	//essa aqui bugou tudo, mas eh necessaria
 	//pro player nao poder mover na escada
 
 	bufferPulo.loadFromFile("assets/SomPulo.ogg");
 	somPulo.setBuffer(bufferPulo);
+	bufferMOrte.loadFromFile("assets/SomMorte.ogg");
+		somMorte.setBuffer(bufferMOrte);
 }
 
 void Player::moverX(sf::Event evento) {
@@ -154,8 +146,10 @@ void Player::moverY(sf::Event evento) {
 			player.move(0, gravity / 3);
 			posY += gravity/3;
 			acabouDePular--;
+
 		} else {
 			player.move(0, gravity);
+
 		}
 	}
 	if (podeSubir == true) {
@@ -193,7 +187,6 @@ void Player::setPodeMover(int valor) {
 	}
 }
 
-//por enquanto sao iguais
 void Player::setPodeSubir(int valor) {
 	if (valor == 1) {
 		podeSubir = true;
@@ -218,9 +211,9 @@ void Player::setVelX(float vx) {
 	velX = vx;
 }
 
-inline void Player::setLayer(float alturaLinha, float larguraColuna) {
+void Player::setLayer(float alturaLinha, float larguraColuna) {
 	float altura, largura;
-	altura = (alturaLinha * 9) - 16;
+	altura = (alturaLinha * 4) - 16;
 	largura = 20 * larguraColuna;
 	setPosXPosY(largura, altura);
 }
@@ -230,6 +223,10 @@ void Player::setPosXPosY(float x, float y) {
 	posX = x;
 	posY = y;
 	player.setPosition(posX, posY);
+}
+
+void Player::setPerdeuVida(bool valor){
+	perdeuVida = valor;
 }
 
 float Player::getVelY() {
@@ -244,14 +241,26 @@ int Player::getVidas() {
 	return vidas;
 }
 
-inline float Player::getLayer(float alturaLinha) {
+bool Player::getPerdeuVida() {
+	return perdeuVida;
+}
+
+float Player::getLayer(float alturaLinha) {
 	this->posY = player.getPosition().y;
 	float layer = posY / alturaLinha;
 	return layer;
 }
 
-void Player::perdeuVidas() {
-	this->vidas--;
+void Player::perdeuVidas(float alturaLinha, float larguraColuna) {
+	if (vidas > 0){
+		this->vidas--;
+		setLayer(alturaLinha, larguraColuna);
+		somMorte.play();
+		perdeuVida = true;
+
+	}else{
+		morreu = true; //futuro gameOver, mas quero colocar a func no main
+	}
 }
 
 sf::Sprite Player::getPlayer() {
@@ -262,8 +271,9 @@ sf::FloatRect Player::bounds() {
 	return player.getGlobalBounds();
 }
 
-void Player::GameOver(float alturaLinha) {
+void Player::caiuBuraco(float alturaLinha) {
 	player.move(0, velY);
+	morreu = true;
 }
 
 #endif /* PLAYER_HPP_ */

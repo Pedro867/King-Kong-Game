@@ -33,6 +33,8 @@ private:
 
 	int qntAtualBombaNormal;
 
+
+
 public:
 	//Declaracao das funcoes
 	Cenario(Player &player, Princesa &princesa, sf::RenderWindow *window);
@@ -50,7 +52,7 @@ public:
 	void playerTestaColisao(int *playerBateuNoChao, int *playerBateuNaParede, int *PlayerBateuNaEscada,
 			int *playerCaiuNoBuraco, int *playerBateuNaBomba, int i);
 	void bombasTestaColisao(vector<int> &bombaBateuNoChao, vector<int> &bombaBateuNaParede,
-			vector<int> &BombaBateuNaEscada, int i, int tipoDesce);
+			vector<int> &BombaBateuNaEscada, int i);
 	void playerUpdate(int playerBateuNoChao, int playerBateuNaParede,
 			int playerBateuNaEscada, int playerCaiuNoBuraco, bool playerBateuNaBomba);
 	void bombaUpdate(vector<int> bombaBateuNoChao,
@@ -58,19 +60,21 @@ public:
 
 
 	bool getIniciouKong();
-	int sorteadorDeNumeros(int andar);
+	int olhaAndarBomba(int cont);
 	void moverBombas();
 	//---------------------
 };
 
 Cenario::Cenario(Player &player, Princesa &princesa, sf::RenderWindow *window) :
 		player(player), princesa(princesa){
+
+
 	alturaLinha = (window->getSize().y) / 10.0f; //determina a altura de cada linha (tamanho y da janela / num de linhas)
 	larguraColuna = (window->getSize().x) / 40.0f; //determina a largura de cada coluna (tamanho x da janela / num de colunas)
 
 	float escalaKong = window->getSize().y / 280.f; //escala kong responsiva
-	kong.IniciaKong(larguraColuna, alturaLinha, escalaKong);
-	iniciouKong = true;
+	kong.iniciaKong(larguraColuna, alturaLinha, escalaKong);
+	iniciouKong = true;//mudar para testar mais rápido
 
 	chao.resize(10); //Se isso nao acontecer o jogo crasha
 	buraco.resize(10); //queria que fosse 6....
@@ -129,11 +133,11 @@ void Cenario::desenhaCenario(sf::RenderWindow *window) {
 		//iniciouKong = kong.iniciarKong(window, larguraColuna, alturaLinha);
 
 		if (iniciouKong == true) {
-			int tipoDesce = sorteadorDeNumeros(i); //sorteia escada pra bomba
+
 			playerTestaColisao(&playerBateuNoChao, &playerBateuNaParede,
 					&playerBateuNaEscada, &playerCaiuNoBuraco, &playerBateuNaBomba, i);
 			bombasTestaColisao(bombaBateuNoChao, bombaBateuNaParede,
-					bombaBateuNaEscada, i, tipoDesce);
+					bombaBateuNaEscada, i);
 		}
 	} //for i
 
@@ -214,6 +218,7 @@ void Cenario::playerTestaColisao(int *playerBateuNoChao, int *playerBateuNaPared
 			|| hitboxPlayer.intersects(hitboxChao2)
 			|| hitboxPlayer.intersects(hitboxChao3)) {
 		*playerBateuNoChao = 1;
+
 	}
 
 	if (hitboxPlayer.intersects(hitboxParede1)
@@ -223,23 +228,27 @@ void Cenario::playerTestaColisao(int *playerBateuNoChao, int *playerBateuNaPared
 	if (hitboxPlayer.intersects(hitboxEscada1)
 			|| hitboxPlayer.intersects(hitboxEscada2)) {
 		*PlayerBateuNaEscada = 1;
+
 	}
 	if (hitboxPlayer.intersects(hitboxBuraco1)
 			|| hitboxPlayer.intersects(hitboxBuraco2)) {
+		//cout << "Caiu";
 		*playerCaiuNoBuraco = 1;
 	}
 
 	for(int cont = 0; cont < qntAtualBombaNormal; cont++){
 		hitboxBomba = bomba[cont].getBombaNormalBounds();
-
+		hitboxBomba.top = hitboxBomba.top + 10;
 		if (hitboxPlayer.intersects(hitboxBomba)) {
+
 			*playerBateuNaBomba = 1;
+
 		}
 	}
 }
 
 void Cenario::bombasTestaColisao(vector<int> &bombaBateuNoChao, vector<int> &bombaBateuNaParede,
-		vector<int> &BombaBateuNaEscada, int i, int tipoDesce) {
+		vector<int> &BombaBateuNaEscada, int i) {
 	srand(time(NULL));
 
 	sf::FloatRect hitboxChao1;
@@ -258,7 +267,6 @@ void Cenario::bombasTestaColisao(vector<int> &bombaBateuNoChao, vector<int> &bom
 	hitboxParede2 = paredes[i].getParede2().getGlobalBounds();
 	hitboxEscada1 = escada[i].getEscada1().getGlobalBounds();
 	hitboxEscada2 = escada[i].getEscada2().getGlobalBounds();
-	Parede8 = paredes[8].getParede2().getGlobalBounds();
 	hitboxEscada1.height = hitboxEscada1.height - 30;
 	hitboxEscada2.height = hitboxEscada2.height - 30;
 	//	meio1 = escada[i].meioEscada1();
@@ -286,6 +294,7 @@ void Cenario::bombasTestaColisao(vector<int> &bombaBateuNoChao, vector<int> &bom
 			hitboxBomba.left = hitboxBomba.left - hitboxBomba.width / 2;
 			hitboxEscada2.left = hitboxEscada2.left + hitboxEscada2.width / 2;
 
+
 		} else {
 			hitboxEscada1.left = hitboxEscada1.left - hitboxEscada1.width / 2;
 			hitboxBomba.left = hitboxBomba.left + hitboxBomba.width / 2;
@@ -294,6 +303,7 @@ void Cenario::bombasTestaColisao(vector<int> &bombaBateuNoChao, vector<int> &bom
 
 		//Parte da bomba descer escada
 		int random;
+		int tipoDesce = olhaAndarBomba(cont);
 		if (tipoDesce == 1) { //duas escadas
 			random = rand() % 2;
 		}
@@ -307,12 +317,14 @@ void Cenario::bombasTestaColisao(vector<int> &bombaBateuNoChao, vector<int> &bom
 		if (hitboxBomba.intersects(hitboxEscada1)) {
 			if (random == 0) {
 				BombaBateuNaEscada[cont] = 1;
+
 			}
 		}
 		if (hitboxBomba.intersects(hitboxEscada2)) {
 			if (tipoDesce == 1) {
 				if (random == 1) {
 					BombaBateuNaEscada[cont] = 1;
+
 				}
 			}
 		}
@@ -323,8 +335,7 @@ void Cenario::playerUpdate(int playerBateuNoChao, int playerBateuNaParede,
 		int playerBateuNaEscada, int playerCaiuNoBuraco, bool playerBateuNaBomba) {
 
 	if(playerBateuNaBomba > 0){
-		player.setLayer(alturaLinha, larguraColuna);
-		player.perdeuVidas();
+		player.perdeuVidas(alturaLinha, larguraColuna);
 	}
 	if (playerBateuNoChao > 0) {
 		player.setCaiu(false);
@@ -333,8 +344,7 @@ void Cenario::playerUpdate(int playerBateuNoChao, int playerBateuNaParede,
 	}
 
 	if (playerCaiuNoBuraco > 0) {
-		//player.setVelY(1);
-		player.GameOver(alturaLinha); //isso depois
+		//player.GameOver(alturaLinha); //isso depois
 	} else {
 		player.setVelY(0);
 	}
@@ -389,7 +399,9 @@ bool Cenario::getIniciouKong() {
 	return iniciouKong;
 }
 
-int Cenario::sorteadorDeNumeros(int andar) {
+int Cenario::olhaAndarBomba(int cont){
+	int andar;
+	andar = bomba[cont].getLayer(alturaLinha);//pega o andar da bomba
 	if (andar > 0 && andar < 9) {
 		if (andar % 2 == 0) {
 			return 1; //uma escada e dois buracos
@@ -398,6 +410,7 @@ int Cenario::sorteadorDeNumeros(int andar) {
 			return 2; //duas escadas
 		}
 	}
+
 	return 0;
 }
 

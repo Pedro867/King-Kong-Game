@@ -39,6 +39,7 @@ public:
 	sf::Sprite getBombaNormal();
 	bool olhaSePodeSpawnarNormal(float alturaLinha, int qntAtualBombaNormal);
 	void spawnBombaNormal(float alturaLinha, float larguraColuna);
+	float getLayer(float alturaLinha);
 
 };
 
@@ -145,10 +146,17 @@ bool Bomba::olhaSePodeSpawnarNormal(float alturaLinha, int qntAtualBombaNormal) 
 	else if(qntAtualBombaNormal < qntMaxBombaNormal){
 		return true;
 	}
+	return false;
 }
 
 void Bomba::spawnBombaNormal(float alturaLinha, float larguraColuna) {
 	setLayer(alturaLinha, larguraColuna);
+}
+
+inline float Bomba::getLayer(float alturaLinha) {
+	this->posY = bombaNormal.getPosition().y;
+	float layer = posY / alturaLinha;
+	return layer;
 }
 
 #endif
