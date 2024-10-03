@@ -1,3 +1,4 @@
+
 #ifndef PLAYER_HPP_
 #define PLAYER_HPP_
 #include <SFML/Graphics.hpp>
@@ -264,6 +265,8 @@ bool Player::getPerdeuVida() {
 float Player::getLayer(float alturaLinha) {
 	this->posY = player.getPosition().y;
 	float layer = posY / alturaLinha;
+	layer = 10-layer;
+
 	return layer;
 }
 

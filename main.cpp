@@ -12,6 +12,9 @@
 
 void animacaoMorte(sf::RenderWindow& window){
 	sf::RectangleShape tela;
+
+
+
 	sf::Vector2f tamanho(window.getSize().x, window.getSize().y);
 	tela.setSize(tamanho);
 	sf::Vector2f origem(tamanho.x/2, tamanho.y/2);
@@ -34,19 +37,26 @@ void animacaoMorte(sf::RenderWindow& window){
 void gameOver(sf::RenderWindow& window){
 	//Texto
 	sf::Font fonte;
+
+
+
 	fonte.loadFromFile("assets/Arial.ttf");
 	sf::Text fimDeJogo;
 	fimDeJogo.setFont(fonte);
 	fimDeJogo.setCharacterSize(100);
 	//fimDeJogo.setOrigin(50, 50);
 	fimDeJogo.setFillColor(sf::Color::White);
+
 	//esses numeros no position sao os unicos que deixa o texto no meio, nn sei a logica
 	fimDeJogo.setPosition(window.getSize().x/2 - 275, window.getSize().y/2 - 100);
 	fimDeJogo.setString("Game Over");
 
+
+
 	window.clear();
 	window.draw(fimDeJogo);
 	window.display();
+
 }
 
 int main(int argc, char **argv) {
@@ -99,6 +109,11 @@ int main(int argc, char **argv) {
 		}
 		if(player.getVidas() <= 0){//ve se acabou as vidas
 			gameOver(window);
+			sf::SoundBuffer bufferSomDaMorte;
+				sf::Sound somDaMorte;
+				bufferSomDaMorte.loadFromFile("assets/SomDeGameOver.ogg");
+						somDaMorte.setBuffer(bufferSomDaMorte);
+						somDaMorte.play();
 			continue;
 		}
 
