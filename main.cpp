@@ -54,7 +54,7 @@ int main(int argc, char **argv) {
 	sf::VideoMode video(1000, 600);
 	sf::RenderWindow window(video, "King Kong");
 	sf::Event evento;
-	window.setFramerateLimit(30);
+	window.setFramerateLimit(50);
 
 	//Fundo
 	sf::Texture background;

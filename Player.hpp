@@ -19,7 +19,8 @@ private:
 	float velX, velY;
 	float posX, posY;
 	float escala;
-	bool bateu, caiu, podeMover, podeSubir, subindo, moveuEsquerda, perdeuVida, morreu;
+	float queda = 0;
+	bool bateu, caiu, podeMover, podeSubir, subindo, moveuEsquerda, perdeuVida, perdeu, morreuDeQueda;
 	int gravity, vidas, acabouDePular;
 
 	sf::SoundBuffer bufferPulo;
@@ -32,11 +33,14 @@ public:
 	void moverX(sf::Event evento);
 	void moverY(sf::Event evento);
 
+	void reiniciaPlayer(float alturaLinha, float larguraColuna);
+
 	//setters
 	void setPodeMover(int valor);
 	void setPodeSubir(int valor);
 	void setCaiu(bool caiu);
 	void setBateu(bool bateu);
+	void setMorreuDeQueda(bool morreuDeQueda);
 	void setVelY(float vy);
 	void setVelX(float vx);
 	void setLayer(float alturaLinha, float larguraColuna);
@@ -48,12 +52,13 @@ public:
 	float getVelX();
 	int getVidas();
 	float getLayer(float alturaLinha);
+	float getQueda();
+	bool getMorreuDeQueda();
 	bool getPerdeuVida();
 	sf::Sprite getPlayer();
 	sf::FloatRect bounds();
 
 	void perdeuVidas(float alturaLinha, float larguraColuna);
-	void caiuBuraco(float alturaLinha);
 };
 
 Player::Player(sf::RenderWindow &window) :
@@ -76,7 +81,7 @@ Player::Player(sf::RenderWindow &window) :
 	player.setScale(escala, escala);
 	player.setOrigin(hitbox.width / 2, hitbox.height / 2); //metade do tamanho do player;
 	player.setPosition(posX, posY);
-	bateu = caiu = podeSubir = moveuEsquerda = subindo = perdeuVida = morreu = false;
+	bateu = caiu = podeSubir = moveuEsquerda = subindo = perdeuVida = perdeu = morreuDeQueda = false;
 	podeMover = true;
 	acabouDePular = 0;
 	//essa aqui bugou tudo, mas eh necessaria
@@ -91,7 +96,7 @@ Player::Player(sf::RenderWindow &window) :
 void Player::moverX(sf::Event evento) {
 
 	player.setScale(escala, escala);
-	if (podeMover) {
+	if (podeMover == true && morreuDeQueda == false) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
 
 			velX = -5;
@@ -144,12 +149,12 @@ void Player::moverY(sf::Event evento) {
 		//subindo = false;
 		if (acabouDePular > 0) {
 			player.move(0, gravity / 3);
-			posY += gravity/3;
 			acabouDePular--;
+			queda++;
 
 		} else {
 			player.move(0, gravity);
-
+			queda++;
 		}
 	}
 	if (podeSubir == true) {
@@ -157,13 +162,13 @@ void Player::moverY(sf::Event evento) {
 			//subindo = true;
 			velY = -gravity * 2;
 			player.move(0, velY);
-			posY -= gravity*2;
+			queda = 0;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
 			//subindo = true;
 			velY = gravity * 2;
 			player.move(0, velY);
-			posY += gravity*2;
+			queda = 0;
 		}
 	}
 	if (podeSubir == false && caiu == false) {
@@ -171,12 +176,19 @@ void Player::moverY(sf::Event evento) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
 			velY = window.getSize().y / 30.0f; //pulo responsivo
 			velY = -velY;
-			posY -= velY;
 			player.move(0, velY);
 			acabouDePular = 10;
 			somPulo.play();
+			queda = 0;
 		}
 	}
+}
+
+void Player::reiniciaPlayer(float alturaLinha, float larguraColuna){
+	setLayer(alturaLinha, larguraColuna);
+	morreuDeQueda = false;
+	queda = 0;
+
 }
 
 void Player::setPodeMover(int valor) {
@@ -203,6 +215,10 @@ void Player::setBateu(bool bateu) {
 	this->bateu = bateu;
 }
 
+void Player::setMorreuDeQueda(bool morreuDeQueda){
+	this->morreuDeQueda = morreuDeQueda;
+}
+
 void Player::setVelY(float vy) {
 	this->velY = vy / 3.0;
 }
@@ -213,7 +229,7 @@ void Player::setVelX(float vx) {
 
 void Player::setLayer(float alturaLinha, float larguraColuna) {
 	float altura, largura;
-	altura = (alturaLinha * 4) - 16;
+	altura = (alturaLinha * 7) - 16;
 	largura = 20 * larguraColuna;
 	setPosXPosY(largura, altura);
 }
@@ -251,15 +267,23 @@ float Player::getLayer(float alturaLinha) {
 	return layer;
 }
 
+float Player::getQueda(){
+	return queda;
+}
+
+bool Player::getMorreuDeQueda(){
+	return morreuDeQueda;
+}
+
 void Player::perdeuVidas(float alturaLinha, float larguraColuna) {
 	if (vidas > 0){
 		this->vidas--;
-		setLayer(alturaLinha, larguraColuna);
 		somMorte.play();
 		perdeuVida = true;
+		reiniciaPlayer(alturaLinha, larguraColuna);
 
 	}else{
-		morreu = true; //futuro gameOver, mas quero colocar a func no main
+		perdeu = true; //futuro gameOver, mas quero colocar a func no main
 	}
 }
 
@@ -269,11 +293,6 @@ sf::Sprite Player::getPlayer() {
 
 sf::FloatRect Player::bounds() {
 	return player.getGlobalBounds();
-}
-
-void Player::caiuBuraco(float alturaLinha) {
-	player.move(0, velY);
-	morreu = true;
 }
 
 #endif /* PLAYER_HPP_ */

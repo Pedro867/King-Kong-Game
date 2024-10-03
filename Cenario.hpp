@@ -41,11 +41,11 @@ public:
 
 	void desenhaCenario(sf::RenderWindow *window);
 	void desenhaAndar1ao6(int i, sf::RenderWindow *window, Chao *chao,
-			Parede *paredes, Escada *escada, Buraco *buraco);
+			Parede *paredes, Escada *escada);
 	void desenhaAndar7(int i, sf::RenderWindow *window, Chao *chao,
-			Parede *paredes, Escada *escada, Buraco *buraco);
+			Parede *paredes, Escada *escada);
 	void desenhaAndar8(int i, sf::RenderWindow *window, Chao *chao,
-			Parede *paredes, Escada *escada, Buraco *buraco);
+			Parede *paredes, Escada *escada);
 	void desenhaAndar9(sf::RenderWindow *window, Chao *chao);
 	void desenhaElementos(sf::RenderWindow *window);
 
@@ -119,14 +119,11 @@ void Cenario::desenhaCenario(sf::RenderWindow *window) {
 
 	for (int i = 0; i < 10; i++) {
 		if (i > 0 && i < 7) {
-			desenhaAndar1ao6(i, window, &chao[i], &paredes[i], &escada[i],
-					&buraco[i]);
+			desenhaAndar1ao6(i, window, &chao[i], &paredes[i], &escada[i]);
 		} else if (i == 7) {
-			desenhaAndar7(i, window, &chao[i], &paredes[i], &escada[i],
-					&buraco[i]);
+			desenhaAndar7(i, window, &chao[i], &paredes[i], &escada[i]);
 		} else if (i == 8) {
-			desenhaAndar8(i, window, &chao[i], &paredes[i], &escada[i],
-					&buraco[i]);
+			desenhaAndar8(i, window, &chao[i], &paredes[i], &escada[i]);
 		} else if (i == 9) {
 			desenhaAndar9(window, &chao[i]);
 		}
@@ -158,7 +155,7 @@ void Cenario::desenhaCenario(sf::RenderWindow *window) {
 } //fim func
 
 void Cenario::desenhaAndar1ao6(int i, sf::RenderWindow *window, Chao *chao,
-		Parede *paredes, Escada *escada, Buraco *buraco) {
+		Parede *paredes, Escada *escada) {
 
 	escada->draw(window);
 	chao->drawChao(window);
@@ -166,7 +163,7 @@ void Cenario::desenhaAndar1ao6(int i, sf::RenderWindow *window, Chao *chao,
 }
 
 void Cenario::desenhaAndar7(int i, sf::RenderWindow *window, Chao *chao,
-		Parede *paredes, Escada *escada, Buraco *buraco) {
+		Parede *paredes, Escada *escada) {
 
 	escada->draw(window);
 	chao->drawChao(window);
@@ -174,7 +171,7 @@ void Cenario::desenhaAndar7(int i, sf::RenderWindow *window, Chao *chao,
 }
 
 void Cenario::desenhaAndar8(int i, sf::RenderWindow *window, Chao *chao,
-		Parede *paredes, Escada *escada, Buraco *buraco) {
+		Parede *paredes, Escada *escada) {
 
 	escada->draw(window);
 	chao->drawChao(window);
@@ -339,14 +336,21 @@ void Cenario::playerUpdate(int playerBateuNoChao, int playerBateuNaParede,
 	}
 	if (playerBateuNoChao > 0) {
 		player.setCaiu(false);
+		if(player.getMorreuDeQueda() == true){
+			player.perdeuVidas(alturaLinha, larguraColuna);
+		}
 	} else {
 		player.setCaiu(true);
 	}
 
-	if (playerCaiuNoBuraco > 0) {
-		//player.GameOver(alturaLinha); //isso depois
+	if (player.getQueda() >= alturaLinha){
+		player.setMorreuDeQueda(1);
 	} else {
 		player.setVelY(0);
+	}
+
+	if(playerCaiuNoBuraco == true){
+		//NAO DEIXAR O PLAYER MEXER
 	}
 
 	if (playerBateuNaParede > 0) {
