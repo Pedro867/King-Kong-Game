@@ -33,9 +33,6 @@ inline void Buraco::iniciarBuraco(float larguraColuna, float alturaLinha, int i)
 	this->dimensoesBuraco.x = larguraColuna / 512.00f; //x = largura / 512 logo x . 512 = largura
 	this->dimensoesBuraco.y = 5.0f / 512.00f; //y = 512 / 5 logo x . 512 = 5
 
-	//hitboxBuraco.width -= 0.1;//diminui a hitbox do buraco 10%
-	//hitboxBuraco.height -= hitboxBuraco.height * 0.9;//diminui a hitbox do buraco 90%
-
 	this->texturaBuraco.loadFromFile("assets/background.png");
 
 	for(int cont = 0; cont < 2; cont++){

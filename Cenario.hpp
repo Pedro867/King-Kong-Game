@@ -58,10 +58,10 @@ public:
 			bool playerBateuNaBomba);
 	void bombaUpdate(vector<int> bombaBateuNoChao,
 			vector<int> bombaBateuNaParede, vector<int> bombaBateuNaEscada);
+	void deleteBombas();
 
 	bool getIniciouKong();
 	int olhaAndarBomba(int cont);
-	void moverBombas();
 	//---------------------
 };
 
@@ -73,7 +73,7 @@ Cenario::Cenario(Player &player, Princesa &princesa, sf::RenderWindow *window) :
 
 	float escalaKong = window->getSize().y / 280.f; //escala kong responsiva
 	kong.iniciaKong(larguraColuna, alturaLinha, escalaKong);
-	iniciouKong = true; //mudar para testar mais rápido
+	iniciouKong = false; //mudar para testar mais rápido
 
 	chao.resize(10); //Se isso nao acontecer o jogo crasha
 	buraco.resize(10); //queria que fosse 6....
@@ -132,7 +132,6 @@ void Cenario::desenhaCenario(sf::RenderWindow *window) {
 		//iniciouKong = kong.iniciarKong(window, larguraColuna, alturaLinha);
 
 		if (iniciouKong == true) {
-
 			playerTestaColisao(&playerBateuNoChao, &playerBateuNaParede,
 					&playerBateuNaEscada, &playerCaiuNoBuraco,
 					&playerBateuNaBomba, i);
@@ -215,17 +214,6 @@ void Cenario::playerTestaColisao(int *playerBateuNoChao,
 	hitboxEscada1 = escada[i].getEscada1().getGlobalBounds();
 	hitboxEscada2 = escada[i].getEscada2().getGlobalBounds();
 
-	hitboxChao1.width = hitboxChao1.width - 5;
-	hitboxChao2.width = hitboxChao2.width - 5;
-	hitboxChao3.width = hitboxChao3.width - 5;
-	hitboxChao1.left = hitboxChao1.left + 2;
-	hitboxChao2.left = hitboxChao2.left + 2;
-	hitboxChao3.left = hitboxChao3.left + 2;
-
-	hitboxBuraco1.left = hitboxBuraco1.left + 15;
-	hitboxBuraco2.left = hitboxBuraco2.left + 15;
-	hitboxBuraco1.width = hitboxBuraco1.width - 22.5;
-	hitboxBuraco2.width = hitboxBuraco2.width - 22.5;
 	if (hitboxPlayer.intersects(hitboxChao1)
 			|| hitboxPlayer.intersects(hitboxChao2)
 			|| hitboxPlayer.intersects(hitboxChao3)) {
@@ -244,7 +232,6 @@ void Cenario::playerTestaColisao(int *playerBateuNoChao,
 	}
 	if (hitboxPlayer.intersects(hitboxBuraco1)
 			|| hitboxPlayer.intersects(hitboxBuraco2)) {
-		cout << "Caiu";
 		*playerCaiuNoBuraco = 1;
 	}
 
@@ -283,8 +270,6 @@ void Cenario::bombasTestaColisao(vector<int> &bombaBateuNoChao,
 	hitboxEscada2 = escada[i].getEscada2().getGlobalBounds();
 	hitboxEscada1.height = hitboxEscada1.height - 30;
 	hitboxEscada2.height = hitboxEscada2.height - 30;
-	//	meio1 = escada[i].meioEscada1();
-	//	meio2 = escada[i].meioEscada2();
 
 	for (int cont = 0; cont < qntAtualBombaNormal; cont++) {
 
@@ -323,6 +308,9 @@ void Cenario::bombasTestaColisao(vector<int> &bombaBateuNoChao,
 		if (tipoDesce == 2) { //uma escada e dois buracos
 			random = rand() % 3;
 		}
+		if (tipoDesce == 2) { //uma escada e dois buracos
+			random = 2;
+		}
 		if (tipoDesce == 0) { //nem um nem outro
 			random = 8; //valor aleatório kkk
 		}
@@ -330,17 +318,16 @@ void Cenario::bombasTestaColisao(vector<int> &bombaBateuNoChao,
 		if (hitboxBomba.intersects(hitboxEscada1)) {
 			if (random == 0) {
 				BombaBateuNaEscada[cont] = 1;
-
 			}
 		}
 		if (hitboxBomba.intersects(hitboxEscada2)) {
 			if (tipoDesce == 1) {
 				if (random == 1) {
 					BombaBateuNaEscada[cont] = 1;
-
 				}
 			}
 		}
+		//AQUI TA FALTANDO A COLISSAO ENTRE BOMBA E BURACO, ELA SO CAI DIRETO SE ESTIVER FORA DO CHAO
 	} //fim for
 }
 
@@ -360,20 +347,20 @@ void Cenario::playerUpdate(int playerBateuNoChao, int playerBateuNaParede,
 		player.setCaiu(true);
 	}
 
-	if (player.getQueda() >= alturaLinha) {
-		player.setMorreuDeQueda(1);
-	} else {
-		player.setVelY(0);
-	}
-
 	if (playerCaiuNoBuraco == true) {
-		//NAO DEIXAR O PLAYER MEXER
+		player.setPodeMover(0);
 	}
 
 	if (playerBateuNaParede > 0) {
 		player.setPodeMover(0);
 	} else {
 		player.setPodeMover(1);
+	}
+
+	//cairno buraco
+	if(playerCaiuNoBuraco > 0 && playerBateuNoChao == 0){
+		player.setMorreuDeQueda(true);
+		player.setPodeMover(0);
 	}
 
 	if (playerBateuNaEscada > 0) {
@@ -422,10 +409,20 @@ bool Cenario::getIniciouKong() {
 	return iniciouKong;
 }
 
+void Cenario::deleteBombas() {
+	for (int i = 0; i < qntAtualBombaNormal; ++i) {
+		bomba.pop_back();
+	}
+	qntAtualBombaNormal = 0;
+}
+
 int Cenario::olhaAndarBomba(int cont) {
 	int andar;
 	andar = bomba[cont].getLayer(alturaLinha); //pega o andar da bomba
 	if (andar > 0 && andar < 9) {
+		if (andar == 2){
+			return 3; //primeiro andar
+		}
 		if (andar % 2 == 0) {
 			return 1; //uma escada e dois buracos
 		}

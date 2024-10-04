@@ -12,9 +12,6 @@
 
 void animacaoMorte(sf::RenderWindow& window){
 	sf::RectangleShape tela;
-
-
-
 	sf::Vector2f tamanho(window.getSize().x, window.getSize().y);
 	tela.setSize(tamanho);
 	sf::Vector2f origem(tamanho.x/2, tamanho.y/2);
@@ -24,10 +21,10 @@ void animacaoMorte(sf::RenderWindow& window){
 	for (int cont = 0; cont < 40; cont++) {//40 quadros eh a duracao
 		window.clear();
 		if(cont % 20 <= 10){
-			tela.setFillColor(sf::Color::Magenta);
+			tela.setFillColor(sf::Color(28,28,28));
 		}
 		if(cont % 20 > 10){
-			tela.setFillColor(sf::Color::Blue);
+			tela.setFillColor(sf::Color(169,169,169));
 		}
 		window.draw(tela);
 		window.display();
@@ -37,34 +34,30 @@ void animacaoMorte(sf::RenderWindow& window){
 void gameOver(sf::RenderWindow& window){
 	//Texto
 	sf::Font fonte;
-
-
-
 	fonte.loadFromFile("assets/Arial.ttf");
 	sf::Text fimDeJogo;
 	fimDeJogo.setFont(fonte);
 	fimDeJogo.setCharacterSize(100);
 	//fimDeJogo.setOrigin(50, 50);
 	fimDeJogo.setFillColor(sf::Color::White);
-
 	//esses numeros no position sao os unicos que deixa o texto no meio, nn sei a logica
 	fimDeJogo.setPosition(window.getSize().x/2 - 275, window.getSize().y/2 - 100);
 	fimDeJogo.setString("Game Over");
 
-
-
 	window.clear();
-	window.draw(fimDeJogo);
-	window.display();
 
+	window.draw(fimDeJogo);
+
+	window.display();
 }
 
 int main(int argc, char **argv) {
+
 	setbuf(stdout, NULL);
 	sf::VideoMode video(1000, 600);
 	sf::RenderWindow window(video, "King Kong");
 	sf::Event evento;
-	window.setFramerateLimit(50);
+	window.setFramerateLimit(40);
 
 	//Fundo
 	sf::Texture background;
@@ -85,10 +78,22 @@ int main(int argc, char **argv) {
 	vidas.setFillColor(sf::Color::Red);
 	vidas.setPosition(45*(window.getSize().x / 100), 5*(window.getSize().y / 100));
 
+	//Audio
+	sf::SoundBuffer bufferSomDoJogo;
+	sf::Sound somDoJogo;
+	sf::SoundBuffer bufferSomDaMorte;
+	sf::Sound somDaMorte;
+	bufferSomDoJogo.loadFromFile("assets/musicaJogo.ogg");
+	somDoJogo.setBuffer(bufferSomDoJogo);
+	bufferSomDaMorte.loadFromFile("assets/SomDeGameOver.ogg");
+	somDaMorte.setBuffer(bufferSomDaMorte);
+
 	//Elementos
 	Player player(window);
 	Princesa princesa(window);
 	Cenario cenario(player, princesa, &window);
+
+	bool morreu = false, iniciouJogo = false;
 
 	while (window.isOpen()) {
 
@@ -97,6 +102,14 @@ int main(int argc, char **argv) {
 				window.close();
 			}
 		}
+
+		if(!iniciouJogo){
+			iniciouJogo = true;
+			somDoJogo.setVolume(70);
+			somDoJogo.play();
+			somDoJogo.setLoop(true);
+		}
+
 		window.clear();
 
 		//Desenha cenario e fundo
@@ -105,15 +118,16 @@ int main(int argc, char **argv) {
 		if(player.getPerdeuVida()){//ve se ele perdeu vida pra rodar a animacao
 			animacaoMorte(window);
 			player.setPerdeuVida(false);
+			cenario.deleteBombas();
 			continue;
 		}
 		if(player.getVidas() <= 0){//ve se acabou as vidas
+			if(!morreu){
+				morreu = true;
+				somDoJogo.pause();
+				somDaMorte.play();
+			}
 			gameOver(window);
-			sf::SoundBuffer bufferSomDaMorte;
-				sf::Sound somDaMorte;
-				bufferSomDaMorte.loadFromFile("assets/SomDeGameOver.ogg");
-						somDaMorte.setBuffer(bufferSomDaMorte);
-						somDaMorte.play();
 			continue;
 		}
 
@@ -123,7 +137,6 @@ int main(int argc, char **argv) {
 		if (cenario.getIniciouKong()) {
 			player.moverY(evento);
 			player.moverX(evento);
-			//cenario.moverBombas();
 		}
 
 		string vidasString = to_string(player.getVidas());

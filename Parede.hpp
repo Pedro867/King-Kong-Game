@@ -29,7 +29,7 @@ Parede::Parede(){
 	parede.resize(2);
 }
 
-inline void Parede::iniciarParede(float larguraColuna, float alturaLinha, int i, sf::RenderWindow *window){
+void Parede::iniciarParede(float larguraColuna, float alturaLinha, int i, sf::RenderWindow *window){
 	this->dimensoesParedes.x = larguraColuna;
 	this->dimensoesParedes.y = alturaLinha;
 
@@ -47,7 +47,7 @@ inline void Parede::iniciarParede(float larguraColuna, float alturaLinha, int i,
 	}
 }
 
-inline void Parede::paredes1a6andar(int i, sf::RenderWindow *window, float larguraColuna, float alturaLinha) {
+void Parede::paredes1a6andar(int i, sf::RenderWindow *window, float larguraColuna, float alturaLinha) {
 	this->parede[0].setSize(dimensoesParedes);
 	this->parede[0].setPosition(larguraColuna * 2, alturaLinha * (9 -i));
 	this->parede[0].setFillColor(sf::Color::Magenta);
@@ -58,7 +58,7 @@ inline void Parede::paredes1a6andar(int i, sf::RenderWindow *window, float largu
 	this->parede[1].setFillColor(sf::Color::Magenta);
 }
 
-inline void Parede::paredes7andar(int i, sf::RenderWindow *window, float larguraColuna, float alturaLinha) {
+void Parede::paredes7andar(int i, sf::RenderWindow *window, float larguraColuna, float alturaLinha) {
 	this->parede[0].setSize(dimensoesParedes);
 	this->parede[0].setPosition(larguraColuna * 3, alturaLinha * (9 -i));
 	this->parede[0].setFillColor(sf::Color::Magenta);
@@ -69,7 +69,7 @@ inline void Parede::paredes7andar(int i, sf::RenderWindow *window, float largura
 	this->parede[1].setFillColor(sf::Color::Magenta);
 }
 
-inline void Parede::paredes8andar(int i, sf::RenderWindow *window, float larguraColuna, float alturaLinha) {
+void Parede::paredes8andar(int i, sf::RenderWindow *window, float larguraColuna, float alturaLinha) {
 	this->parede[0].setSize(dimensoesParedes);
 	this->parede[0].setPosition(larguraColuna * 4, alturaLinha * (9 -i));
 	this->parede[0].setFillColor(sf::Color::Magenta);
@@ -80,16 +80,16 @@ inline void Parede::paredes8andar(int i, sf::RenderWindow *window, float largura
 	this->parede[1].setFillColor(sf::Color::Magenta);
 }
 
-inline void Parede::draw(sf::RenderWindow *window) {
+void Parede::draw(sf::RenderWindow *window) {
 	window->draw(parede[0]);
 	window->draw(parede[1]);
 }
 
-inline sf::RectangleShape Parede::getParede1() {
+sf::RectangleShape Parede::getParede1() {
 	return parede[0];
 }
 
-inline sf::RectangleShape Parede::getParede2() {
+sf::RectangleShape Parede::getParede2() {
 	return parede[1];
 }
 

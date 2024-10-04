@@ -20,7 +20,6 @@ private:
 	float velX, velY;
 	float posX, posY;
 	float escala;
-	float queda = 0;
 	bool bateu, caiu, podeMover, podeSubir, subindo, moveuEsquerda, perdeuVida, perdeu, morreuDeQueda;
 	int gravity, vidas, acabouDePular;
 
@@ -53,7 +52,6 @@ public:
 	float getVelX();
 	int getVidas();
 	float getLayer(float alturaLinha);
-	float getQueda();
 	bool getMorreuDeQueda();
 	bool getPerdeuVida();
 	sf::Sprite getPlayer();
@@ -85,13 +83,11 @@ Player::Player(sf::RenderWindow &window) :
 	bateu = caiu = podeSubir = moveuEsquerda = subindo = perdeuVida = perdeu = morreuDeQueda = false;
 	podeMover = true;
 	acabouDePular = 0;
-	//essa aqui bugou tudo, mas eh necessaria
-	//pro player nao poder mover na escada
 
 	bufferPulo.loadFromFile("assets/SomPulo.ogg");
 	somPulo.setBuffer(bufferPulo);
 	bufferMOrte.loadFromFile("assets/SomMorte.ogg");
-		somMorte.setBuffer(bufferMOrte);
+	somMorte.setBuffer(bufferMOrte);
 }
 
 void Player::moverX(sf::Event evento) {
@@ -140,7 +136,7 @@ void Player::moverX(sf::Event evento) {
 		}
 		player.move(velX, 0);
 	} else {
-		player.move(-velX, 0);
+		player.move(0, gravity);
 	}
 }
 
@@ -151,11 +147,9 @@ void Player::moverY(sf::Event evento) {
 		if (acabouDePular > 0) {
 			player.move(0, gravity / 3);
 			acabouDePular--;
-			queda++;
 
 		} else {
 			player.move(0, gravity);
-			queda++;
 		}
 	}
 	if (podeSubir == true) {
@@ -163,13 +157,11 @@ void Player::moverY(sf::Event evento) {
 			//subindo = true;
 			velY = -gravity * 2;
 			player.move(0, velY);
-			queda = 0;
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
 			//subindo = true;
 			velY = gravity * 2;
 			player.move(0, velY);
-			queda = 0;
 		}
 	}
 	if (podeSubir == false && caiu == false) {
@@ -180,7 +172,6 @@ void Player::moverY(sf::Event evento) {
 			player.move(0, velY);
 			acabouDePular = 10;
 			somPulo.play();
-			queda = 0;
 		}
 	}
 }
@@ -188,7 +179,6 @@ void Player::moverY(sf::Event evento) {
 void Player::reiniciaPlayer(float alturaLinha, float larguraColuna){
 	setLayer(alturaLinha, larguraColuna);
 	morreuDeQueda = false;
-	queda = 0;
 
 }
 
@@ -268,10 +258,6 @@ float Player::getLayer(float alturaLinha) {
 	layer = 10-layer;
 
 	return layer;
-}
-
-float Player::getQueda(){
-	return queda;
 }
 
 bool Player::getMorreuDeQueda(){

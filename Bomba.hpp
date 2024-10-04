@@ -18,7 +18,7 @@ private:
 	float velX, velY;
 	float posX, posY;
 	float escala;
-	bool bateu, escada, cair;
+	bool bateuNoChao, escada, cair, descerHabilitado;
 
 	int qntMaxBombaNormal;
 
@@ -32,14 +32,15 @@ public:
 	void setPosXPosY(float x, float y);
 	void setPodeMover(int valor);
 	void setPodeDescer(int valor);
+	void setDescerHabilitado(bool descerHabilitado);
 	void setLayer(float alturaLinha, float larguraColuna);
 	void descerEscada();
 	float getVelX();
+	float getLayer(float alturaLinha);
 	sf::FloatRect getBombaNormalBounds();
 	sf::Sprite getBombaNormal();
 	bool olhaSePodeSpawnarNormal(float alturaLinha, int qntAtualBombaNormal);
 	void spawnBombaNormal(float alturaLinha, float larguraColuna);
-	float getLayer(float alturaLinha);
 
 };
 
@@ -53,21 +54,22 @@ void Bomba::iniciarBomba(sf::RenderWindow *window){
 	//fim da hitbox
 	bombaNormal.setTexture(texturaBombaNormal);
 	velX = window->getSize().x / 250.0f; //velocidade responsiva
-	velY = window->getSize().y / 200.0f; //imita a gravidade
+	velY = window->getSize().y / 200.0f; //igual a gravidade
 	posX = 600;
 	posY = 550;
 	escala = window->getSize().y / 400.0f; //escala responsiva
 	bombaNormal.setScale(escala, escala);
 	bombaNormal.setOrigin(16, 16); //metade do tamanho do player;
 	bombaNormal.setPosition(posX, posY);
-	bateu = false;
+	bateuNoChao = false;
 	cair = false;
 	escada = false;
+	descerHabilitado = false;
 	qntMaxBombaNormal = 10;
 }
 
 void Bomba::mover() {
-	if (bateu == true) {
+	if (bateuNoChao == true && descerHabilitado == false) {
 		bombaNormal.move(velX, 0);
 		posX = bombaNormal.getPosition().x + velX;
 	} else {
@@ -96,9 +98,9 @@ void Bomba::setPosXPosY(float x, float y) {
 
 void Bomba::setPodeMover(int valor) {
 	if (valor == 1) {
-		bateu = true;
+		bateuNoChao = true;
 	} else if (valor == 0) {
-		bateu = false;
+		bateuNoChao = false;
 	}
 }
 
@@ -111,16 +113,20 @@ void Bomba::setPodeDescer(int valor) {
 	}
 }
 
-inline void Bomba::setLayer(float alturaLinha, float larguraColuna) {
+void Bomba::setDescerHabilitado(bool descerHabilitado) {
+		this->descerHabilitado = descerHabilitado;
+}
+
+void Bomba::setLayer(float alturaLinha, float larguraColuna) {
 	float altura, largura;
-	altura = (alturaLinha * 2) - 13;
-	largura = 7 * larguraColuna - 13;
+	altura = (alturaLinha * 2);
+	largura = 7 * larguraColuna;
 	setPosXPosY(largura, altura);
 }
 
 void Bomba::descerEscada() {
 	if (escada == true) {
-		bateu = false;
+		bateuNoChao = false;
 		mover();
 	} else {
 		escada = false;
@@ -129,6 +135,14 @@ void Bomba::descerEscada() {
 
 float Bomba::getVelX() {
 	return velX;
+}
+
+float Bomba::getLayer(float alturaLinha) {
+	this->posY = bombaNormal.getPosition().y;
+	//Mudei a variável para int, assim fica mais fácil tratar
+	int layer = posY / alturaLinha;
+	layer = 10 - layer;
+	return layer;
 }
 
 sf::FloatRect Bomba::getBombaNormalBounds() {
@@ -153,11 +167,4 @@ void Bomba::spawnBombaNormal(float alturaLinha, float larguraColuna) {
 	setLayer(alturaLinha, larguraColuna);
 }
 
-inline float Bomba::getLayer(float alturaLinha) {
-	this->posY = bombaNormal.getPosition().y;
-	float layer = posY / alturaLinha;
-	return layer;
-}
-
 #endif
-
