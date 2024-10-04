@@ -21,7 +21,7 @@ private:
 	float posX, posY;
 	float escala;
 	bool bateu, caiu, podeMover, podeSubir, subindo, moveuEsquerda, perdeuVida, perdeu, morreuDeQueda, venceu, podeMudarSprite;
-	int gravity, vidas, acabouDePular;
+	int gravity, vidas, acabouDePular, tempo;
 
 	sf::SoundBuffer bufferPulo;
 	sf::Sound somPulo;
@@ -63,8 +63,8 @@ public:
 
 Player::Player(sf::RenderWindow &window) : window(window) {
 	spritesPlayer[0].loadFromFile("assets/playerParado.png");
-	spritesPlayer[1].loadFromFile("assets/playerCorrendoEsquerda.png");
-	spritesPlayer[2].loadFromFile("assets/playerCorrendoDireita.png");
+	spritesPlayer[1].loadFromFile("assets/playerCorrendo1.png");
+	spritesPlayer[2].loadFromFile("assets/playerCorrendo2.png");
 	spritesPlayer[3].loadFromFile("assets/playerSubindoEscada.png");
 	//hitbox
 	hitbox.left = hitbox.top = 0;
@@ -73,10 +73,8 @@ Player::Player(sf::RenderWindow &window) : window(window) {
 	//-----
 	player.setTexture(spritesPlayer[0]);//parado
 	player.setTextureRect(hitbox);
-	velX = 0;
-	velY = 0;
-	posX = 0;
-	posY = 0;
+	velX = velY = posX = posY = 0;
+	tempo = 0;
 	vidas = 3;
 	escala = window.getSize().y / 275.0f; //escala responsiva
 	gravity = window.getSize().y / 600.0f;
@@ -106,7 +104,17 @@ void Player::moverX(sf::Event evento) {
 				hitbox.width = 9;
 				player.setTextureRect(hitbox);
 				player.setOrigin(hitbox.width / 2, hitbox.height / 2);
-				player.setTexture(spritesPlayer[1]);//esquerda
+				//animacao
+				if (tempo % 40 >= 20) {
+					player.setTexture(spritesPlayer[2]);
+				} else {
+					player.setTexture(spritesPlayer[1]);
+				}
+				tempo++;
+				if(tempo == 40){
+					tempo = 0;
+				}
+				player.setScale(-escala, escala);
 				moveuEsquerda = true;
 			}
 
@@ -119,7 +127,16 @@ void Player::moverX(sf::Event evento) {
 				hitbox.width = 9;
 				player.setTextureRect(hitbox);
 				player.setOrigin(hitbox.width / 2, hitbox.height / 2);
-				player.setTexture(spritesPlayer[2]);//direita
+				//animacao
+				if (tempo % 40 >= 20) {
+					player.setTexture(spritesPlayer[2]);
+				} else {
+					player.setTexture(spritesPlayer[1]);
+				}
+				tempo++;
+				if (tempo == 40) {
+					tempo = 0;
+				}
 				moveuEsquerda = false;
 			}
 

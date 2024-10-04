@@ -8,7 +8,7 @@
 #include <iostream>
 #include "Player.hpp"
 #include "Bomba.hpp"
-#include "Cenario.hpp"
+#include "Game.hpp"
 
 void animacaoMorte(sf::RenderWindow& window){
 	sf::RectangleShape tela;
@@ -77,7 +77,7 @@ void veceuJogo(sf::RenderWindow& window){
 int main(int argc, char **argv) {
 
 	setbuf(stdout, NULL);
-	sf::VideoMode video(800, 600);
+	sf::VideoMode video(1200, 600);
 	sf::RenderWindow window(video, "King Kong");
 	sf::Event evento;
 	window.setFramerateLimit(40);
@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
 	//Elementos
 	Player player(window);
 	Princesa princesa(window);
-	Cenario cenario(player, princesa, &window);
+	Game Game(player, princesa, &window);
 
 	bool morreu = false, iniciouJogo = false;
 
@@ -141,7 +141,7 @@ int main(int argc, char **argv) {
 		if(player.getPerdeuVida()){//ve se ele perdeu vida pra rodar a animacao
 			animacaoMorte(window);
 			player.setPerdeuVida(false);
-			cenario.deleteBombas();
+			Game.deleteBombas();
 			continue;
 		}
 		if(player.getVidas() <= 0){//ve se acabou as vidas
@@ -153,15 +153,15 @@ int main(int argc, char **argv) {
 			gameOver(window);
 			continue;
 		}
-		if(cenario.playerVenceu()){
+		if(Game.playerVenceu()){
 			veceuJogo(window);
 			continue;
 		}
 
-		cenario.desenhaCenario(&window); //colisoes dentro dessa funcao
+		Game.desenhaCenario(&window); //colisoes dentro dessa funcao
 
 		//movimenta elementos se o kong tiver iniciado
-		if (cenario.getIniciouKong()) {
+		if (Game.getIniciouKong()) {
 			player.moverY(evento);
 			player.moverX(evento);
 		}

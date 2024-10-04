@@ -8,7 +8,7 @@
 #ifndef CHAO_HPP_
 #define CHAO_HPP_
 
-#include "Cenario.hpp"
+#include "Game.hpp"
 
 class Chao{
 private:
