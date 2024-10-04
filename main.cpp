@@ -38,23 +38,46 @@ void gameOver(sf::RenderWindow& window){
 	sf::Text fimDeJogo;
 	fimDeJogo.setFont(fonte);
 	fimDeJogo.setCharacterSize(100);
-	//fimDeJogo.setOrigin(50, 50);
 	fimDeJogo.setFillColor(sf::Color::White);
-	//esses numeros no position sao os unicos que deixa o texto no meio, nn sei a logica
-	fimDeJogo.setPosition(window.getSize().x/2 - 275, window.getSize().y/2 - 100);
+	//esses numeros no position sao os unicos que deixa o texto no meio da tela
+	fimDeJogo.setPosition(window.getSize().x/2 - (window.getSize().x * 0.23), window.getSize().y/2 - 100);
 	fimDeJogo.setString("Game Over");
 
 	window.clear();
-
 	window.draw(fimDeJogo);
+	window.display();
+}
 
+void veceuJogo(sf::RenderWindow& window){
+	//Texto
+	sf::Font fonte;
+	fonte.loadFromFile("assets/Arial.ttf");
+	sf::Text mensagemVitoria;
+	mensagemVitoria.setFont(fonte);
+	mensagemVitoria.setCharacterSize(100);
+	mensagemVitoria.setFillColor(sf::Color::Red);
+	mensagemVitoria.setPosition((window.getSize().x / 2 - (window.getSize().x * 0.146)), (window.getSize().y / 2 - 100));
+	mensagemVitoria.setString("Vitoria!");
+
+	//Quadrado na tela
+	sf::RectangleShape tela;
+	sf::Vector2f tamanho(window.getSize().x, window.getSize().y);
+	tela.setSize(tamanho);
+	sf::Vector2f origem(tamanho.x / 2, tamanho.y / 2);
+	tela.setOrigin(origem);
+	tela.setPosition(window.getSize().x / 2, window.getSize().y / 2);
+	tela.setFillColor(sf::Color::Magenta);
+
+	window.clear();
+	window.draw(tela);
+	window.draw(mensagemVitoria);
 	window.display();
 }
 
 int main(int argc, char **argv) {
 
 	setbuf(stdout, NULL);
-	sf::VideoMode video(1000, 600);
+	sf::VideoMode video(1200, 600);
 	sf::RenderWindow window(video, "King Kong");
 	sf::Event evento;
 	window.setFramerateLimit(40);
@@ -128,6 +151,10 @@ int main(int argc, char **argv) {
 				somDaMorte.play();
 			}
 			gameOver(window);
+			continue;
+		}
+		if(cenario.playerVenceu()){
+			veceuJogo(window);
 			continue;
 		}
 

@@ -1,14 +1,7 @@
-/*
- * Princesa.hpp
- *
- *  Created on: 29 de set. de 2024
- *      Author: Rafael
- */
-
 #ifndef PRINCESA_HPP_
 #define PRINCESA_HPP_
 
-class Princesa{
+class Princesa {
 private:
 
 	sf::IntRect hitbox;
@@ -25,7 +18,7 @@ private:
 public:
 
 	Princesa(sf::RenderWindow &window);
-	void AnimacaoPrincesa(float larguraColuna);
+	void animacaoPrincesa(float larguraColuna);
 	void rota1(float larguraColuna);
 	void rota2(float larguraColuna);
 
@@ -50,7 +43,7 @@ Princesa::Princesa(sf::RenderWindow &window) : window(window) {
 	posY = 0;
 }
 
-void Princesa::AnimacaoPrincesa(float larguraColuna) {
+void Princesa::animacaoPrincesa(float larguraColuna) {
 
 	if(concluiuRota1 == false)
 	rota1(larguraColuna);
@@ -85,7 +78,7 @@ void Princesa::rota2(float larguraColuna) {
 	}
 }
 
-inline sf::Sprite Princesa::getPrincesa() {
+sf::Sprite Princesa::getPrincesa() {
 	return princesa;
 }
 

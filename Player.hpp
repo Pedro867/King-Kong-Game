@@ -20,7 +20,7 @@ private:
 	float velX, velY;
 	float posX, posY;
 	float escala;
-	bool bateu, caiu, podeMover, podeSubir, subindo, moveuEsquerda, perdeuVida, perdeu, morreuDeQueda;
+	bool bateu, caiu, podeMover, podeSubir, subindo, moveuEsquerda, perdeuVida, perdeu, morreuDeQueda, venceu;
 	int gravity, vidas, acabouDePular;
 
 	sf::SoundBuffer bufferPulo;
@@ -46,6 +46,7 @@ public:
 	void setLayer(float alturaLinha, float larguraColuna);
 	void setPosXPosY(float x, float y);
 	void setPerdeuVida(bool valor);
+	void setVenceu(bool valor);
 
 	//getters
 	float getVelY();
@@ -80,7 +81,7 @@ Player::Player(sf::RenderWindow &window) :
 	player.setScale(escala, escala);
 	player.setOrigin(hitbox.width / 2, hitbox.height / 2); //metade do tamanho do player;
 	player.setPosition(posX, posY);
-	bateu = caiu = podeSubir = moveuEsquerda = subindo = perdeuVida = perdeu = morreuDeQueda = false;
+	bateu = caiu = podeSubir = moveuEsquerda = subindo = perdeuVida = perdeu = morreuDeQueda = venceu = false;
 	podeMover = true;
 	acabouDePular = 0;
 
@@ -220,7 +221,7 @@ void Player::setVelX(float vx) {
 
 void Player::setLayer(float alturaLinha, float larguraColuna) {
 	float altura, largura;
-	altura = (alturaLinha * 7) - 16;
+	altura = (alturaLinha * 2) - 16;
 	largura = 20 * larguraColuna;
 	setPosXPosY(largura, altura);
 }
@@ -234,6 +235,10 @@ void Player::setPosXPosY(float x, float y) {
 
 void Player::setPerdeuVida(bool valor){
 	perdeuVida = valor;
+}
+
+void Player::setVenceu(bool valor) {
+	venceu = valor;
 }
 
 float Player::getVelY() {

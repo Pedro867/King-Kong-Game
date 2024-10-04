@@ -59,6 +59,7 @@ public:
 	void bombaUpdate(vector<int> bombaBateuNoChao,
 			vector<int> bombaBateuNaParede, vector<int> bombaBateuNaEscada);
 	void deleteBombas();
+	bool playerVenceu();
 
 	bool getIniciouKong();
 	int olhaAndarBomba(int cont);
@@ -73,7 +74,7 @@ Cenario::Cenario(Player &player, Princesa &princesa, sf::RenderWindow *window) :
 
 	float escalaKong = window->getSize().y / 280.f; //escala kong responsiva
 	kong.iniciaKong(larguraColuna, alturaLinha, escalaKong);
-	iniciouKong = false; //mudar para testar mais rápido
+	iniciouKong = true; //mudar para testar mais rápido
 
 	chao.resize(10); //Se isso nao acontecer o jogo crasha
 	buraco.resize(10); //queria que fosse 6....
@@ -151,7 +152,7 @@ void Cenario::desenhaCenario(sf::RenderWindow *window) {
 		bombaUpdate(bombaBateuNoChao, bombaBateuNaParede, bombaBateuNaEscada);
 
 		kong.AnimacaoKong();
-		princesa.AnimacaoPrincesa(larguraColuna);
+		princesa.animacaoPrincesa(larguraColuna);
 		desenhaElementos(window);
 	}
 } //fim func
@@ -410,10 +411,20 @@ bool Cenario::getIniciouKong() {
 }
 
 void Cenario::deleteBombas() {
+	//Deletar bombas quando player morre
 	for (int i = 0; i < qntAtualBombaNormal; ++i) {
 		bomba.pop_back();
 	}
 	qntAtualBombaNormal = 0;
+}
+
+bool Cenario::playerVenceu() {
+	sf::FloatRect hitboxPlayer = player.bounds();
+	sf::FloatRect hitboxPrincesa = princesa.getPrincesa().getGlobalBounds();
+	if(hitboxPlayer.intersects(hitboxPrincesa)){
+		return true;
+	}
+	return false;
 }
 
 int Cenario::olhaAndarBomba(int cont) {
