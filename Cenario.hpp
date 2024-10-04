@@ -212,8 +212,8 @@ void Cenario::playerTestaColisao(int *playerBateuNoChao,
 	hitboxBuraco2 = buraco[i].getBuraco2().getGlobalBounds();
 	hitboxParede1 = paredes[i].getParede1().getGlobalBounds();
 	hitboxParede2 = paredes[i].getParede2().getGlobalBounds();
-	hitboxEscada1 = escada[i].getEscada1().getGlobalBounds();
-	hitboxEscada2 = escada[i].getEscada2().getGlobalBounds();
+	hitboxEscada1 = escada[i].getHitbox1().getGlobalBounds();
+	hitboxEscada2 = escada[i].getHitbox2().getGlobalBounds();
 
 	if (hitboxPlayer.intersects(hitboxChao1)
 			|| hitboxPlayer.intersects(hitboxChao2)

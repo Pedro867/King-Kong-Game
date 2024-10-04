@@ -77,7 +77,7 @@ void veceuJogo(sf::RenderWindow& window){
 int main(int argc, char **argv) {
 
 	setbuf(stdout, NULL);
-	sf::VideoMode video(1200, 600);
+	sf::VideoMode video(800, 600);
 	sf::RenderWindow window(video, "King Kong");
 	sf::Event evento;
 	window.setFramerateLimit(40);

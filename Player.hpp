@@ -15,12 +15,12 @@ private:
 
 	sf::IntRect hitbox;
 	sf::Sprite player;
-	sf::Texture texturePlayer;
+	sf::Texture spritesPlayer[4];
 	sf::RenderWindow &window;
 	float velX, velY;
 	float posX, posY;
 	float escala;
-	bool bateu, caiu, podeMover, podeSubir, subindo, moveuEsquerda, perdeuVida, perdeu, morreuDeQueda, venceu;
+	bool bateu, caiu, podeMover, podeSubir, subindo, moveuEsquerda, perdeuVida, perdeu, morreuDeQueda, venceu, podeMudarSprite;
 	int gravity, vidas, acabouDePular;
 
 	sf::SoundBuffer bufferPulo;
@@ -61,15 +61,17 @@ public:
 	void perdeuVidas(float alturaLinha, float larguraColuna);
 };
 
-Player::Player(sf::RenderWindow &window) :
-		window(window) {
-	texturePlayer.loadFromFile("assets/playerParado.png");
+Player::Player(sf::RenderWindow &window) : window(window) {
+	spritesPlayer[0].loadFromFile("assets/playerParado.png");
+	spritesPlayer[1].loadFromFile("assets/playerCorrendoEsquerda.png");
+	spritesPlayer[2].loadFromFile("assets/playerCorrendoDireita.png");
+	spritesPlayer[3].loadFromFile("assets/playerSubindoEscada.png");
 	//hitbox
 	hitbox.left = hitbox.top = 0;
 	hitbox.height = 16;
 	hitbox.width = 7;
 	//-----
-	player.setTexture(texturePlayer);
+	player.setTexture(spritesPlayer[0]);//parado
 	player.setTextureRect(hitbox);
 	velX = 0;
 	velY = 0;
@@ -82,7 +84,7 @@ Player::Player(sf::RenderWindow &window) :
 	player.setOrigin(hitbox.width / 2, hitbox.height / 2); //metade do tamanho do player;
 	player.setPosition(posX, posY);
 	bateu = caiu = podeSubir = moveuEsquerda = subindo = perdeuVida = perdeu = morreuDeQueda = venceu = false;
-	podeMover = true;
+	podeMover = podeMudarSprite = true;
 	acabouDePular = 0;
 
 	bufferPulo.loadFromFile("assets/SomPulo.ogg");
@@ -100,33 +102,36 @@ void Player::moverX(sf::Event evento) {
 			velX = -5;
 			posX += velX;
 
-			hitbox.width = 9;
-			player.setTextureRect(hitbox);
-
-			player.setOrigin(hitbox.width / 2, hitbox.height / 2);
-			texturePlayer.loadFromFile("assets/playerCorrendoEsquerda.png");
-			moveuEsquerda = true;
+			if (podeMudarSprite) {
+				hitbox.width = 9;
+				player.setTextureRect(hitbox);
+				player.setOrigin(hitbox.width / 2, hitbox.height / 2);
+				player.setTexture(spritesPlayer[1]);//esquerda
+				moveuEsquerda = true;
+			}
 
 		} else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
 
 			velX = 5;
 			posX += -velX;
 
-			hitbox.width = 9;
-			player.setTextureRect(hitbox);
-
-			player.setOrigin(hitbox.width / 2, hitbox.height / 2);
-			texturePlayer.loadFromFile("assets/playerCorrendoDireita.png");
-			moveuEsquerda = false;
+			if (podeMudarSprite) {
+				hitbox.width = 9;
+				player.setTextureRect(hitbox);
+				player.setOrigin(hitbox.width / 2, hitbox.height / 2);
+				player.setTexture(spritesPlayer[2]);//direita
+				moveuEsquerda = false;
+			}
 
 		} else {
 			velX = 0;
 
-			hitbox.width = 7;
-			player.setTextureRect(hitbox);
-
-			player.setOrigin(hitbox.width / 2, hitbox.height / 2);
-			texturePlayer.loadFromFile("assets/playerParado.png");
+			if (podeMudarSprite) {
+				hitbox.width = 7;
+				player.setTextureRect(hitbox);
+				player.setOrigin(hitbox.width / 2, hitbox.height / 2);
+				player.setTexture(spritesPlayer[0]); //parado
+			}
 
 			if (moveuEsquerda) {
 				player.setScale(-escala, escala);
@@ -135,7 +140,10 @@ void Player::moverX(sf::Event evento) {
 			}
 
 		}
-		player.move(velX, 0);
+		if (subindo == false) {
+			podeMudarSprite = true;
+			player.move(velX, 0);
+		}
 	} else {
 		player.move(0, gravity);
 	}
@@ -144,7 +152,7 @@ void Player::moverX(sf::Event evento) {
 void Player::moverY(sf::Event evento) {
 
 	if (caiu == true && podeSubir == false) {
-		//subindo = false;
+		subindo = false;
 		if (acabouDePular > 0) {
 			player.move(0, gravity / 3);
 			acabouDePular--;
@@ -155,18 +163,27 @@ void Player::moverY(sf::Event evento) {
 	}
 	if (podeSubir == true) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-			//subindo = true;
+			subindo = true;
 			velY = -gravity * 2;
 			player.move(0, velY);
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-			//subindo = true;
+			subindo = true;
 			velY = gravity * 2;
 			player.move(0, velY);
 		}
+		if (subindo == true) {
+			hitbox.width = 10;
+			player.setTextureRect(hitbox);
+			player.setOrigin(hitbox.width / 2, hitbox.height / 2);
+			player.setTexture(spritesPlayer[3]);//escada
+			podeMudarSprite = false;
+		} else {
+			podeMudarSprite = true;
+		}
 	}
-	if (podeSubir == false && caiu == false) {
-		//subindo = false;
+	if (caiu == false && podeSubir == false) {
+		subindo = false;
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
 			velY = window.getSize().y / 30.0f; //pulo responsivo
 			velY = -velY;
@@ -221,7 +238,7 @@ void Player::setVelX(float vx) {
 
 void Player::setLayer(float alturaLinha, float larguraColuna) {
 	float altura, largura;
-	altura = (alturaLinha * 2) - 16;
+	altura = (alturaLinha * 7) - 16;
 	largura = 20 * larguraColuna;
 	setPosXPosY(largura, altura);
 }
@@ -260,7 +277,7 @@ bool Player::getPerdeuVida() {
 float Player::getLayer(float alturaLinha) {
 	this->posY = player.getPosition().y;
 	float layer = posY / alturaLinha;
-	layer = 10-layer;
+	layer = 10 - layer;
 
 	return layer;
 }
