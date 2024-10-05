@@ -42,6 +42,7 @@ public:
 	bool olhaSePodeSpawnarNormal(float alturaLinha, int qntAtualBombaNormal);
 	void spawnBombaNormal(float alturaLinha, float larguraColuna);
 
+
 };
 
 void Bomba::iniciarBomba(sf::RenderWindow *window){
@@ -66,6 +67,17 @@ void Bomba::iniciarBomba(sf::RenderWindow *window){
 	escada = false;
 	descerHabilitado = false;
 	qntMaxBombaNormal = 10;
+	//plano de rota
+	std::vector<int> Descer;
+	Descer.resize(17);
+	for (int i = 0; i < 9; ++i) {
+		if (i % 2 == 0) {
+					 rand()%2
+				}
+				if (i % 2 == 1) {
+					//duas escadas
+				}
+	}
 }
 
 void Bomba::mover() {
