@@ -196,9 +196,9 @@ void Game::desenhaElementos(sf::RenderWindow *window) {
 	}
 }
 
-void Game::playerTestaColisao(int *playerBateuNoChao,
-		int *playerBateuNaParede, int *PlayerBateuNaEscada,
-		int *playerCaiuNoBuraco, int *playerBateuNaBomba, int i) {
+void Game::playerTestaColisao(int *playerBateuNoChao, int *playerBateuNaParede,
+		int *PlayerBateuNaEscada, int *playerCaiuNoBuraco,
+		int *playerBateuNaBomba, int i) {
 
 	sf::FloatRect hitboxChao1, hitboxChao2, hitboxChao3, hitboxBuraco1,
 			hitboxBuraco2, hitboxParede1, hitboxParede2, hitboxEscada1,
@@ -214,6 +214,16 @@ void Game::playerTestaColisao(int *playerBateuNoChao,
 	hitboxParede2 = paredes[i].getParede2().getGlobalBounds();
 	hitboxEscada1 = escada[i].getHitbox1().getGlobalBounds();
 	hitboxEscada2 = escada[i].getHitbox2().getGlobalBounds();
+	hitboxChao1.width = hitboxChao1.width - 5;
+	hitboxChao2.width = hitboxChao2.width - 5;
+	hitboxChao3.width = hitboxChao3.width - 5;
+	hitboxChao1.left = hitboxChao1.left + 3;
+	hitboxChao2.left = hitboxChao2.left + 3;
+	hitboxChao3.left = hitboxChao3.left + 3;
+	hitboxBuraco1.left = hitboxBuraco1.left + 15;
+	hitboxBuraco2.left = hitboxBuraco2.left + 15;
+	hitboxBuraco1.width = hitboxBuraco1.width - 22.5;
+	hitboxBuraco2.width = hitboxBuraco2.width - 22.5;
 
 	if (hitboxPlayer.intersects(hitboxChao1)
 			|| hitboxPlayer.intersects(hitboxChao2)
@@ -359,7 +369,7 @@ void Game::playerUpdate(int playerBateuNoChao, int playerBateuNaParede,
 	}
 
 	//cairno buraco
-	if(playerCaiuNoBuraco > 0 && playerBateuNoChao == 0){
+	if (playerCaiuNoBuraco > 0 && playerBateuNoChao == 0) {
 		player.setMorreuDeQueda(true);
 		player.setPodeMover(0);
 	}
@@ -421,7 +431,7 @@ void Game::deleteBombas() {
 bool Game::playerVenceu() {
 	sf::FloatRect hitboxPlayer = player.bounds();
 	sf::FloatRect hitboxPrincesa = princesa.getPrincesa().getGlobalBounds();
-	if(hitboxPlayer.intersects(hitboxPrincesa)){
+	if (hitboxPlayer.intersects(hitboxPrincesa)) {
 		return true;
 	}
 	return false;
@@ -431,7 +441,7 @@ int Game::olhaAndarBomba(int cont) {
 	int andar;
 	andar = bomba[cont].getLayer(alturaLinha); //pega o andar da bomba
 	if (andar > 0 && andar < 9) {
-		if (andar == 2){
+		if (andar == 2) {
 			return 3; //primeiro andar
 		}
 		if (andar % 2 == 0) {
