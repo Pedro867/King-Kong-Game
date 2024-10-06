@@ -272,6 +272,8 @@ void Game::bombasTestaColisao(vector<int> &bombaBateuNoChao,
 		int i) {
 	srand(time(NULL));
 
+	int formaDeDescer;
+
 	sf::FloatRect hitboxChao1;
 	sf::FloatRect hitboxChao2;
 	sf::FloatRect hitboxChao3;
@@ -283,22 +285,22 @@ void Game::bombasTestaColisao(vector<int> &bombaBateuNoChao,
 	sf::FloatRect hitboxBuraco1;
 	sf::FloatRect hitboxBuraco2;
 	//sf::FloatRect meio1, meio2;
-	hitboxChao1 = chao[i].getChao1().getGlobalBounds();
-	hitboxChao2 = chao[i].getChao2().getGlobalBounds();
-	hitboxChao3 = chao[i].getChao3().getGlobalBounds();
-	hitboxParede1 = paredes[i].getParede1().getGlobalBounds();
-	hitboxParede2 = paredes[i].getParede2().getGlobalBounds();
-	hitboxEscada1 = escada[i].getEscada1().getGlobalBounds();
-	hitboxEscada2 = escada[i].getEscada2().getGlobalBounds();
-	hitboxEscada1.height = hitboxEscada1.height - 30;
-	hitboxEscada2.height = hitboxEscada2.height - 30;
-	hitboxBuraco1 = buraco[i].getBuraco1().getGlobalBounds();
-	hitboxBuraco2 = buraco[i].getBuraco2().getGlobalBounds();
 
 	for (int cont = 0; cont <= qntAtualBombaNormal; cont++) {
 
+		hitboxChao1 = chao[i].getChao1().getGlobalBounds();
+		hitboxChao2 = chao[i].getChao2().getGlobalBounds();
+		hitboxChao3 = chao[i].getChao3().getGlobalBounds();
+		hitboxParede1 = paredes[i].getParede1().getGlobalBounds();
+		hitboxParede2 = paredes[i].getParede2().getGlobalBounds();
+		hitboxEscada1 = escada[i].getEscada1().getGlobalBounds();
+		hitboxEscada2 = escada[i].getEscada2().getGlobalBounds();
+		hitboxEscada1.height = hitboxEscada1.height - 30;
+		hitboxEscada2.height = hitboxEscada2.height - 30;
+		hitboxBuraco1 = buraco[i].getBuraco1().getGlobalBounds();
+		hitboxBuraco2 = buraco[i].getBuraco2().getGlobalBounds();
+
 		int bombaLayer = bomba[cont].getLayer(alturaLinha);
-		int formaDeDescer;
 
 		sf::FloatRect hitboxBomba = bomba[cont].getBombaNormalBounds();
 
