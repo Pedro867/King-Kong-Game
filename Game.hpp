@@ -23,12 +23,14 @@ private:
 	std::vector<Parede> paredes;
 	std::vector<Escada> escada;
 
-	//fazer tudo isso em uma outra funcao para nao precisar declarar dnv quando colocar ele la embaixo no mid game
+	//elementos
 	bool iniciouKong;
 	Player &player;
 	std::vector<Bomba> bomba;
 	Kong kong;
 	Princesa &princesa;
+
+
 	float alturaLinha, larguraColuna; //determina a altura de cada linha (tamanho y da janela / num de linhas)
 
 	int qntAtualBombaNormal;
@@ -36,6 +38,7 @@ private:
 public:
 	//Declaracao das funcoes
 	Game(Player &player, Princesa &princesa, sf::RenderWindow *window);
+	void iniciaElementos(sf::RenderWindow *window);
 
 	void desenhaCenario(sf::RenderWindow *window);
 	void desenhaAndar1ao6(int i, sf::RenderWindow *window, Chao *chao,
@@ -90,6 +93,14 @@ Game::Game(Player &player, Princesa &princesa, sf::RenderWindow *window) :
 	kong.iniciaKong(larguraColuna, alturaLinha, escalaKong);
 	iniciouKong = true; //mudar para testar mais rápido
 
+	iniciaElementos(window);
+
+	player.setLayer(alturaLinha, larguraColuna);
+	princesa.setLayer(alturaLinha, larguraColuna);
+	qntAtualBombaNormal = 0;
+}
+
+void Game::iniciaElementos(sf::RenderWindow *window){
 	chao.resize(10); //Se isso nao acontecer o jogo crasha
 	buraco.resize(10); //queria que fosse 6....
 	paredes.resize(16); // Um elemento por linha
@@ -116,10 +127,6 @@ Game::Game(Player &player, Princesa &princesa, sf::RenderWindow *window) :
 		bomba[i].iniciarBomba(window);
 		bomba[i].setLayer(alturaLinha,larguraColuna);
 	}
-
-	player.setLayer(alturaLinha, larguraColuna);
-	princesa.setLayer(alturaLinha, larguraColuna);
-	qntAtualBombaNormal = 0;
 }
 
 void Game::desenhaCenario(sf::RenderWindow *window) {
@@ -392,9 +399,9 @@ void Game::bombaUpdate(vector<int> bombaBateuNoChao,
 				bomba[qntAtualBombaNormal].olhaSePodeSpawnarNormal(alturaLinha, qntAtualBombaNormal); //so spawna se a ultima bomba nao estiver mais no ultimo andar
 
 		if (podeSpawnarNormal == true) {
-				bomba[qntAtualBombaNormal + 1].spawnBombaNormal(alturaLinha, larguraColuna);
-				this->qntAtualBombaNormal++;
-			}
+			bomba[qntAtualBombaNormal + 1].spawnBombaNormal(alturaLinha, larguraColuna);
+			this->qntAtualBombaNormal++;
+		}
 	}
 }
 
