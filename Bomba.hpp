@@ -35,17 +35,21 @@ public:
 	//setters
 	void setPosXPosY(float x, float y);
 	void setPodeMover(int valor);
-	void setPodeDescer(int valor, float alturaLinha);
+	void setPodeDescerEscada(int valor);
+	void setPodeDescerBuraco(int valor);
 	void setDescerHabilitado(bool descerHabilitado);
 	void setSorteouFormaDeDescer(bool sorteou);
 	void setLayer(float alturaLinha, float larguraColuna);
-	void descerEscada(float alturaLinha);
+
+	void descerEscada();
+	void descerBuraco();
 
 	//getters
 	float getVelX();
 	int getLayer(float alturaLinha);
 	sf::FloatRect getBombaNormalBounds();
 	sf::Sprite getBombaNormal();
+	int getFormaDeDescer();
 
 	int sortearFormaDeDescer(int layer, int cont);
 	bool olhaSePodeSpawnarNormal(float alturaLinha, int qntAtualBombaNormal);
@@ -118,12 +122,15 @@ void Bomba::setPodeMover(int valor) {
 	}
 }
 
-void Bomba::setPodeDescer(int valor, float alturaLinha) {
+void Bomba::setPodeDescerEscada(int valor) {
 	if (valor == 1) {
-		escada = true;
-		descerEscada(alturaLinha);
-	} else if (valor == 0) {
-		escada = false;
+		descerEscada();
+	}
+}
+
+void Bomba::setPodeDescerBuraco(int valor) {
+	if (valor == 1) {
+		descerBuraco();
 	}
 }
 
@@ -142,23 +149,21 @@ void Bomba::setLayer(float alturaLinha, float larguraColuna) {
 	setPosXPosY(largura, altura);
 }
 
-void Bomba::descerEscada(float alturaLinha) {
+void Bomba::descerEscada() {
 
 	if(bateuNoChao == true){
-		descendo = true;
-		moverY();
+		setDescerHabilitado(true);
+		this->sorteouFormaDeDescer = true;
 	}else{
-		descendo = false;
+		setDescerHabilitado(false);
 		this->sorteouFormaDeDescer = false;
 	}
+}
 
-//	if(desceu == false){
-//		//this->sorteouFormaDeDescer = true;
-//		bombaNormal.move(0, velY);
-//		desceu = false;
-//	}else{
-//		desceu = true;
-//	}
+void Bomba::descerBuraco() {
+
+	setDescerHabilitado(false);
+	this->sorteouFormaDeDescer = false;
 }
 
 float Bomba::getVelX() {
@@ -181,6 +186,10 @@ sf::Sprite Bomba::getBombaNormal() {
 	return bombaNormal;
 }
 
+int Bomba::getFormaDeDescer(){
+	return formaDeDescer;
+}
+
 int Bomba::sortearFormaDeDescer(int layer, int cont){
 
 	if(sorteouFormaDeDescer == false){
@@ -188,23 +197,21 @@ int Bomba::sortearFormaDeDescer(int layer, int cont){
 		if (layer == 1) {
 			this->formaDeDescer = (rand() % 2);
 			this->sorteouFormaDeDescer = true;
-			//cout << formaDeDescer;
 			//Para esse andar, existem 2 possibilidades: sumir do mapa ou bater na parede e voltar
 		}
 		if (layer == 2 || layer == 4 || layer == 6 || layer == 8) {
 			this->formaDeDescer = (rand() % 3);
 			this->sorteouFormaDeDescer = true;
-			//cout << formaDeDescer;
 			//Para esses andares, existem 2 formas de descer (as duas escadas), o terceiro numero significa que ela seguira reto
 		}
 		if(layer == 3 || layer == 5 || layer == 7){
 			this->formaDeDescer = (rand() % 4);
 			this->sorteouFormaDeDescer = true;
-			//cout << formaDeDescer;
 			//Para esses andares, existem 3 formas de descer (a escada e os dois buracos), o quarto numero significa que ela seguira reto
 		}
 		cout<< "bomba " << cont << ": ";
-		cout << formaDeDescer << endl;
+		cout << formaDeDescer;
+		cout << " - " << layer << endl;
 	}
 	return formaDeDescer;
 }
