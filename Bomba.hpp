@@ -18,48 +18,42 @@ private:
 	float velX, velY;
 	float posX, posY;
 	float escala;
-	bool bateuNoChao, escada, cair, descerHabilitado, descendo;
-	bool sorteouFormaDeDescer;
-	int formaDeDescer;
+	bool bateuNoChao, escada, cair, descerHabilitado;
+
 
 	int qntMaxBombaNormal;
 
 public:
-
+	std::vector<int> Descer;
+		int random;
 	void iniciarBomba(sf::RenderWindow *window);
 	void mover();
 	void moverY();
 	void moverX();
 	void inverteVelX();
-
-	//setters
 	void setPosXPosY(float x, float y);
 	void setPodeMover(int valor);
-	void setPodeDescer(int valor, float alturaLinha);
+	void setPodeDescer(int valor);
 	void setDescerHabilitado(bool descerHabilitado);
-	void setSorteouFormaDeDescer(bool sorteou);
 	void setLayer(float alturaLinha, float larguraColuna);
-	void descerEscada(float alturaLinha);
-
-	//getters
+	void descerEscada();
 	float getVelX();
-	int getLayer(float alturaLinha);
+	float getLayer(float alturaLinha);
 	sf::FloatRect getBombaNormalBounds();
 	sf::Sprite getBombaNormal();
-
-	int sortearFormaDeDescer(int layer, int cont);
 	bool olhaSePodeSpawnarNormal(float alturaLinha, int qntAtualBombaNormal);
 	void spawnBombaNormal(float alturaLinha, float larguraColuna);
 
-
 };
 
-void Bomba::iniciarBomba(sf::RenderWindow *window){
+
+void Bomba::iniciarBomba(sf::RenderWindow *window) {
 	texturaBombaNormal.loadFromFile("assets/bomba.png");
+	srand(time(NULL));
 	//hitbox
 	hitbox.left = 0;
 	hitbox.top = 0;
-	hitbox.height = 11.5;//menorque 13 pra melhorar a gameplay
+	hitbox.height = 11.5; //menorque 13 pra melhorar a gameplay
 	hitbox.width = 13;
 	//fim da hitbox
 	bombaNormal.setTexture(texturaBombaNormal);
@@ -75,9 +69,26 @@ void Bomba::iniciarBomba(sf::RenderWindow *window){
 	cair = false;
 	escada = false;
 	descerHabilitado = false;
-	descendo = false;
 	qntMaxBombaNormal = 10;
-	sorteouFormaDeDescer = false;
+	//plano de rota
+
+	Descer.resize(9);
+	for (int i = 0; i < 9; ++i) {
+
+		if (i % 2 == 0) {
+			random = rand()%3;
+			Descer[i] = random;
+
+		}
+		if (i % 2 == 1) {
+			random = rand()%1;
+			Descer[i] = random;
+		}
+
+
+	}
+	cout<<Descer[0];
+
 }
 
 void Bomba::mover() {
@@ -95,9 +106,7 @@ void Bomba::moverY() {
 }
 
 void Bomba::moverX() {
-	if(descendo == false){
-		bombaNormal.move(velX, 0);
-	}
+	bombaNormal.move(velX, 0);
 }
 
 void Bomba::inverteVelX() {
@@ -118,10 +127,10 @@ void Bomba::setPodeMover(int valor) {
 	}
 }
 
-void Bomba::setPodeDescer(int valor, float alturaLinha) {
+void Bomba::setPodeDescer(int valor) {
 	if (valor == 1) {
 		escada = true;
-		descerEscada(alturaLinha);
+		descerEscada();
 	} else if (valor == 0) {
 		escada = false;
 	}
@@ -131,45 +140,31 @@ void Bomba::setDescerHabilitado(bool descerHabilitado) {
 	this->descerHabilitado = descerHabilitado;
 }
 
-void Bomba::setSorteouFormaDeDescer(bool sorteou){
-	this->sorteouFormaDeDescer = sorteou;
-}
-
 void Bomba::setLayer(float alturaLinha, float larguraColuna) {
 	float altura, largura;
-	altura = (alturaLinha * 2);
-	largura = 10 * larguraColuna;
+	altura = (alturaLinha * 2)+6;
+	largura = 12 * larguraColuna;
 	setPosXPosY(largura, altura);
 }
 
-void Bomba::descerEscada(float alturaLinha) {
-
-	if(bateuNoChao == true){
-		descendo = true;
-		moverY();
-	}else{
-		descendo = false;
-		this->sorteouFormaDeDescer = false;
+void Bomba::descerEscada() {
+	if (escada == true) {
+		bateuNoChao = false;
+		mover();
+	} else {
+		escada = false;
 	}
-
-//	if(desceu == false){
-//		//this->sorteouFormaDeDescer = true;
-//		bombaNormal.move(0, velY);
-//		desceu = false;
-//	}else{
-//		desceu = true;
-//	}
 }
 
 float Bomba::getVelX() {
 	return velX;
 }
 
-int Bomba::getLayer(float alturaLinha) {
+float Bomba::getLayer(float alturaLinha) {
 	this->posY = bombaNormal.getPosition().y;
+	//Mudei a variável para int, assim fica mais fácil tratar
 	int layer = posY / alturaLinha;
 	layer = 10 - layer;
-
 	return layer;
 }
 
@@ -181,39 +176,11 @@ sf::Sprite Bomba::getBombaNormal() {
 	return bombaNormal;
 }
 
-int Bomba::sortearFormaDeDescer(int layer, int cont){
-
-	if(sorteouFormaDeDescer == false){
-		//desceu = false;
-		if (layer == 1) {
-			this->formaDeDescer = (rand() % 2);
-			this->sorteouFormaDeDescer = true;
-			//cout << formaDeDescer;
-			//Para esse andar, existem 2 possibilidades: sumir do mapa ou bater na parede e voltar
-		}
-		if (layer == 2 || layer == 4 || layer == 6 || layer == 8) {
-			this->formaDeDescer = (rand() % 3);
-			this->sorteouFormaDeDescer = true;
-			//cout << formaDeDescer;
-			//Para esses andares, existem 2 formas de descer (as duas escadas), o terceiro numero significa que ela seguira reto
-		}
-		if(layer == 3 || layer == 5 || layer == 7){
-			this->formaDeDescer = (rand() % 4);
-			this->sorteouFormaDeDescer = true;
-			//cout << formaDeDescer;
-			//Para esses andares, existem 3 formas de descer (a escada e os dois buracos), o quarto numero significa que ela seguira reto
-		}
-		cout<< "bomba " << cont << ": ";
-		cout << formaDeDescer << endl;
-	}
-	return formaDeDescer;
-}
-
-bool Bomba::olhaSePodeSpawnarNormal(float alturaLinha, int qntAtualBombaNormal) {
-	if((posY > alturaLinha) && (posY < (3 * alturaLinha))){
+bool Bomba::olhaSePodeSpawnarNormal(float alturaLinha,
+		int qntAtualBombaNormal) {
+	if ((posY > alturaLinha) && (posY < (3 * alturaLinha))) {
 		return false;
-	}
-	else if(qntAtualBombaNormal < qntMaxBombaNormal){
+	} else if (qntAtualBombaNormal < qntMaxBombaNormal) {
 		return true;
 	}
 	return false;
