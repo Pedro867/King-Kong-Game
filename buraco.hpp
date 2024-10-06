@@ -13,6 +13,7 @@ private:
 
 	vector<sf::Sprite> buraco;
 	sf::FloatRect hitboxBuraco;
+	sf::FloatRect hitboxMorte;
 	sf::Vector2<float> dimensoesBuraco;
 	sf::Texture texturaBuraco;
 
