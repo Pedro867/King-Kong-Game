@@ -49,13 +49,13 @@ public:
 
 
 	void playerTestaColisao(int *playerBateuNoChao, int *playerBateuNaParede,
-			int *PlayerBateuNaEscada, int *playerCaiuNoBuraco,
+			int *playerPodeSubir, int *playerPodeDescer, int *playerCaiuNoBuraco,
 			int *playerBateuNaBomba, int i);
 	void bombasTestaColisao(vector<int> &bombaBateuNoChao,
 			vector<int> &bombaBateuNaParede, vector<int> &BombaBateuNaEscada, vector<int> &bombaBateuNoBuraco,
 			int i);
 	void playerUpdate(int playerBateuNoChao, int playerBateuNaParede,
-			int playerBateuNaEscada, int playerCaiuNoBuraco,
+			int playerPodeSubir, int playerPodeDescer, int playerCaiuNoBuraco,
 			bool playerBateuNaBomba);
 	void bombaUpdate(vector<int> bombaBateuNoChao,
 			vector<int> bombaBateuNaParede, vector<int> bombaBateuNaEscada, vector<int> bombaBateuNoBuraco);
@@ -117,9 +117,9 @@ Game::Game(Player &player, Princesa &princesa, sf::RenderWindow *window) :
 void Game::desenhaCenario(sf::RenderWindow *window) {
 
 	int playerBateuNoChao, playerBateuNaBomba, playerCaiuNoBuraco,
-			playerBateuNaParede, playerBateuNaEscada;
+			playerBateuNaParede, playerPodeSubir, playerPodeDescer;
 	playerBateuNoChao = playerBateuNaBomba = playerCaiuNoBuraco =
-			playerBateuNaParede = playerBateuNaEscada = 0;
+			playerBateuNaParede = playerPodeSubir = playerPodeDescer = 0;
 
 	vector<int> bombaBateuNoChao(10, 0), bombaBateuNaParede(10, 0),
 			bombaBateuNaEscada(10, 0), bombaBateuNoBuraco(10, 0); //inicializa todos com 0
@@ -140,7 +140,7 @@ void Game::desenhaCenario(sf::RenderWindow *window) {
 
 		if (iniciouKong == true) {
 			playerTestaColisao(&playerBateuNoChao, &playerBateuNaParede,
-					&playerBateuNaEscada, &playerCaiuNoBuraco,
+					&playerPodeSubir, &playerPodeDescer, &playerCaiuNoBuraco,
 					&playerBateuNaBomba, i);
 			bombasTestaColisao(bombaBateuNoChao, bombaBateuNaParede,
 					bombaBateuNaEscada, bombaBateuNoBuraco, i);
@@ -154,7 +154,7 @@ void Game::desenhaCenario(sf::RenderWindow *window) {
 
 	if (iniciouKong == true) {
 		playerUpdate(playerBateuNoChao, playerBateuNaParede,
-				playerBateuNaEscada, playerCaiuNoBuraco, playerBateuNaBomba);
+				playerPodeSubir, playerPodeDescer, playerCaiuNoBuraco, playerBateuNaBomba);
 		bombaUpdate(bombaBateuNoChao, bombaBateuNaParede, bombaBateuNaEscada, bombaBateuNoBuraco);
 
 		kong.AnimacaoKong();
@@ -203,14 +203,14 @@ void Game::desenhaElementos(sf::RenderWindow *window) {
 }
 
 void Game::playerTestaColisao(int *playerBateuNoChao, int *playerBateuNaParede,
-		int *PlayerBateuNaEscada, int *playerCaiuNoBuraco,
+		int *playerPodeSubir, int *playerPodeDescer, int *playerCaiuNoBuraco,
 		int *playerBateuNaBomba, int i) {
 
 	sf::FloatRect hitboxChao1, hitboxChao2, hitboxChao3, hitboxBuraco1,
-			hitboxBuraco2, hitboxParede1, hitboxParede2, hitboxEscada1,
-			hitboxEscada2, hitboxPlayer, hitboxBomba;
+			hitboxBuraco2, hitboxParede1, hitboxParede2, hitboxEscada1Subir,
+			hitboxEscada2Subir, hitboxEscada1Descer,
+			hitboxEscada2Descer, hitboxPlayer, hitboxBomba;
 	hitboxPlayer = player.bounds();
-
 	hitboxChao1 = chao[i].getChao1().getGlobalBounds();
 	hitboxChao2 = chao[i].getChao2().getGlobalBounds();
 	hitboxChao3 = chao[i].getChao3().getGlobalBounds();
@@ -218,8 +218,10 @@ void Game::playerTestaColisao(int *playerBateuNoChao, int *playerBateuNaParede,
 	hitboxBuraco2 = buraco[i].getBuraco2().getGlobalBounds();
 	hitboxParede1 = paredes[i].getParede1().getGlobalBounds();
 	hitboxParede2 = paredes[i].getParede2().getGlobalBounds();
-	hitboxEscada1 = escada[i].getHitbox1().getGlobalBounds();
-	hitboxEscada2 = escada[i].getHitbox2().getGlobalBounds();
+	hitboxEscada1Subir = escada[i].getHitbox1().getGlobalBounds();
+	hitboxEscada2Subir = escada[i].getHitbox2().getGlobalBounds();
+	hitboxEscada1Descer = escada[i].getHitboxDescer1().getGlobalBounds();
+	hitboxEscada2Descer = escada[i].getHitboxDescer2().getGlobalBounds();
 	hitboxChao1.width = hitboxChao1.width - 5;
 	hitboxChao2.width = hitboxChao2.width - 5;
 	hitboxChao3.width = hitboxChao3.width - 5;
@@ -242,10 +244,13 @@ void Game::playerTestaColisao(int *playerBateuNoChao, int *playerBateuNaParede,
 			|| hitboxPlayer.intersects(hitboxParede2)) {
 		*playerBateuNaParede = 1;
 	}
-	if (hitboxPlayer.intersects(hitboxEscada1)
-			|| hitboxPlayer.intersects(hitboxEscada2)) {
-		*PlayerBateuNaEscada = 1;
-
+	if (hitboxPlayer.intersects(hitboxEscada1Subir)
+			|| hitboxPlayer.intersects(hitboxEscada2Subir)) {
+		*playerPodeSubir = 1;
+	}
+	if (hitboxPlayer.intersects(hitboxEscada1Descer)
+			|| hitboxPlayer.intersects(hitboxEscada2Descer)) {
+		*playerPodeDescer = 1;
 	}
 	if (hitboxPlayer.intersects(hitboxBuraco1)
 			|| hitboxPlayer.intersects(hitboxBuraco2)) {
@@ -369,7 +374,7 @@ void Game::bombasTestaColisao(vector<int> &bombaBateuNoChao,
 }
 
 void Game::playerUpdate(int playerBateuNoChao, int playerBateuNaParede,
-		int playerBateuNaEscada, int playerCaiuNoBuraco,
+		int playerPodeSubir, int playerPodeDescer, int playerCaiuNoBuraco,
 		bool playerBateuNaBomba) {
 
 	if (playerBateuNaBomba > 0) {
@@ -400,10 +405,15 @@ void Game::playerUpdate(int playerBateuNoChao, int playerBateuNaParede,
 		player.setPodeMover(0);
 	}
 
-	if (playerBateuNaEscada > 0) {
+	if (playerPodeSubir > 0) {
 		player.setPodeSubir(1);
 	} else {
 		player.setPodeSubir(0);
+	}
+	if (playerPodeDescer > 0) {
+		player.setPodeDescer(1);
+	} else {
+		player.setPodeDescer(0);
 	}
 	if ((player.getLayer(alturaLinha)) <= 5) {
 		kong.trocaDePosicao(alturaLinha);
@@ -454,7 +464,6 @@ void Game::desceBombaAndares357(int *formaDeDescer){
 		*formaDeDescer = 4;
 	}
 }
-
 
 bool Game::getIniciouKong() {
 	return iniciouKong;

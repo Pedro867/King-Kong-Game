@@ -20,7 +20,7 @@ private:
 	float velX, velY;
 	float posX, posY;
 	float escala;
-	bool bateu, caiu, podeMover, podeSubir, subindo, moveuEsquerda, perdeuVida, perdeu, morreuDeQueda, venceu, podeMudarSprite;
+	bool bateu, caiu, podeMover, podeSubir, podeDescer, subindo, moveuEsquerda, perdeuVida, perdeu, morreuDeQueda, venceu, podeMudarSprite;
 	int gravity, vidas, acabouDePular, tempo;
 
 	sf::SoundBuffer bufferPulo;
@@ -38,6 +38,7 @@ public:
 	//setters
 	void setPodeMover(int valor);
 	void setPodeSubir(int valor);
+	void setPodeDescer(int valor);
 	void setCaiu(bool caiu);
 	void setBateu(bool bateu);
 	void setMorreuDeQueda(bool morreuDeQueda);
@@ -81,7 +82,7 @@ Player::Player(sf::RenderWindow &window) : window(window) {
 	player.setScale(escala, escala);
 	player.setOrigin(hitbox.width / 2, hitbox.height / 2); //metade do tamanho do player;
 	player.setPosition(posX, posY);
-	bateu = caiu = podeSubir = moveuEsquerda = subindo = perdeuVida = perdeu = morreuDeQueda = venceu = false;
+	bateu = caiu = podeSubir = podeDescer = moveuEsquerda = subindo = perdeuVida = perdeu = morreuDeQueda = venceu = false;
 	podeMover = podeMudarSprite = true;
 	acabouDePular = 0;
 
@@ -162,7 +163,7 @@ void Player::moverX(sf::Event evento) {
 			player.move(velX, 0);
 		}
 	} else {
-		player.move(0, gravity);
+		player.move(-velX, 0);
 	}
 }
 
@@ -178,15 +179,15 @@ void Player::moverY(sf::Event evento) {
 			player.move(0, gravity);
 		}
 	}
-	if (podeSubir == true) {
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+	if (podeSubir == true || podeDescer == true) {
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W) && podeSubir == true) {
 			subindo = true;
 			velY = -gravity * 2;
 			player.move(0, velY);
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-			subindo = true;
-			velY = gravity * 2;
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && podeDescer == true) {
+			subindo = true;//descendo kk
+			velY = gravity * 2;//da uma aceleradinha na descida
 			player.move(0, velY);
 		}
 		if (subindo == true) {
@@ -201,6 +202,7 @@ void Player::moverY(sf::Event evento) {
 	}
 	if (caiu == false && podeSubir == false) {
 		subindo = false;
+		//PULO
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
 			velY = window.getSize().y / 30.0f; //pulo responsivo
 			velY = -velY;
@@ -232,6 +234,13 @@ void Player::setPodeSubir(int valor) {
 		podeSubir = false;
 	}
 }
+void Player::setPodeDescer(int valor) {
+	if (valor == 1) {
+		podeDescer = true;
+	} else if (valor == 0) {
+		podeDescer = false;
+	}
+}
 
 void Player::setCaiu(bool caiu) {
 	this->caiu = caiu;
@@ -255,7 +264,7 @@ void Player::setVelX(float vx) {
 
 void Player::setLayer(float alturaLinha, float larguraColuna) {
 	float altura, largura;
-	altura = (alturaLinha * 7) - 16;
+	altura = (alturaLinha * 6) - 16;
 	largura = 20 * larguraColuna;
 	setPosXPosY(largura, altura);
 }
