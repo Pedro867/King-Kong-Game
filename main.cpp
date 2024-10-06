@@ -162,6 +162,8 @@ int main(int argc, char **argv) {
 
 		//movimenta elementos se o kong tiver iniciado
 		if (Game.getIniciouKong()) {
+			Game.bombasTestaColisao();
+			//Game.playerTestaColisao();
 			player.moverY(evento);
 			player.moverX(evento);
 		}
