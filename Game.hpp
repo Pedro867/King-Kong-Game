@@ -114,11 +114,11 @@ Game::Game(Player &player, Princesa &princesa, sf::RenderWindow *window) :
 
 	for (int i = 0; i < 10; i++) {
 		bomba[i].iniciarBomba(window);
+		bomba[i].setLayer(alturaLinha,larguraColuna);
 	}
 
 	player.setLayer(alturaLinha, larguraColuna);
 	princesa.setLayer(alturaLinha, larguraColuna);
-	bomba[0].setLayer(alturaLinha, larguraColuna);
 	qntAtualBombaNormal = 0;
 }
 
@@ -387,12 +387,14 @@ void Game::bombaUpdate(vector<int> bombaBateuNoChao,
 		bomba[cont].mover();
 	}
 
-	bool podeSpawnarNormal =
-			bomba[qntAtualBombaNormal].olhaSePodeSpawnarNormal(alturaLinha, qntAtualBombaNormal); //so spawna se a ultima bomba nao estiver mais no ultimo andar
+	if(qntAtualBombaNormal < 9){
+		bool podeSpawnarNormal =
+				bomba[qntAtualBombaNormal].olhaSePodeSpawnarNormal(alturaLinha, qntAtualBombaNormal); //so spawna se a ultima bomba nao estiver mais no ultimo andar
 
-	if (podeSpawnarNormal == true) {
-		bomba[qntAtualBombaNormal + 1].spawnBombaNormal(alturaLinha, larguraColuna);
-		this->qntAtualBombaNormal++;
+		if (podeSpawnarNormal == true) {
+				bomba[qntAtualBombaNormal + 1].spawnBombaNormal(alturaLinha, larguraColuna);
+				this->qntAtualBombaNormal++;
+			}
 	}
 }
 

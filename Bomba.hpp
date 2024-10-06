@@ -69,12 +69,12 @@ void Bomba::iniciarBomba(sf::RenderWindow *window){
 	bombaNormal.setTexture(texturaBombaNormal);
 	velX = window->getSize().x / 250.0f; //velocidade responsiva
 	velY = window->getSize().y / 200.0f; //igual a gravidade
-	posX = 600;
-	posY = 550;
+	//posX = 600;
+	//posY = 550;
 	escala = window->getSize().y / 400.0f; //escala responsiva
 	bombaNormal.setScale(escala, escala);
 	bombaNormal.setOrigin(16, 16); //metade do tamanho do player;
-	bombaNormal.setPosition(posX, posY);
+	//bombaNormal.setPosition(posX, posY);
 	bateuNoChao = false;
 	cair = false;
 	escada = false;
