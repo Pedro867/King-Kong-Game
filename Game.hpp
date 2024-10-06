@@ -399,13 +399,7 @@ void Game::bombaUpdate(vector<int> bombaBateuNoChao,
 void Game::bombaColisoesNecessarias(vector<int> &bombaBateuNoChao,
 			vector<int> &bombaBateuNaParede, vector<int> &bombaBateuNoBuraco, int bombaLayer, int cont){
 
-	sf::FloatRect hitboxChao1;
-	sf::FloatRect hitboxChao2;
-	sf::FloatRect hitboxChao3;
-	sf::FloatRect hitboxParede1;
-	sf::FloatRect hitboxParede2;
-	sf::FloatRect hitboxBuraco1;
-	sf::FloatRect hitboxBuraco2;
+	sf::FloatRect hitboxChao1, hitboxChao2, hitboxChao3, hitboxParede1, hitboxParede2, hitboxBuraco1, hitboxBuraco2;
 
 	hitboxChao1 = chao[bombaLayer].getChao1().getGlobalBounds();
 	hitboxChao2 = chao[bombaLayer].getChao2().getGlobalBounds();

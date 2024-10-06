@@ -199,19 +199,22 @@ int Bomba::sortearFormaDeDescer(int layer, int cont){
 			this->sorteouFormaDeDescer = true;
 			//Para esse andar, existem 2 possibilidades: sumir do mapa ou bater na parede e voltar
 		}
-		if (layer == 2 || layer == 4 || layer == 6 || layer == 8) {
+		if (layer == 8) {
+			this->formaDeDescer = 2;
+		}
+		if (layer == 2 || layer == 4 || layer == 6) {
 			this->formaDeDescer = (rand() % 3);
 			this->sorteouFormaDeDescer = true;
 			//Para esses andares, existem 2 formas de descer (as duas escadas), o terceiro numero significa que ela seguira reto
 		}
-		if(layer == 3 || layer == 5 || layer == 7){
+		if(layer == 3 || layer == 5 || layer == 7) {
 			this->formaDeDescer = (rand() % 4);
 			this->sorteouFormaDeDescer = true;
 			//Para esses andares, existem 3 formas de descer (a escada e os dois buracos), o quarto numero significa que ela seguira reto
 		}
-		cout<< "bomba " << cont << ": ";
-		cout << formaDeDescer;
-		cout << " - " << layer << endl;
+//		cout<< "bomba " << cont << ": ";
+//		cout << formaDeDescer;
+//		cout << " - " << layer << endl;
 	}
 	return formaDeDescer;
 }

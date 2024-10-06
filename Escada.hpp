@@ -74,7 +74,7 @@ void Escada::iniciarEscada(float larguraColuna, float alturaLinha, int i) {
 		hitbox[i].setPosition(posQuadradoX, posQuadradoY);
 
 		hitboxDescer[i].setScale(larguraColuna / 4, alturaLinha / 4.5);
-		posQuadradoY = escada[i].getPosition().y - alturaLinha/32;
+		posQuadradoY = escada[i].getPosition().y - alturaLinha/64;
 		hitboxDescer[i].setPosition(posQuadradoX, posQuadradoY);
 	}
 }

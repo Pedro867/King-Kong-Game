@@ -6,6 +6,7 @@
 #include <SFMl/Graphics.hpp>
 #include <SFML/audio.hpp>
 #include <iostream>
+#include <ctime>
 #include "Player.hpp"
 #include "Bomba.hpp"
 #include "Game.hpp"
@@ -80,7 +81,8 @@ int main(int argc, char **argv) {
 	sf::VideoMode video(1200, 600);
 	sf::RenderWindow window(video, "King Kong");
 	sf::Event evento;
-	window.setFramerateLimit(40);
+	int framerate = 40;
+	window.setFramerateLimit(framerate);
 
 	//Fundo
 	sf::Texture background;
@@ -94,12 +96,20 @@ int main(int argc, char **argv) {
 	//Texto
 	sf::Font fonte;
 	fonte.loadFromFile("assets/Arial.ttf");
-	sf::Text vidas;
+	string vidasString, tempoString;
+	sf::Text vidas, tempo;
 	vidas.setFont(fonte);
 	vidas.setCharacterSize(30);
 	vidas.setOrigin(15, 15);
 	vidas.setFillColor(sf::Color::Red);
-	vidas.setPosition(45*(window.getSize().x / 100), 5*(window.getSize().y / 100));
+	vidas.setPosition(35*(window.getSize().x/100), 5*(window.getSize().y / 100));
+	tempo.setFont(fonte);
+	tempo.setCharacterSize(30);
+	tempo.setOrigin(15, 15);
+	tempo.setFillColor(sf::Color(32, 32, 32));
+	tempo.setPosition(15*(window.getSize().x/100), 5*(window.getSize().y/100));
+	int contadorQuadros = 0, contadorTotal = 0;
+
 
 	//Audio
 	sf::SoundBuffer bufferSomDoJogo;
@@ -116,6 +126,7 @@ int main(int argc, char **argv) {
 	Princesa princesa(window);
 	Game Game(player, princesa, &window);
 
+	//Booleanos de controle
 	bool morreu = false, iniciouJogo = false;
 
 	while (window.isOpen()) {
@@ -166,11 +177,18 @@ int main(int argc, char **argv) {
 			//Game.playerTestaColisao();
 			player.moverY(evento);
 			player.moverX(evento);
+			contadorQuadros++;
+			if (contadorQuadros >= framerate) {
+				contadorTotal++;
+				contadorQuadros = 0;
+			}
+			vidasString = to_string(player.getVidas());
+			vidas.setString("Vidas: " + vidasString);
+			tempoString = to_string(contadorTotal);
+			tempo.setString("Tempo: " + tempoString);
+			window.draw(vidas);
+			window.draw(tempo);
 		}
-
-		string vidasString = to_string(player.getVidas());
-		vidas.setString("Vidas: " + vidasString);
-		window.draw(vidas);
 
 		window.display();
 	}
