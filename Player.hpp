@@ -1,9 +1,6 @@
 #ifndef PLAYER_HPP_
 #define PLAYER_HPP_
 #include <SFML/Graphics.hpp>
-//#include "Chao.hpp"
-//#include "Parede.hpp"
-//#include "Cenario.hpp"
 #include "Bomba.hpp"
 #include <iostream>
 

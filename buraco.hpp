@@ -1,10 +1,3 @@
-/*
- * buraco.hpp
- *
- *  Created on: 21 de set. de 2024
- *      Author: Rafael
- */
-
 #ifndef BURACO_HPP_
 #define BURACO_HPP_
 

@@ -35,13 +35,13 @@ void animacaoMorte(sf::RenderWindow& window){
 void gameOver(sf::RenderWindow& window){
 	//Texto
 	sf::Font fonte;
-	fonte.loadFromFile("assets/Arial.ttf");
+	fonte.loadFromFile("assets/8-BIT WONDER.ttf");
 	sf::Text fimDeJogo;
 	fimDeJogo.setFont(fonte);
 	fimDeJogo.setCharacterSize(100);
 	fimDeJogo.setFillColor(sf::Color::White);
 	//esses numeros no position sao os unicos que deixa o texto no meio da tela
-	fimDeJogo.setPosition(window.getSize().x/2 - (window.getSize().x * 0.23), window.getSize().y/2 - 100);
+	fimDeJogo.setPosition(window.getSize().x/8 , window.getSize().y/2 - 100);
 	fimDeJogo.setString("Game Over");
 
 	window.clear();
@@ -52,13 +52,13 @@ void gameOver(sf::RenderWindow& window){
 void veceuJogo(sf::RenderWindow& window){
 	//Texto
 	sf::Font fonte;
-	fonte.loadFromFile("assets/Arial.ttf");
+	fonte.loadFromFile("assets/8-BIT WONDER.ttf");
 	sf::Text mensagemVitoria;
 	mensagemVitoria.setFont(fonte);
 	mensagemVitoria.setCharacterSize(100);
 	mensagemVitoria.setFillColor(sf::Color::Red);
-	mensagemVitoria.setPosition((window.getSize().x / 2 - (window.getSize().x * 0.146)), (window.getSize().y / 2 - 100));
-	mensagemVitoria.setString("Vitoria!");
+	mensagemVitoria.setPosition((window.getSize().x / 4), (window.getSize().y / 3));
+	mensagemVitoria.setString("Vitoria");
 
 	//Quadrado na tela
 	sf::RectangleShape tela;
@@ -96,19 +96,19 @@ int main(int argc, char **argv) {
 
 	//Texto
 	sf::Font fonte;
-	fonte.loadFromFile("assets/Arial.ttf");
+	fonte.loadFromFile("assets/8-BIT WONDER.ttf");
+
 	string vidasString, tempoString;
 	sf::Text vidas, tempo;
 	vidas.setFont(fonte);
-	vidas.setCharacterSize(30);
-	vidas.setOrigin(15, 15);
+	vidas.setCharacterSize((window.getSize().x)/20);
 	vidas.setFillColor(sf::Color::Red);
-	vidas.setPosition(35*(window.getSize().x/100), 5*(window.getSize().y / 100));
+	vidas.setPosition((window.getSize().x) * 28/40, -5);
+
 	tempo.setFont(fonte);
-	tempo.setCharacterSize(30);
-	tempo.setOrigin(15, 15);
+	tempo.setCharacterSize((window.getSize().x)/20);
 	tempo.setFillColor(sf::Color(32, 32, 32));
-	tempo.setPosition(15*(window.getSize().x/100), 5*(window.getSize().y/100));
+	tempo.setPosition((window.getSize().x)/40, -5);
 	int contadorQuadros = 0, contadorTotal = 0;
 
 
@@ -187,9 +187,9 @@ int main(int argc, char **argv) {
 				contadorQuadros = 0;
 			}
 			vidasString = to_string(player.getVidas());
-			vidas.setString("Vidas: " + vidasString);
+			vidas.setString(vidasString + " Vidas");
 			tempoString = to_string(contadorTotal);
-			tempo.setString("Tempo: " + tempoString);
+			tempo.setString(tempoString);
 			window.draw(vidas);
 			window.draw(tempo);
 		}

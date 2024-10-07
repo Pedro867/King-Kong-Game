@@ -433,12 +433,6 @@ void Game::playerUpdate(int playerBateuNoChao, int playerBateuNaParede,
 	} else {
 		player.setPodeDescer(0);
 	}
-	if ((player.getLayer(alturaLinha)) >= 5) {
-		kong.trocaDePosicaoBaixo(alturaLinha, larguraColuna);
-		//cout << "uifhsdi";
-	}else{
-		kong.trocaDePosicaoAlto(alturaLinha, larguraColuna);
-	}
 }
 
 

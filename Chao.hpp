@@ -1,14 +1,5 @@
-/*
- * Chao.hpp
- *
- *  Created on: 27 de ago. de 2024
- *      Author: Rafael
- */
-
 #ifndef CHAO_HPP_
 #define CHAO_HPP_
-
-//#include "Game.hpp"
 
 class Chao{
 private:

@@ -1,10 +1,3 @@
-/*
- * Parede.hpp
- *
- *  Created on: 27 de ago. de 2024
- *      Author: Rafael
- */
-
 #ifndef PAREDE_HPP_
 #define PAREDE_HPP_
 

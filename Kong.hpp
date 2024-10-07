@@ -10,7 +10,6 @@ private:
 	float scaleX;
 	float scaleY;
 
-	bool estaEmCima = true;
 	bool concluiuRota1 = false;
 	bool concluiuRota2 = true;
 	bool bateuNoPeito = false;
@@ -26,8 +25,6 @@ public:
 	bool AnimacaoInicialKong(float larguraColuna, float alturaLinha);
 	void AnimacaoKong();
 	void bateNoPeito();
-	void trocaDePosicaoBaixo(float alturaLinha, float larguraColuna);
-	void trocaDePosicaoAlto(float alturaLinha, float larguraColuna);
 
 	void rota1(float larguraColuna, float alturaLinha);
 	void rota2(float larguraColuna, float alturaLinha);
@@ -94,45 +91,6 @@ void Kong::bateNoPeito() {
 	if(batidasNoPeito == 10){
 		bateuNoPeito = true;
 	}
-}
-
-void Kong::trocaDePosicaoBaixo(float alturaLinha, float larguraColuna){
-
-	if(estaEmCima == true){
-		if(concluiuRota1 == false){
-			rota1(larguraColuna, alturaLinha);
-		}
-		else if(concluiuRota2 == false){
-			rota2(larguraColuna, alturaLinha);
-		}
-
-		if(kong.getPosition().y < alturaLinha){ //se ele for pra fora do mapa
-			kong.setPosition(larguraColuna * 9, alturaLinha * 11);
-		}
-
-		if(rotas == 5){
-			kong.setPosition(larguraColuna * 9, alturaLinha * 9);
-			estaEmCima = false;
-			rotas = 0;
-		}
-	}else{
-		trocaDePosicaoAlto(alturaLinha,larguraColuna);
-	}
-}
-
-void Kong::trocaDePosicaoAlto(float alturaLinha, float larguraColuna){
-	/*if(estaEmCima == false){
-		if(concluiuRota1 == false)
-		rota1(larguraColuna, alturaLinha);
-
-		if(concluiuRota2 == false)
-		rota2(larguraColuna, alturaLinha);
-
-		if(kong.getPosition().y <= alturaLinha * 9){
-			kong.setPosition(larguraColuna * 9, alturaLinha * 9);
-			estaEmCima = true;
-		}
-	}*/
 }
 
 void Kong::rota1(float larguraColuna, float alturaLinha) {
