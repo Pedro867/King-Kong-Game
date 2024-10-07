@@ -32,9 +32,9 @@ private:
 	Kong kong;
 	Princesa &princesa;
 
-
 	float alturaLinha, larguraColuna; //determina a altura de cada linha (tamanho y da janela / num de linhas)
 
+	int nasceuBombaNormal;
 	int qntAtualBombaNormal;
 	int qntAtualBombaEspecial;
 
@@ -114,6 +114,7 @@ Game::Game(Player &player, Princesa &princesa, sf::RenderWindow *window) :
 	princesa.setLayer(alturaLinha, larguraColuna);
 	qntAtualBombaNormal = 0;
 	qntAtualBombaEspecial = 0;
+	nasceuBombaNormal = 0;
 }
 
 void Game::iniciaElementos(sf::RenderWindow *window){
@@ -122,7 +123,7 @@ void Game::iniciaElementos(sf::RenderWindow *window){
 	paredes.resize(16); // Um elemento por linha
 	escada.resize(10);
 	bomba.resize(10); //No max 10 bombas normais
-	bombaEspecial.resize(5);
+	bombaEspecial.resize(4);
 
 	for (int i = 0; i < 10; i++) {
 		chao[i].iniciarChao(larguraColuna, alturaLinha, i);
@@ -144,10 +145,10 @@ void Game::iniciaElementos(sf::RenderWindow *window){
 		bomba[i].iniciarBomba(window);
 		bomba[i].setLayer(alturaLinha,larguraColuna);
 	}
-	for (int i = 0; i < 5; i++) {
-			bombaEspecial[i].iniciarBombaEspecial(window);
-			bombaEspecial[i].setLayer(alturaLinha,larguraColuna);
-		}
+	for (int i = 0; i < 4; i++) {
+		bombaEspecial[i].iniciarBombaEspecial(window);
+		bombaEspecial[i].setLayer(alturaLinha,larguraColuna);
+	}
 }
 
 void Game::desenhaCenario(sf::RenderWindow *window) {
@@ -229,7 +230,7 @@ void Game::desenhaElementos(sf::RenderWindow *window) {
 	for (int cont = 0; cont <= qntAtualBombaNormal; cont++) {
 		window->draw(bomba[cont].getBombaNormal());
 	}
-	for (int cont = 0; cont <= qntAtualBombaEspecial; cont++) {
+	for (int cont = 0; cont < qntAtualBombaEspecial; cont++) {
 			window->draw(bombaEspecial[cont].getBombaEspecial());
 		}
 }
@@ -241,7 +242,7 @@ void Game::playerTestaColisao(int *playerBateuNoChao, int *playerBateuNaParede,
 	sf::FloatRect hitboxChao1, hitboxChao2, hitboxChao3, hitboxBuraco1,
 			hitboxBuraco2, hitboxParede1, hitboxParede2, hitboxEscada1Subir,
 			hitboxEscada2Subir, hitboxEscada1Descer,
-			hitboxEscada2Descer, hitboxPlayer, hitboxBomba;
+			hitboxEscada2Descer, hitboxPlayer, hitboxBombaNormal, hitboxBombaEspecial;
 	hitboxPlayer = player.bounds();
 	hitboxChao1 = chao[i].getChao1().getGlobalBounds();
 	hitboxChao2 = chao[i].getChao2().getGlobalBounds();
@@ -290,10 +291,17 @@ void Game::playerTestaColisao(int *playerBateuNoChao, int *playerBateuNaParede,
 	}
 
 	for (int cont = 0; cont <= qntAtualBombaNormal; cont++) {
-		hitboxBomba = bomba[cont].getBombaNormalBounds();
-		hitboxBomba.top = hitboxBomba.top + 10;
-		hitboxBomba.height = hitboxBomba.height - 10;
-		if (hitboxPlayer.intersects(hitboxBomba)) {
+		hitboxBombaNormal = bomba[cont].getBombaNormalBounds();
+		hitboxBombaEspecial = bombaEspecial[cont].getBombaEspecialBounds();
+
+		hitboxBombaNormal.top = hitboxBombaNormal.top + 10;
+		hitboxBombaNormal.height = hitboxBombaNormal.height - 10;
+
+		hitboxBombaEspecial.top = hitboxBombaEspecial.top + 10;
+		hitboxBombaEspecial.height = hitboxBombaEspecial.height - 10;
+
+		if (hitboxPlayer.intersects(hitboxBombaNormal) ||
+				hitboxPlayer.intersects(hitboxBombaEspecial)) {
 			*playerBateuNaBomba = 1;
 		}
 	}
@@ -347,7 +355,7 @@ void Game::bombasEspeciaisTestaColisao(){
 				bombaEspecialBateuNaEscada(10, 0), bombaEspecialBateuNoBuraco(10, 0), ignorarParede(10, 0), bombaEspecialSaiuDoMapa(10, 0); //inicializa todos com 0
 
 
-	for (int cont = 0; cont <= qntAtualBombaNormal; cont++) {
+	for (int cont = 0; cont < qntAtualBombaEspecial; cont++) {
 
 		bombaEspecialLayer = bombaEspecial[cont].getLayer(alturaLinha);
 
@@ -406,7 +414,6 @@ void Game::playerUpdate(int playerBateuNoChao, int playerBateuNaParede,
 	if ((playerCaiuNoBuraco > 0) && (playerBateuNoChao == 0)) {
 		player.setPodeMover(0);
 		player.setMorreuDeQueda(true);
-
 	}
 
 	if (playerPodeSubir > 0) {
@@ -459,15 +466,25 @@ void Game::bombaUpdate(vector<int> bombaBateuNoChao,
 		bomba[cont].mover();
 	}//fim for
 
-	if (qntAtualBombaNormal < 9){
+	if ((qntAtualBombaNormal < 9) && (nasceuBombaNormal < 2)){
 		bool podeSpawnarNormal =
 				bomba[qntAtualBombaNormal].olhaSePodeSpawnarNormal(alturaLinha,
 						qntAtualBombaNormal); //so spawna se a ultima bomba nao estiver mais no ultimo andar
 
-		if (podeSpawnarNormal == true) {
+		bool podeSpawnarEspecial;
+
+		if(qntAtualBombaEspecial == 0){
+			podeSpawnarEspecial = true;
+		}else{
+			podeSpawnarEspecial = bombaEspecial[qntAtualBombaEspecial - 1].olhaSePodeSpawnarEspecial(alturaLinha, qntAtualBombaEspecial); //so spawna se a ultima bomba nao estiver mais no ultimo andar
+		}
+
+
+		if (podeSpawnarNormal == true && podeSpawnarEspecial == true) {
 			bomba[qntAtualBombaNormal + 1].spawnBombaNormal(alturaLinha,
 					larguraColuna);
 			this->qntAtualBombaNormal++;
+			this->nasceuBombaNormal++;
 		}
 	}
 
@@ -475,7 +492,7 @@ void Game::bombaUpdate(vector<int> bombaBateuNoChao,
 void Game::bombaEspecialUpdate(vector<int> bombaEspecialBateuNoChao,
 		vector<int> bombaEspecialBateuNaParede, vector<int> bombaEspecialBateuNaEscada, vector<int> bombaEspecialBateuNoBuraco, vector<int> bombaEspecialSaiuDoMapa) {
 
-	for (int cont = 0; cont <= qntAtualBombaEspecial; cont++) {
+	for (int cont = 0; cont < qntAtualBombaEspecial; cont++) {
 		if(bombaEspecialSaiuDoMapa[cont] == 1){
 			bool podeVoltarAoTopo =
 					bombaEspecial[cont].olhaSePodeSpawnarEspecial(
@@ -506,18 +523,18 @@ void Game::bombaEspecialUpdate(vector<int> bombaEspecialBateuNoChao,
 		bombaEspecial[cont].mover();
 	}//fim for
 
-	if (qntAtualBombaNormal < 9){
+	if ((qntAtualBombaEspecial < 5) && (nasceuBombaNormal == 2)){
 		bool podeSpawnarNormal =
 				bomba[qntAtualBombaNormal].olhaSePodeSpawnarNormal(alturaLinha,
 						qntAtualBombaNormal); //so spawna se a ultima bomba nao estiver mais no ultimo andar
 
 		if (podeSpawnarNormal == true) {
-			bomba[qntAtualBombaNormal + 1].spawnBombaNormal(alturaLinha,
+			bombaEspecial[qntAtualBombaEspecial + 1].spawnBombaEspecial(alturaLinha,
 					larguraColuna);
-			this->qntAtualBombaNormal++;
+			this->qntAtualBombaEspecial++;
+			this->nasceuBombaNormal = 0;
 		}
 	}
-
 }
 void Game::bombaColisoesNecessarias(vector<int> &bombaBateuNoChao,
 			vector<int> &bombaBateuNaParede, vector<int> bombaBateuNoBuraco, vector<int> ignorarParede, vector<int> &bombaSaiuDoMapa, int bombaLayer, int cont){

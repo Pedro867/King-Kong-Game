@@ -103,11 +103,11 @@ void Player::moverX(sf::Event evento) {
 	if (podeMover == true && morreuDeQueda == false) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
 
-			velX = -4;
+			velX = -3;
 			posX += velX;
 
 			if (podeMudarSprite) {
-				hitbox.width = 9;
+				hitbox.width = 8;
 				player.setTextureRect(hitbox);
 				player.setOrigin(hitbox.width / 2, hitbox.height / 2);
 				//animacao
@@ -132,7 +132,7 @@ void Player::moverX(sf::Event evento) {
 
 		} else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
 
-			velX = 4;
+			velX = 3;
 			posX += -velX;
 
 			if (podeMudarSprite) {
@@ -179,7 +179,9 @@ void Player::moverX(sf::Event evento) {
 			podeMudarSprite = true;
 			player.move(velX, 0);
 		}
-	} else {
+	} else if(morreuDeQueda == true){
+		player.move(0, 0);
+	}else{
 		player.move(-velX, 0);
 	}
 }

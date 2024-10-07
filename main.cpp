@@ -67,7 +67,7 @@ void veceuJogo(sf::RenderWindow& window){
 	sf::Vector2f origem(tamanho.x / 2, tamanho.y / 2);
 	tela.setOrigin(origem);
 	tela.setPosition(window.getSize().x / 2, window.getSize().y / 2);
-	tela.setFillColor(sf::Color::Magenta);
+	tela.setFillColor(sf::Color::Blue);
 
 	window.clear();
 	window.draw(tela);
@@ -92,6 +92,7 @@ int main(int argc, char **argv) {
 	fundo.setOrigin(256, 256);
 	fundo.setPosition(window.getPosition().x / 2, window.getPosition().y / 2);
 	fundo.setScale(6, 6);
+
 
 	//Texto
 	sf::Font fonte;
@@ -153,6 +154,7 @@ int main(int argc, char **argv) {
 			animacaoMorte(window);
 			player.setPerdeuVida(false);
 			Game.deleteBombas();
+			Game.deleteBombasEspeciais();
 			continue;
 		}
 		if(player.getVidas() <= 0){//ve se acabou as vidas
@@ -174,6 +176,7 @@ int main(int argc, char **argv) {
 		//movimenta elementos se o kong tiver iniciado
 		if (Game.getIniciouKong()) {
 			Game.bombasTestaColisao();
+			Game.bombasEspeciaisTestaColisao();
 			//Game.playerTestaColisao();
 			player.moverY(evento);
 			player.moverX(evento);
