@@ -62,7 +62,7 @@ public:
 			vector<int> bombaBateuNaParede, vector<int> bombaBateuNaEscada, vector<int> bombaBateuNoBuraco);
 
 	void bombaColisoesNecessarias(vector<int> &bombaBateuNoChao,
-			vector<int> &bombaBateuNaParede, vector<int> &bombaBateuNoBuraco, int bombaLayer, int cont);
+			vector<int> &bombaBateuNaParede, int bombaLayer, int cont);
 
 	//formas da bomba descer
 	void desce0(vector<int> &bombaBateuNaParede, int cont);
@@ -269,7 +269,7 @@ void Game::playerTestaColisao(int *playerBateuNoChao, int *playerBateuNaParede,
 		*playerCaiuNoBuraco = 1;
 	}
 
-	for (int cont = 0; cont < qntAtualBombaNormal; cont++) {
+	for (int cont = 0; cont <= qntAtualBombaNormal; cont++) {
 		hitboxBomba = bomba[cont].getBombaNormalBounds();
 		hitboxBomba.top = hitboxBomba.top + 10;
 		hitboxBomba.height = hitboxBomba.height - 10;
@@ -294,7 +294,7 @@ void Game::bombasTestaColisao() {
 		bombaLayer = bomba[cont].getLayer(alturaLinha);
 
 		bombaColisoesNecessarias(bombaBateuNoChao,
-				bombaBateuNaParede, bombaBateuNoBuraco, bombaLayer, cont);
+				bombaBateuNaParede, bombaLayer, cont);
 
 		formaDeDescer = bomba[cont].getFormaDeDescer();
 
@@ -406,7 +406,7 @@ void Game::bombaUpdate(vector<int> bombaBateuNoChao,
 }
 
 void Game::bombaColisoesNecessarias(vector<int> &bombaBateuNoChao,
-			vector<int> &bombaBateuNaParede, vector<int> &bombaBateuNoBuraco, int bombaLayer, int cont){
+			vector<int> &bombaBateuNaParede, int bombaLayer, int cont){
 
 	sf::FloatRect hitboxChao1, hitboxChao2, hitboxChao3, hitboxParede1, hitboxParede2, hitboxBuraco1, hitboxBuraco2;
 
