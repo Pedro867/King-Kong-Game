@@ -1,4 +1,3 @@
-
 #ifndef PLAYER_HPP_
 #define PLAYER_HPP_
 #include <SFML/Graphics.hpp>
@@ -15,12 +14,13 @@ private:
 
 	sf::IntRect hitbox;
 	sf::Sprite player;
-	sf::Texture spritesPlayer[4];
+	sf::Texture spritesPlayer[7];
 	sf::RenderWindow &window;
 	float velX, velY;
 	float posX, posY;
 	float escala;
-	bool bateu, caiu, podeMover, podeSubir, podeDescer, subindo, moveuEsquerda, perdeuVida, perdeu, morreuDeQueda, venceu, podeMudarSprite;
+	bool bateu, caiu, podeMover, podeSubir, podeDescer, subindo, moveuEsquerda,
+			perdeuVida, perdeu, morreuDeQueda, venceu, podeMudarSprite;
 	int gravity, vidas, acabouDePular, tempo;
 
 	sf::SoundBuffer bufferPulo;
@@ -62,17 +62,21 @@ public:
 	void perdeuVidas(float alturaLinha, float larguraColuna);
 };
 
-Player::Player(sf::RenderWindow &window) : window(window) {
+Player::Player(sf::RenderWindow &window) :
+		window(window) {
 	spritesPlayer[0].loadFromFile("assets/playerParado.png");
 	spritesPlayer[1].loadFromFile("assets/playerCorrendo1.png");
 	spritesPlayer[2].loadFromFile("assets/playerCorrendo2.png");
-	spritesPlayer[3].loadFromFile("assets/playerSubindoEscada.png");
+	spritesPlayer[3].loadFromFile("assets/playerCorrendo3.png");
+	spritesPlayer[4].loadFromFile("assets/playerCorrendo4.png");
+	spritesPlayer[5].loadFromFile("assets/playerCorrendo5.png");
+	spritesPlayer[6].loadFromFile("assets/playerSubindoEscada.png");
 	//hitbox
 	hitbox.left = hitbox.top = 0;
 	hitbox.height = 16;
 	hitbox.width = 7;
 	//-----
-	player.setTexture(spritesPlayer[0]);//parado
+	player.setTexture(spritesPlayer[0]); //parado
 	player.setTextureRect(hitbox);
 	velX = velY = posX = posY = 0;
 	tempo = 0;
@@ -82,7 +86,8 @@ Player::Player(sf::RenderWindow &window) : window(window) {
 	player.setScale(escala, escala);
 	player.setOrigin(hitbox.width / 2, hitbox.height / 2); //metade do tamanho do player;
 	player.setPosition(posX, posY);
-	bateu = caiu = podeSubir = podeDescer = moveuEsquerda = subindo = perdeuVida = perdeu = morreuDeQueda = venceu = false;
+	bateu = caiu = podeSubir = podeDescer = moveuEsquerda = subindo =
+			perdeuVida = perdeu = morreuDeQueda = venceu = false;
 	podeMover = podeMudarSprite = true;
 	acabouDePular = 0;
 
@@ -98,7 +103,7 @@ void Player::moverX(sf::Event evento) {
 	if (podeMover == true && morreuDeQueda == false) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
 
-			velX = -5;
+			velX = -4;
 			posX += velX;
 
 			if (podeMudarSprite) {
@@ -106,13 +111,19 @@ void Player::moverX(sf::Event evento) {
 				player.setTextureRect(hitbox);
 				player.setOrigin(hitbox.width / 2, hitbox.height / 2);
 				//animacao
-				if (tempo % 40 >= 20) {
-					player.setTexture(spritesPlayer[2]);
-				} else {
+				if (tempo == 5) {
 					player.setTexture(spritesPlayer[1]);
+				} else if (tempo == 15) {
+					player.setTexture(spritesPlayer[2]);
+				} else if (tempo == 25) {
+					player.setTexture(spritesPlayer[3]);
+				} else if (tempo == 35) {
+					player.setTexture(spritesPlayer[4]);
+				} else if (tempo == 40) {
+					player.setTexture(spritesPlayer[5]);
 				}
 				tempo++;
-				if(tempo == 40){
+				if (tempo == 40) {
 					tempo = 0;
 				}
 				player.setScale(-escala, escala);
@@ -121,7 +132,7 @@ void Player::moverX(sf::Event evento) {
 
 		} else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
 
-			velX = 5;
+			velX = 4;
 			posX += -velX;
 
 			if (podeMudarSprite) {
@@ -129,10 +140,16 @@ void Player::moverX(sf::Event evento) {
 				player.setTextureRect(hitbox);
 				player.setOrigin(hitbox.width / 2, hitbox.height / 2);
 				//animacao
-				if (tempo % 40 >= 20) {
-					player.setTexture(spritesPlayer[2]);
-				} else {
+				if (tempo == 5) {
 					player.setTexture(spritesPlayer[1]);
+				} else if (tempo == 15) {
+					player.setTexture(spritesPlayer[2]);
+				} else if (tempo == 25) {
+					player.setTexture(spritesPlayer[3]);
+				} else if (tempo == 35) {
+					player.setTexture(spritesPlayer[4]);
+				} else if (tempo == 40) {
+					player.setTexture(spritesPlayer[5]);
 				}
 				tempo++;
 				if (tempo == 40) {
@@ -186,15 +203,15 @@ void Player::moverY(sf::Event evento) {
 			player.move(0, velY);
 		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && podeDescer == true) {
-			subindo = true;//descendo kk
-			velY = gravity * 2;//da uma aceleradinha na descida
+			subindo = true; //descendo kk
+			velY = gravity * 2; //da uma aceleradinha na descida
 			player.move(0, velY);
 		}
 		if (subindo == true) {
 			hitbox.width = 10;
 			player.setTextureRect(hitbox);
 			player.setOrigin(hitbox.width / 2, hitbox.height / 2);
-			player.setTexture(spritesPlayer[3]);//escada
+			player.setTexture(spritesPlayer[6]); //escada
 			podeMudarSprite = false;
 		} else {
 			podeMudarSprite = true;
@@ -213,7 +230,7 @@ void Player::moverY(sf::Event evento) {
 	}
 }
 
-void Player::reiniciaPlayer(float alturaLinha, float larguraColuna){
+void Player::reiniciaPlayer(float alturaLinha, float larguraColuna) {
 	setLayer(alturaLinha, larguraColuna);
 	morreuDeQueda = false;
 
@@ -250,7 +267,7 @@ void Player::setBateu(bool bateu) {
 	this->bateu = bateu;
 }
 
-void Player::setMorreuDeQueda(bool morreuDeQueda){
+void Player::setMorreuDeQueda(bool morreuDeQueda) {
 	this->morreuDeQueda = morreuDeQueda;
 }
 
@@ -276,7 +293,7 @@ void Player::setPosXPosY(float x, float y) {
 	player.setPosition(posX, posY);
 }
 
-void Player::setPerdeuVida(bool valor){
+void Player::setPerdeuVida(bool valor) {
 	perdeuVida = valor;
 }
 
@@ -308,18 +325,18 @@ float Player::getLayer(float alturaLinha) {
 	return layer;
 }
 
-bool Player::getMorreuDeQueda(){
+bool Player::getMorreuDeQueda() {
 	return morreuDeQueda;
 }
 
 void Player::perdeuVidas(float alturaLinha, float larguraColuna) {
-	if (vidas > 0){
+	if (vidas > 0) {
 		this->vidas--;
 		somMorte.play();
 		perdeuVida = true;
 		reiniciaPlayer(alturaLinha, larguraColuna);
 
-	}else{
+	} else {
 		perdeu = true; //futuro gameOver, mas quero colocar a func no main
 	}
 }
