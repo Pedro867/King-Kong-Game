@@ -229,9 +229,11 @@ void Game::desenhaElementos(sf::RenderWindow *window) {
 
 	for (int cont = 0; cont <= qntAtualBombaNormal; cont++) {
 		window->draw(bomba[cont].getBombaNormal());
+
 	}
 	for (int cont = 0; cont < qntAtualBombaEspecial; cont++) {
-			window->draw(bombaEspecial[cont].getBombaEspecial());
+
+		window->draw(bombaEspecial[cont].getBombaEspecial());
 		}
 }
 
@@ -242,7 +244,7 @@ void Game::playerTestaColisao(int *playerBateuNoChao, int *playerBateuNaParede,
 	sf::FloatRect hitboxChao1, hitboxChao2, hitboxChao3, hitboxBuraco1,
 			hitboxBuraco2, hitboxParede1, hitboxParede2, hitboxEscada1Subir,
 			hitboxEscada2Subir, hitboxEscada1Descer,
-			hitboxEscada2Descer, hitboxPlayer, hitboxBombaNormal, hitboxBombaEspecial;
+			hitboxEscada2Descer, hitboxPlayer, hitboxBombaNormal, hitboxBombaEspecial,HitboxDoPulo;
 	hitboxPlayer = player.bounds();
 	hitboxChao1 = chao[i].getChao1().getGlobalBounds();
 	hitboxChao2 = chao[i].getChao2().getGlobalBounds();
@@ -291,6 +293,7 @@ void Game::playerTestaColisao(int *playerBateuNoChao, int *playerBateuNaParede,
 	}
 
 	for (int cont = 0; cont <= qntAtualBombaNormal; cont++) {
+		HitboxDoPulo = bombaEspecial[cont].getPuloBounds();
 		hitboxBombaNormal = bomba[cont].getBombaNormalBounds();
 		hitboxBombaEspecial = bombaEspecial[cont].getBombaEspecialBounds();
 
@@ -300,10 +303,12 @@ void Game::playerTestaColisao(int *playerBateuNoChao, int *playerBateuNaParede,
 		hitboxBombaEspecial.top = hitboxBombaEspecial.top + 10;
 		hitboxBombaEspecial.height = hitboxBombaEspecial.height - 10;
 
-		if (hitboxPlayer.intersects(hitboxBombaNormal) ||
-				hitboxPlayer.intersects(hitboxBombaEspecial)) {
+		if (hitboxPlayer.intersects(hitboxBombaNormal) || hitboxPlayer.intersects(hitboxBombaEspecial)) {
 			*playerBateuNaBomba = 1;
+		}if (hitboxPlayer.intersects(HitboxDoPulo)) {
+			player.sobe(larguraColuna,alturaLinha);
 		}
+
 	}
 }
 
@@ -351,6 +356,7 @@ void Game::bombasEspeciaisTestaColisao(){
 	int formaDeDescer;
 	int bombaEspecialLayer;
 
+
 	vector<int> bombaEspecialBateuNoChao(10, 0), bombaEspecialBateuNaParede(10, 0),
 				bombaEspecialBateuNaEscada(10, 0), bombaEspecialBateuNoBuraco(10, 0), ignorarParede(10, 0), bombaEspecialSaiuDoMapa(10, 0); //inicializa todos com 0
 
@@ -358,6 +364,7 @@ void Game::bombasEspeciaisTestaColisao(){
 	for (int cont = 0; cont < qntAtualBombaEspecial; cont++) {
 
 		bombaEspecialLayer = bombaEspecial[cont].getLayer(alturaLinha);
+
 
 		if(bombaEspecialLayer >= 0){
 			formaDeDescer = bombaEspecial[cont].getFormaDeDescer();
@@ -594,6 +601,7 @@ void Game::bombaEspecialColisoesNecessarias(vector<int> &bombaEspecialBateuNoCha
 	hitboxBuraco2 = buraco[bombaEspecialLayer].getBuraco2().getGlobalBounds();
 
 	sf::FloatRect hitboxBomba = bombaEspecial[cont].getBombaEspecialBounds();
+
 	if(bombaEspecialBateuNoBuraco[cont] == 0){
 		if (hitboxBomba.intersects(hitboxChao1)
 				|| hitboxBomba.intersects(hitboxChao2)

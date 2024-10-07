@@ -32,6 +32,7 @@ public:
 	Player(sf::RenderWindow &window);
 	void moverX(sf::Event evento);
 	void moverY(sf::Event evento);
+	void sobe(float larguraColuna,float alturaLinhas);
 
 	void reiniciaPlayer(float alturaLinha, float larguraColuna);
 
@@ -103,7 +104,7 @@ void Player::moverX(sf::Event evento) {
 	if (podeMover == true && morreuDeQueda == false) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
 
-			velX = -2;
+			velX = -2.5;
 			posX += velX;
 
 			if (podeMudarSprite) {
@@ -132,7 +133,7 @@ void Player::moverX(sf::Event evento) {
 
 		} else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
 
-			velX = 2;
+			velX = 2.5;
 			posX += -velX;
 
 			if (podeMudarSprite) {
@@ -283,7 +284,7 @@ void Player::setVelX(float vx) {
 
 void Player::setLayer(float alturaLinha, float larguraColuna) {
 	float altura, largura;
-	altura = (alturaLinha * 9) - 16;
+	altura = (alturaLinha * 2) - 16;
 	largura = 20 * larguraColuna;
 	setPosXPosY(largura, altura);
 }
@@ -329,6 +330,11 @@ float Player::getLayer(float alturaLinha) {
 
 bool Player::getMorreuDeQueda() {
 	return morreuDeQueda;
+}
+
+inline void Player::sobe(float larguraColuna,float alturaLinha) {
+	sf::Vector2<float> rota1(larguraColuna * 9, alturaLinha * 8); // o y eh descartavel pq nn comparo ele com nada
+		player.move(-velX, velY);
 }
 
 void Player::perdeuVidas(float alturaLinha, float larguraColuna) {

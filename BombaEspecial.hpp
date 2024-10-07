@@ -11,9 +11,10 @@ private:
 
 	sf::IntRect hitbox;
 	sf::Sprite bombaEspecial;
-	//Projeto futuro sf::Sprite bombaEspecial;
+	sf::Sprite hitboxPulo;
+	sf::Texture texturahitboxPulo;
+
 	sf::Texture texturaBombaEspecial;
-	//Projeto futuro sf::Texture texturaBombaEspecial;
 
 	float velX, velY;
 	float posX, posY;
@@ -48,7 +49,9 @@ public:
 	float getVelX();
 	int getLayer(float alturaLinha);
 	sf::FloatRect getBombaEspecialBounds();
+	sf::FloatRect getPuloBounds();
 	sf::Sprite getBombaEspecial();
+	sf::Sprite getHitboxDoPulo();
 	int getFormaDeDescer();
 
 	int sortearFormaDeDescer(int layer, int cont);
@@ -60,13 +63,16 @@ public:
 
 void BombaEspecial::iniciarBombaEspecial(sf::RenderWindow *window){
 	texturaBombaEspecial.loadFromFile("assets/BombaEspecial.png");
+	texturahitboxPulo.loadFromFile("assets/AreaDeHitboxDopulo.png");
 	//hitbox
 	hitbox.left = 0;
-	hitbox.top = 0;
+	hitbox.top = 50;
 	hitbox.height = 11.5;//menorque 13 pra melhorar a gameplay
 	hitbox.width = 13;
+
 	//fim da hitbox
 	bombaEspecial.setTexture(texturaBombaEspecial);
+	hitboxPulo.setTexture(texturahitboxPulo);
 	velX = window->getSize().x / 250.0f; //velocidade responsiva
 	velY = window->getSize().y / 190.0f; //igual a gravidade
 	//posX = 600;
@@ -74,6 +80,8 @@ void BombaEspecial::iniciarBombaEspecial(sf::RenderWindow *window){
 	escala = window->getSize().y / 400.0f; //escala responsiva
 	bombaEspecial.setScale(escala, escala);
 	bombaEspecial.setOrigin(16, 16); //metade do tamanho do player;
+	hitboxPulo.setOrigin(16,16);
+	hitboxPulo.setScale(escala,escala+3);
 	//bombaEspecial.setPosition(posX, posY);
 	bateuNoChao = false;
 	cair = false;
@@ -87,20 +95,25 @@ void BombaEspecial::iniciarBombaEspecial(sf::RenderWindow *window){
 void BombaEspecial::mover() {
 	if (bateuNoChao == true && descerHabilitado == false) {
 		bombaEspecial.move(velX, 0);
+		hitboxPulo.move(velX,0);
 		posX = bombaEspecial.getPosition().x + velX;
+
 	} else {
 		bombaEspecial.move(0, velY);
+		hitboxPulo.move(0,velY);
 		posY = bombaEspecial.getPosition().y + velY;
 	}
 }
 
 void BombaEspecial::moverY() {
 	bombaEspecial.move(0, velY);
+	hitboxPulo.move(0,velY);
 }
 
 void BombaEspecial::moverX() {
 	if(descendo == false){
 		bombaEspecial.move(velX, 0);
+		hitboxPulo.move(velX,0);
 	}
 }
 
@@ -112,6 +125,7 @@ void BombaEspecial::setPosXPosY(float x, float y) {
 	posX = x;
 	posY = y;
 	bombaEspecial.setPosition(posX, posY);
+	hitboxPulo.setPosition(posX, posY+13);
 }
 
 void BombaEspecial::setPodeMover(int valor) {
@@ -181,6 +195,9 @@ int BombaEspecial::getLayer(float alturaLinha) {
 sf::FloatRect BombaEspecial::getBombaEspecialBounds() {
 	return bombaEspecial.getGlobalBounds();
 }
+sf::FloatRect BombaEspecial::getPuloBounds() {
+	return hitboxPulo.getGlobalBounds();
+}
 
 sf::Sprite BombaEspecial::getBombaEspecial() {
 	return bombaEspecial;
@@ -228,6 +245,10 @@ bool BombaEspecial::olhaSePodeSpawnarEspecial(float alturaLinha, int qntAtualBom
 		return true;
 	}
 	return false;
+}
+
+inline sf::Sprite BombaEspecial::getHitboxDoPulo() {
+	return hitboxPulo;
 }
 
 void BombaEspecial::spawnBombaEspecial(float alturaLinha, float larguraColuna) {
