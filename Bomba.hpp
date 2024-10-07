@@ -68,7 +68,7 @@ void Bomba::iniciarBomba(sf::RenderWindow *window){
 	//fim da hitbox
 	bombaNormal.setTexture(texturaBombaNormal);
 	velX = window->getSize().x / 250.0f; //velocidade responsiva
-	velY = window->getSize().y / 200.0f; //igual a gravidade
+	velY = window->getSize().y / 190.0f; //igual a gravidade
 	//posX = 600;
 	//posY = 550;
 	escala = window->getSize().y / 400.0f; //escala responsiva
@@ -195,22 +195,23 @@ int Bomba::sortearFormaDeDescer(int layer, int cont){
 	if(sorteouFormaDeDescer == false){
 		//desceu = false;
 		if (layer == 1) {
-			this->formaDeDescer = (rand() % 2);
+			this->formaDeDescer = (rand() % 3);
 			this->sorteouFormaDeDescer = true;
 			//Para esse andar, existem 2 possibilidades: sumir do mapa ou bater na parede e voltar
 		}
 		if (layer == 8) {
-			this->formaDeDescer = 2;
+			this->formaDeDescer = 3;
+			this->sorteouFormaDeDescer = true;
 		}
 		if (layer == 2 || layer == 4 || layer == 6) {
-			this->formaDeDescer = (rand() % 3);
+			this->formaDeDescer = (rand() % 5);
 			this->sorteouFormaDeDescer = true;
-			//Para esses andares, existem 2 formas de descer (as duas escadas), o terceiro numero significa que ela seguira reto
+			//Para esses andares, existem 2 formas de descer (as duas escadas), 2 numeros pra cada e 1 para seguir reto
 		}
 		if(layer == 3 || layer == 5 || layer == 7) {
-			this->formaDeDescer = (rand() % 4);
+			this->formaDeDescer = (rand() % 7);
 			this->sorteouFormaDeDescer = true;
-			//Para esses andares, existem 3 formas de descer (a escada e os dois buracos), o quarto numero significa que ela seguira reto
+			//Para esses andares, existem 3 formas de descer (a escada e os dois buracos), 2 numeros pra cada e 1 para seguir reto
 		}
 //		cout<< "bomba " << cont << ": ";
 //		cout << formaDeDescer;
