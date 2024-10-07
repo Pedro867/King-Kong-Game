@@ -155,6 +155,7 @@ int main(int argc, char **argv) {
 			player.setPerdeuVida(false);
 			Game.deleteBombas();
 			Game.deleteBombasEspeciais();
+			Game.reiniciaKong();
 			continue;
 		}
 		if(player.getVidas() <= 0){//ve se acabou as vidas

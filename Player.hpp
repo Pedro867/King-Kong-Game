@@ -103,7 +103,7 @@ void Player::moverX(sf::Event evento) {
 	if (podeMover == true && morreuDeQueda == false) {
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
 
-			velX = -3;
+			velX = -2;
 			posX += velX;
 
 			if (podeMudarSprite) {
@@ -132,7 +132,7 @@ void Player::moverX(sf::Event evento) {
 
 		} else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
 
-			velX = 3;
+			velX = 2;
 			posX += -velX;
 
 			if (podeMudarSprite) {
@@ -283,7 +283,7 @@ void Player::setVelX(float vx) {
 
 void Player::setLayer(float alturaLinha, float larguraColuna) {
 	float altura, largura;
-	altura = (alturaLinha * 6) - 16;
+	altura = (alturaLinha * 9) - 16;
 	largura = 20 * larguraColuna;
 	setPosXPosY(largura, altura);
 }

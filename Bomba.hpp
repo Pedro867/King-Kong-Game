@@ -67,8 +67,8 @@ void Bomba::iniciarBomba(sf::RenderWindow *window){
 	hitbox.width = 13;
 	//fim da hitbox
 	bombaNormal.setTexture(texturaBombaNormal);
-	velX = window->getSize().x / 250.0f; //velocidade responsiva
-	velY = window->getSize().y / 190.0f; //igual a gravidade
+	velX = window->getSize().x / 230.0f; //velocidade responsiva
+	velY = window->getSize().y / 180.0f; //um pouco maior que a gravidade
 	//posX = 600;
 	//posY = 550;
 	escala = window->getSize().y / 400.0f; //escala responsiva

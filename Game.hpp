@@ -91,6 +91,7 @@ public:
 
 	void deleteBombas();
 	void deleteBombasEspeciais();
+	void reiniciaKong();
 	bool playerVenceu();
 
 
@@ -104,8 +105,7 @@ Game::Game(Player &player, Princesa &princesa, sf::RenderWindow *window) :
 	alturaLinha = (window->getSize().y) / 10.0f; //determina a altura de cada linha (tamanho y da janela / num de linhas)
 	larguraColuna = (window->getSize().x) / 40.0f; //determina a largura de cada coluna (tamanho x da janela / num de colunas)
 
-	float escalaKong = window->getSize().y / 280.f; //escala kong responsiva
-	kong.iniciaKong(larguraColuna, alturaLinha, escalaKong);
+	kong.iniciaKong(larguraColuna, alturaLinha, window);
 	iniciouKong = true; //mudar para testar mais r�pido
 
 	iniciaElementos(window);
@@ -426,8 +426,11 @@ void Game::playerUpdate(int playerBateuNoChao, int playerBateuNaParede,
 	} else {
 		player.setPodeDescer(0);
 	}
-	if ((player.getLayer(alturaLinha)) <= 5) {
-		kong.trocaDePosicao(alturaLinha);
+	if ((player.getLayer(alturaLinha)) >= 5) {
+		kong.trocaDePosicaoBaixo(alturaLinha, larguraColuna);
+		//cout << "uifhsdi";
+	}else{
+		kong.trocaDePosicaoAlto(alturaLinha, larguraColuna);
 	}
 }
 
@@ -868,6 +871,10 @@ void Game::deleteBombasEspeciais() {
 		//na verdade nao deleta, mas deixa ela pronta pra spawnar denovo
 	}
 	qntAtualBombaEspecial = 0;
+}
+
+void Game::reiniciaKong(){
+	kong.setPosition(larguraColuna * 9, alturaLinha * 3);
 }
 
 bool Game::playerVenceu() {
