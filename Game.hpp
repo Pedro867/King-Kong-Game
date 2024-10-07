@@ -65,7 +65,7 @@ public:
 			vector<int> &bombaBateuNaParede, vector<int> bombaBateuNoBuraco, int bombaLayer, int cont);
 
 	//formas da bomba descer
-	void desce0(vector<int> &bombaBateuNaParede, int cont);
+	void desce0(vector<int> &bombaBateuNaParede, int bombaLayer, int cont);
 	void desce1(vector<int> &bombaBateuNaEscada, int bombaLayer, int cont);
 	void desce2(vector<int> &bombaBateuNaEscada, int bombaLayer, int cont);
 	void desce3(vector<int> &bombaBateuNoChao, vector<int> &bombaBateuNoBuraco, int bombaLayer, int cont);
@@ -296,7 +296,7 @@ void Game::bombasTestaColisao() {
 		}
 
 		if(formaDeDescer == 0){ //0 == seguir reto
-			desce0(bombaBateuNaParede, cont);
+			desce0(bombaBateuNaParede, bombaLayer, cont);
 		}
 		else if(formaDeDescer == 1){ //1 == escada1
 			desce1(bombaBateuNaEscada, bombaLayer, cont);
@@ -436,8 +436,15 @@ void Game::bombaColisoesNecessarias(vector<int> &bombaBateuNoChao,
 		}
 }
 
-void Game::desce0(vector<int> &bombaBateuNaParede, int cont){
-	if (bombaBateuNaParede[cont] == 1) {
+void Game::desce0(vector<int> &bombaBateuNaParede, int bombaLayer, int cont){
+
+	sf::FloatRect hitboxBomba = bomba[cont].getBombaNormalBounds();
+
+	sf::FloatRect hitboxParede1 = paredes[bombaLayer].getParede1().getGlobalBounds();
+	sf::FloatRect hitboxParede2 = paredes[bombaLayer].getParede2().getGlobalBounds();
+
+	if (hitboxBomba.intersects(hitboxParede1)
+			|| hitboxBomba.intersects(hitboxParede2)) {
 		bomba[cont].setSorteouFormaDeDescer(false);
 		//se bateu na parede, sorteia outra forma de descer
 	}
@@ -489,12 +496,9 @@ void Game::desce2(vector<int> &bombaBateuNaEscada, int bombaLayer, int cont){
 void Game::desce3(vector<int> &bombaBateuNoChao, vector<int> &bombaBateuNoBuraco, int bombaLayer, int cont){
 
 	sf::FloatRect hitboxBomba = bomba[cont].getBombaNormalBounds();
-
 	sf::FloatRect hitboxBuraco1;
-	sf::FloatRect hitboxBuraco2;
 
 	hitboxBuraco1 = buraco[bombaLayer].getBuraco1().getGlobalBounds();
-	hitboxBuraco2 = buraco[bombaLayer].getBuraco2().getGlobalBounds();
 
 	if (bomba[cont].getVelX() > 0) {
 		hitboxBuraco1.left = hitboxBuraco1.left + hitboxBuraco1.width / 2;
@@ -504,7 +508,7 @@ void Game::desce3(vector<int> &bombaBateuNoChao, vector<int> &bombaBateuNoBuraco
 		hitboxBomba.left = hitboxBomba.left + hitboxBomba.width / 2;
 	}
 
-	if (hitboxBomba.intersects(hitboxBuraco2)) {
+	if (hitboxBomba.intersects(hitboxBuraco1)) {
 		bombaBateuNoChao[cont] = 0;
 		bombaBateuNoBuraco[cont] = 1;
 	}
@@ -513,18 +517,15 @@ void Game::desce3(vector<int> &bombaBateuNoChao, vector<int> &bombaBateuNoBuraco
 void Game::desce4(vector<int> &bombaBateuNoChao, vector<int> &bombaBateuNoBuraco, int bombaLayer, int cont){
 
 	sf::FloatRect hitboxBomba = bomba[cont].getBombaNormalBounds();
-
-	sf::FloatRect hitboxBuraco1;
 	sf::FloatRect hitboxBuraco2;
 
-	hitboxBuraco1 = buraco[bombaLayer].getBuraco1().getGlobalBounds();
 	hitboxBuraco2 = buraco[bombaLayer].getBuraco2().getGlobalBounds();
 
 	if (bomba[cont].getVelX() > 0) {
-		hitboxBuraco1.left = hitboxBuraco1.left + hitboxBuraco1.width / 2;
+		hitboxBuraco2.left = hitboxBuraco2.left + hitboxBuraco2.width / 2;
 		hitboxBomba.left = hitboxBomba.left - hitboxBomba.width / 2;
 	} else {
-		hitboxBuraco1.left = hitboxBuraco1.left - hitboxBuraco1.width / 2;
+		hitboxBuraco2.left = hitboxBuraco2.left - hitboxBuraco2.width / 2;
 		hitboxBomba.left = hitboxBomba.left + hitboxBomba.width / 2;
 	}
 
