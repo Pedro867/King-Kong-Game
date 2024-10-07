@@ -62,7 +62,7 @@ public:
 			vector<int> bombaBateuNaParede, vector<int> bombaBateuNaEscada, vector<int> bombaBateuNoBuraco);
 
 	void bombaColisoesNecessarias(vector<int> &bombaBateuNoChao,
-			vector<int> &bombaBateuNaParede, int bombaLayer, int cont);
+			vector<int> &bombaBateuNaParede, vector<int> bombaBateuNoBuraco, int bombaLayer, int cont);
 
 	//formas da bomba descer
 	void desce0(vector<int> &bombaBateuNaParede, int cont);
@@ -148,14 +148,11 @@ void Game::desenhaCenario(sf::RenderWindow *window) {
 		} else if (i == 9) {
 			desenhaAndar9(window, &chao[i]);
 		}
-		//iniciouKong = kong.iniciarKong(window, larguraColuna, alturaLinha);
 
 		if (iniciouKong == true) {
 			playerTestaColisao(&playerBateuNoChao, &playerBateuNaParede,
 					&playerPodeSubir, &playerPodeDescer, &playerCaiuNoBuraco,
 					&playerBateuNaBomba, i);
-			//bombasTestaColisao(bombaBateuNoChao, bombaBateuNaParede,
-					//bombaBateuNaEscada, bombaBateuNoBuraco, i);
 		}
 	} //for i
 
@@ -167,7 +164,6 @@ void Game::desenhaCenario(sf::RenderWindow *window) {
 	if (iniciouKong == true) {
 		playerUpdate(playerBateuNoChao, playerBateuNaParede, playerPodeSubir,
 				playerPodeDescer, playerCaiuNoBuraco, playerBateuNaBomba);
-		//bombaUpdate(bombaBateuNoChao, bombaBateuNaParede, bombaBateuNaEscada, bombaBateuNoBuraco);
 
 		kong.AnimacaoKong();
 		princesa.animacaoPrincesa(larguraColuna);
@@ -293,9 +289,6 @@ void Game::bombasTestaColisao() {
 
 		bombaLayer = bomba[cont].getLayer(alturaLinha);
 
-		bombaColisoesNecessarias(bombaBateuNoChao,
-				bombaBateuNaParede, bombaLayer, cont);
-
 		formaDeDescer = bomba[cont].getFormaDeDescer();
 
 		if(bombaLayer == 3 || bombaLayer == 5 || bombaLayer == 7){
@@ -317,6 +310,8 @@ void Game::bombasTestaColisao() {
 		else if (formaDeDescer == 4) { //4 == buraco2
 			desce4(bombaBateuNoChao, bombaBateuNoBuraco, bombaLayer, cont);
 		}
+		bombaColisoesNecessarias(bombaBateuNoChao,
+				bombaBateuNaParede, bombaBateuNoBuraco, bombaLayer, cont);
 	} //fim for
 	bombaUpdate(bombaBateuNoChao, bombaBateuNaParede, bombaBateuNaEscada, bombaBateuNoBuraco);
 }
@@ -406,7 +401,7 @@ void Game::bombaUpdate(vector<int> bombaBateuNoChao,
 }
 
 void Game::bombaColisoesNecessarias(vector<int> &bombaBateuNoChao,
-			vector<int> &bombaBateuNaParede, int bombaLayer, int cont){
+			vector<int> &bombaBateuNaParede, vector<int> bombaBateuNoBuraco, int bombaLayer, int cont){
 
 	sf::FloatRect hitboxChao1, hitboxChao2, hitboxChao3, hitboxParede1, hitboxParede2, hitboxBuraco1, hitboxBuraco2;
 
@@ -419,12 +414,13 @@ void Game::bombaColisoesNecessarias(vector<int> &bombaBateuNoChao,
 	hitboxBuraco2 = buraco[bombaLayer].getBuraco2().getGlobalBounds();
 
 	sf::FloatRect hitboxBomba = bomba[cont].getBombaNormalBounds();
-
-	if (hitboxBomba.intersects(hitboxChao1)
-			|| hitboxBomba.intersects(hitboxChao2)
-			|| hitboxBomba.intersects(hitboxChao3)) {
-		bombaBateuNoChao[cont] = 1;
-		bomba[cont].sortearFormaDeDescer(bombaLayer, cont);
+	if(bombaBateuNoBuraco[cont] == 0){
+		if (hitboxBomba.intersects(hitboxChao1)
+				|| hitboxBomba.intersects(hitboxChao2)
+				|| hitboxBomba.intersects(hitboxChao3)) {
+			bombaBateuNoChao[cont] = 1;
+			bomba[cont].sortearFormaDeDescer(bombaLayer, cont);
+		}
 	}
 
 	if (hitboxBomba.intersects(hitboxParede1)
@@ -432,10 +428,12 @@ void Game::bombaColisoesNecessarias(vector<int> &bombaBateuNoChao,
 		bombaBateuNaParede[cont] = 1;
 	}
 
-	if (hitboxBomba.intersects(hitboxBuraco1)
-			|| hitboxBomba.intersects(hitboxBuraco2)) {
-		bombaBateuNoChao[cont] = 1;
-	}
+	if(bombaBateuNoBuraco[cont] == 0){
+		if (hitboxBomba.intersects(hitboxBuraco1)
+					|| hitboxBomba.intersects(hitboxBuraco2)) {
+				bombaBateuNoChao[cont] = 1;
+			}
+		}
 }
 
 void Game::desce0(vector<int> &bombaBateuNaParede, int cont){
