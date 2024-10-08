@@ -106,7 +106,7 @@ Game::Game(Player &player, Princesa &princesa, sf::RenderWindow *window) :
 	larguraColuna = (window->getSize().x) / 40.0f; //determina a largura de cada coluna (tamanho x da janela / num de colunas)
 
 	kong.iniciaKong(larguraColuna, alturaLinha, window);
-	iniciouKong = true; //mudar para testar mais r�pido
+	iniciouKong = false; //mudar para testar mais r�pido
 
 	iniciaElementos(window);
 

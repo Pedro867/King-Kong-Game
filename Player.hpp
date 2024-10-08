@@ -281,7 +281,7 @@ void Player::setVelX(float vx) {
 
 void Player::setLayer(float alturaLinha, float larguraColuna) {
 	float altura, largura;
-	altura = (alturaLinha * 2) - 16;
+	altura = (alturaLinha * 9) - 16;
 	largura = 20 * larguraColuna;
 	setPosXPosY(largura, altura);
 }

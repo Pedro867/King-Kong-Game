@@ -152,6 +152,7 @@ int main(int argc, char **argv) {
 
 		if(player.getPerdeuVida()){//ve se ele perdeu vida pra rodar a animacao
 			animacaoMorte(window);
+			contadorTotal = 0;
 			player.setPerdeuVida(false);
 			Game.deleteBombas();
 			Game.deleteBombasEspeciais();
