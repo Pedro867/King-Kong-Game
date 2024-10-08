@@ -158,7 +158,7 @@ int main(int argc, char **argv) {
 			Game.reiniciaKong();
 			continue;
 		}
-		if(player.getVidas() <= 0){//ve se acabou as vidas
+		if(player.getVidas() <= 0 || contadorTotal > 79){//ve se acabou as vidas
 			if(!morreu){
 				morreu = true;
 				somDoJogo.pause();
