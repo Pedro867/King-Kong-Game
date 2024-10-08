@@ -106,7 +106,7 @@ Game::Game(Player &player, Princesa &princesa, sf::RenderWindow *window) :
 	larguraColuna = (window->getSize().x) / 40.0f; //determina a largura de cada coluna (tamanho x da janela / num de colunas)
 
 	kong.iniciaKong(larguraColuna, alturaLinha, window);
-	iniciouKong = false; //mudar para testar mais r�pido
+	iniciouKong = true; //mudar para testar mais r�pido
 
 	iniciaElementos(window);
 
@@ -142,12 +142,10 @@ void Game::iniciaElementos(sf::RenderWindow *window){
 	}
 
 	for (int i = 0; i < 10; i++) {
-		bomba[i].iniciarBomba(window);
-		bomba[i].setLayer(alturaLinha,larguraColuna);
+		bomba[i].iniciarVelocidadeEEscalaBomba(window);
 	}
 	for (int i = 0; i < 4; i++) {
-		bombaEspecial[i].iniciarBombaEspecial(window);
-		bombaEspecial[i].setLayer(alturaLinha,larguraColuna);
+		bombaEspecial[i].iniciarVelocidadeEEscalaBombaEspecial(window);
 	}
 }
 
@@ -227,7 +225,7 @@ void Game::desenhaElementos(sf::RenderWindow *window) {
 	window->draw(kong.getKong());
 	window->draw(princesa.getPrincesa());
 
-	for (int cont = 0; cont <= qntAtualBombaNormal; cont++) {
+	for (int cont = 0; cont < qntAtualBombaNormal; cont++) {
 		window->draw(bomba[cont].getBombaNormal());
 
 	}
@@ -322,7 +320,7 @@ void Game::bombasTestaColisao() {
 				bombaBateuNaEscada(10, 0), bombaBateuNoBuraco(10, 0), ignorarParede(10, 0), bombaSaiuDoMapa(10, 0); //inicializa todos com 0
 
 
-	for (int cont = 0; cont <= qntAtualBombaNormal; cont++) {
+	for (int cont = 0; cont < qntAtualBombaNormal; cont++) {
 
 		bombaLayer = bomba[cont].getLayer(alturaLinha);
 
@@ -439,15 +437,15 @@ void Game::playerUpdate(int playerBateuNoChao, int playerBateuNaParede,
 void Game::bombaUpdate(vector<int> bombaBateuNoChao,
 		vector<int> bombaBateuNaParede, vector<int> bombaBateuNaEscada, vector<int> bombaBateuNoBuraco, vector<int> bombaSaiuDoMapa) {
 
-	for (int cont = 0; cont <= qntAtualBombaNormal; cont++) {
+	for (int cont = 0; cont < qntAtualBombaNormal; cont++) {
 		if(bombaSaiuDoMapa[cont] == 1){
-			bool podeVoltarAoTopo =
-					bomba[cont].olhaSePodeSpawnarNormal(
-							alturaLinha, qntAtualBombaNormal); //so spawna se a ultima bomba nao estiver mais no ultimo andar
-
-			if (podeVoltarAoTopo == true) {
-				bomba[cont].setLayer(alturaLinha, larguraColuna);
-			}
+//			bool podeVoltarAoTopo =
+//					bomba[cont].olhaSePodeSpawnarNormal(
+//							alturaLinha, qntAtualBombaNormal); //so spawna se a ultima bomba nao estiver mais no ultimo andar
+//
+//			if (podeVoltarAoTopo == true) {
+//				bomba[cont].setLayer(alturaLinha, larguraColuna);
+//			}
 		}
 		if (bombaBateuNoChao[cont] > 0) {
 			bomba[cont].setPodeMover(1);
@@ -471,40 +469,45 @@ void Game::bombaUpdate(vector<int> bombaBateuNoChao,
 	}//fim for
 
 	if ((qntAtualBombaNormal < 9) && (nasceuBombaNormal < 2)){
-		bool podeSpawnarNormal =
-				bomba[qntAtualBombaNormal].olhaSePodeSpawnarNormal(alturaLinha,
-						qntAtualBombaNormal); //so spawna se a ultima bomba nao estiver mais no ultimo andar
 
+		bool podeSpawnarNormal;
 		bool podeSpawnarEspecial;
 
-		if(qntAtualBombaEspecial == 0){
+		if(qntAtualBombaNormal == 0){
+			podeSpawnarNormal = true;
 			podeSpawnarEspecial = true;
-		}else{
+		}else if(qntAtualBombaEspecial == 0){
+			podeSpawnarNormal = bomba[qntAtualBombaNormal - 1].olhaSePodeSpawnarNormal(alturaLinha,
+										qntAtualBombaNormal); //so spawna se a ultima bomba nao estiver mais no ultimo andar
+			podeSpawnarEspecial = true;
+		}
+		else{
+			podeSpawnarNormal = bomba[qntAtualBombaNormal - 1].olhaSePodeSpawnarNormal(alturaLinha,
+							qntAtualBombaNormal); //so spawna se a ultima bomba nao estiver mais no ultimo andar
+
 			podeSpawnarEspecial = bombaEspecial[qntAtualBombaEspecial - 1].olhaSePodeSpawnarEspecial(alturaLinha, qntAtualBombaEspecial); //so spawna se a ultima bomba nao estiver mais no ultimo andar
 		}
 
-
 		if (podeSpawnarNormal == true && podeSpawnarEspecial == true) {
-			bomba[qntAtualBombaNormal + 1].spawnBombaNormal(alturaLinha,
-					larguraColuna);
+			bomba[qntAtualBombaNormal].iniciarBomba();
+			bomba[qntAtualBombaNormal].spawnBombaNormal(alturaLinha, larguraColuna);
 			this->qntAtualBombaNormal++;
 			this->nasceuBombaNormal++;
 		}
 	}
-
 }
 void Game::bombaEspecialUpdate(vector<int> bombaEspecialBateuNoChao,
 		vector<int> bombaEspecialBateuNaParede, vector<int> bombaEspecialBateuNaEscada, vector<int> bombaEspecialBateuNoBuraco, vector<int> bombaEspecialSaiuDoMapa) {
 
 	for (int cont = 0; cont < qntAtualBombaEspecial; cont++) {
 		if(bombaEspecialSaiuDoMapa[cont] == 1){
-			bool podeVoltarAoTopo =
-					bombaEspecial[cont].olhaSePodeSpawnarEspecial(
-							alturaLinha, qntAtualBombaEspecial); //so spawna se a ultima bomba nao estiver mais no ultimo andar
-
-			if (podeVoltarAoTopo == true) {
-				bombaEspecial[cont].setLayer(alturaLinha, larguraColuna);
-			}
+//			bool podeVoltarAoTopo =
+//					bombaEspecial[cont].olhaSePodeSpawnarEspecial(
+//							alturaLinha, qntAtualBombaEspecial); //so spawna se a ultima bomba nao estiver mais no ultimo andar
+//
+//			if (podeVoltarAoTopo == true) {
+//				bombaEspecial[cont].setLayer(alturaLinha, larguraColuna);
+//			}
 		}
 		if (bombaEspecialBateuNoChao[cont] > 0) {
 			bombaEspecial[cont].setPodeMover(1);
@@ -528,15 +531,26 @@ void Game::bombaEspecialUpdate(vector<int> bombaEspecialBateuNoChao,
 	}//fim for
 
 	if ((qntAtualBombaEspecial < 5) && (nasceuBombaNormal == 2)){
-		bool podeSpawnarNormal =
-				bomba[qntAtualBombaNormal].olhaSePodeSpawnarNormal(alturaLinha,
-						qntAtualBombaNormal); //so spawna se a ultima bomba nao estiver mais no ultimo andar
 
-		if (podeSpawnarNormal == true) {
-			bombaEspecial[qntAtualBombaEspecial + 1].spawnBombaEspecial(alturaLinha,
-					larguraColuna);
-			this->qntAtualBombaEspecial++;
-			this->nasceuBombaNormal = 0;
+		bool podeSpawnarNormal;
+		bool podeSpawnarEspecial;
+
+		if(qntAtualBombaEspecial == 0){
+			podeSpawnarNormal = bomba[qntAtualBombaNormal - 1].olhaSePodeSpawnarNormal(alturaLinha,
+							qntAtualBombaNormal);
+			podeSpawnarEspecial = true;
+		}else{
+			podeSpawnarNormal = bomba[qntAtualBombaNormal - 1].olhaSePodeSpawnarNormal(alturaLinha,
+							qntAtualBombaNormal); //so spawna se a ultima bomba nao estiver mais no ultimo andar
+
+			podeSpawnarEspecial = bombaEspecial[qntAtualBombaEspecial - 1].olhaSePodeSpawnarEspecial(alturaLinha, qntAtualBombaEspecial); //so spawna se a ultima bomba nao estiver mais no ultimo andar
+		}
+
+		if (podeSpawnarNormal == true && podeSpawnarEspecial == true) {
+			bombaEspecial[qntAtualBombaEspecial].iniciarBombaEspecial();
+				bombaEspecial[qntAtualBombaEspecial].spawnBombaEspecial(alturaLinha, larguraColuna);
+				this->qntAtualBombaEspecial++;
+				this->nasceuBombaNormal = 0;
 		}
 	}
 }
@@ -858,21 +872,20 @@ bool Game::getIniciouKong() {
 
 void Game::deleteBombas() {
 	//Deletar bombas quando player morre
-	for (int i = 0; i <= qntAtualBombaNormal; ++i) {
-		bomba[i].setLayer(alturaLinha, larguraColuna);
-		bomba[i].setSorteouFormaDeDescer(false);
-		//na verdade nao deleta, mas deixa ela pronta pra spawnar denovo
-	}
+//	for (int i = 0; i <= qntAtualBombaNormal; ++i) {
+//		bomba[i].setSorteouFormaDeDescer(false);
+//	}
 	qntAtualBombaNormal = 0;
+	nasceuBombaNormal = 0;
+	//na verdade nao deleta, mas deixa ela pronta pra spawnar denovo
 }
 void Game::deleteBombasEspeciais() {
 	//Deletar bombas quando player morre
-	for (int i = 0; i <= qntAtualBombaEspecial; ++i) {
-		bombaEspecial[i].setLayer(alturaLinha, larguraColuna);
-		bombaEspecial[i].setSorteouFormaDeDescer(false);
-		//na verdade nao deleta, mas deixa ela pronta pra spawnar denovo
-	}
+//	for (int i = 0; i <= qntAtualBombaEspecial; ++i) {
+//		//bomba[i].setEstaDescendo(true);
+//	}
 	qntAtualBombaEspecial = 0;
+	//na verdade nao deleta, mas deixa ela pronta pra spawnar denovo
 }
 
 void Game::reiniciaKong(){

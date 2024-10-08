@@ -27,7 +27,8 @@ private:
 
 public:
 
-	void iniciarBombaEspecial(sf::RenderWindow *window);
+	void iniciarVelocidadeEEscalaBombaEspecial(sf::RenderWindow *window);
+	void iniciarBombaEspecial();
 	void mover();
 	void moverY();
 	void moverX();
@@ -61,7 +62,21 @@ public:
 
 };
 
-void BombaEspecial::iniciarBombaEspecial(sf::RenderWindow *window){
+void BombaEspecial::iniciarVelocidadeEEscalaBombaEspecial(sf::RenderWindow *window){
+
+	velX = window->getSize().x / 250.0f; //velocidade responsiva
+	velY = window->getSize().y / 190.0f; //igual a gravidade
+	//posX = 600;
+	//posY = 550;
+	escala = window->getSize().y / 400.0f; //escala responsiva
+	bombaEspecial.setScale(escala, escala);
+	bombaEspecial.setOrigin(16, 16); //metade do tamanho do player;
+	hitboxPulo.setOrigin(16,16);
+	hitboxPulo.setScale(escala,escala+3);
+	//bombaEspecial.setPosition(posX, posY);
+}
+
+void BombaEspecial::iniciarBombaEspecial(){
 	texturaBombaEspecial.loadFromFile("assets/BombaEspecial.png");
 	texturahitboxPulo.loadFromFile("assets/AreaDeHitboxDopulo.png");
 	//hitbox
@@ -73,15 +88,11 @@ void BombaEspecial::iniciarBombaEspecial(sf::RenderWindow *window){
 	//fim da hitbox
 	bombaEspecial.setTexture(texturaBombaEspecial);
 	hitboxPulo.setTexture(texturahitboxPulo);
-	velX = window->getSize().x / 250.0f; //velocidade responsiva
-	velY = window->getSize().y / 190.0f; //igual a gravidade
-	//posX = 600;
-	//posY = 550;
-	escala = window->getSize().y / 400.0f; //escala responsiva
-	bombaEspecial.setScale(escala, escala);
-	bombaEspecial.setOrigin(16, 16); //metade do tamanho do player;
-	hitboxPulo.setOrigin(16,16);
-	hitboxPulo.setScale(escala,escala+3);
+
+	if (velX < 0) { //quando a bomba vai reespawnar mas ela ja tinha batido em uma parede antes, a velX fica negativa
+		inverteVelX();
+	}
+
 	//bombaEspecial.setPosition(posX, posY);
 	bateuNoChao = false;
 	cair = false;
