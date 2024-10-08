@@ -106,7 +106,7 @@ Game::Game(Player &player, Princesa &princesa, sf::RenderWindow *window) :
 	larguraColuna = (window->getSize().x) / 40.0f; //determina a largura de cada coluna (tamanho x da janela / num de colunas)
 
 	kong.iniciaKong(larguraColuna, alturaLinha, window);
-	iniciouKong = false; //mudar para testar mais r�pido
+	iniciouKong = true; //mudar para testar mais r�pido
 
 	iniciaElementos(window);
 
@@ -313,6 +313,7 @@ void Game::playerTestaColisao(int *playerBateuNoChao, int *playerBateuNaParede,
 }
 
 void Game::bombasTestaColisao() {
+	srand(time(NULL));
 
 	int formaDeDescer;
 	int bombaLayer;
@@ -350,6 +351,7 @@ void Game::bombasTestaColisao() {
 	bombaUpdate(bombaBateuNoChao, bombaBateuNaParede, bombaBateuNaEscada, bombaBateuNoBuraco, bombaSaiuDoMapa);
 }
 void Game::bombasEspeciaisTestaColisao(){
+	srand(time(NULL));
 
 	int formaDeDescer;
 	int bombaEspecialLayer;
@@ -440,11 +442,11 @@ void Game::bombaUpdate(vector<int> bombaBateuNoChao,
 	for (int cont = 0; cont <= qntAtualBombaNormal; cont++) {
 		if(bombaSaiuDoMapa[cont] == 1){
 			bool podeVoltarAoTopo =
-					bomba[qntAtualBombaNormal].olhaSePodeSpawnarNormal(
+					bomba[cont].olhaSePodeSpawnarNormal(
 							alturaLinha, qntAtualBombaNormal); //so spawna se a ultima bomba nao estiver mais no ultimo andar
 
 			if (podeVoltarAoTopo == true) {
-				bomba[cont].spawnBombaNormal(alturaLinha, larguraColuna);
+				bomba[cont].setLayer(alturaLinha, larguraColuna);
 			}
 		}
 		if (bombaBateuNoChao[cont] > 0) {
@@ -497,11 +499,11 @@ void Game::bombaEspecialUpdate(vector<int> bombaEspecialBateuNoChao,
 	for (int cont = 0; cont < qntAtualBombaEspecial; cont++) {
 		if(bombaEspecialSaiuDoMapa[cont] == 1){
 			bool podeVoltarAoTopo =
-					bombaEspecial[qntAtualBombaEspecial].olhaSePodeSpawnarEspecial(
+					bombaEspecial[cont].olhaSePodeSpawnarEspecial(
 							alturaLinha, qntAtualBombaEspecial); //so spawna se a ultima bomba nao estiver mais no ultimo andar
 
 			if (podeVoltarAoTopo == true) {
-				bombaEspecial[cont].spawnBombaEspecial(alturaLinha, larguraColuna);
+				bombaEspecial[cont].setLayer(alturaLinha, larguraColuna);
 			}
 		}
 		if (bombaEspecialBateuNoChao[cont] > 0) {
@@ -702,46 +704,52 @@ void Game::desce3ou4(vector<int> &bombaBateuNaEscada, vector<int> &ignorarParede
 
 	sf::FloatRect hitboxBomba = bomba[cont].getBombaNormalBounds();
 
-	sf::FloatRect hitboxEscada1 =
-			escada[bombaLayer - 1].getEscada1().getGlobalBounds();
-	sf::FloatRect hitboxEscada2 =
-			escada[bombaLayer - 1].getEscada2().getGlobalBounds();
-	hitboxEscada1.height = hitboxEscada1.height - 30;
-	hitboxEscada2.height = hitboxEscada2.height - 30;
+	if(bombaLayer <= 1){
+		ignorarParede[cont] = 1;
+	}else{
 
-	if (bomba[cont].getVelX() > 0) {
-		hitboxEscada2.left = hitboxEscada2.left + hitboxEscada2.width / 2;
-		hitboxBomba.left = hitboxBomba.left - hitboxBomba.width / 2;
-	} else {
-		hitboxEscada2.left = hitboxEscada2.left - hitboxEscada2.width / 2;
-		hitboxBomba.left = hitboxBomba.left + hitboxBomba.width / 2;
-	}
+		sf::FloatRect hitboxEscada1 = escada[bombaLayer - 1].getEscada1().getGlobalBounds();
+		sf::FloatRect hitboxEscada2 = escada[bombaLayer - 1].getEscada2().getGlobalBounds();
+		hitboxEscada1.height = hitboxEscada1.height - 30;
+		hitboxEscada2.height = hitboxEscada2.height - 30;
 
-	if (hitboxBomba.intersects(hitboxEscada2)) {
-		bombaBateuNaEscada[cont] = 1;
+		if (bomba[cont].getVelX() > 0) {
+			hitboxEscada2.left = hitboxEscada2.left + hitboxEscada2.width / 2;
+			hitboxBomba.left = hitboxBomba.left - hitboxBomba.width / 2;
+		} else {
+			hitboxEscada2.left = hitboxEscada2.left - hitboxEscada2.width / 2;
+			hitboxBomba.left = hitboxBomba.left + hitboxBomba.width / 2;
+		}
+
+		if (hitboxBomba.intersects(hitboxEscada2)) {
+			bombaBateuNaEscada[cont] = 1;
+		}
 	}
 }
 void Game::desce3ou4Especial(vector<int> &bombaEspecialBateuNaEscada, vector<int> &ignorarParede, int bombaEspecialLayer, int cont){
 
 	sf::FloatRect hitboxBomba = bombaEspecial[cont].getBombaEspecialBounds();
 
-	sf::FloatRect hitboxEscada1 =
-			escada[bombaEspecialLayer - 1].getEscada1().getGlobalBounds();
-	sf::FloatRect hitboxEscada2 =
-			escada[bombaEspecialLayer - 1].getEscada2().getGlobalBounds();
-	hitboxEscada1.height = hitboxEscada1.height - 30;
-	hitboxEscada2.height = hitboxEscada2.height - 30;
+	if(bombaEspecialLayer <= 1){
+		ignorarParede[cont] = 1;
+	}else{
 
-	if (bombaEspecial[cont].getVelX() > 0) {
-		hitboxEscada2.left = hitboxEscada2.left + hitboxEscada2.width / 2;
-		hitboxBomba.left = hitboxBomba.left - hitboxBomba.width / 2;
-	} else {
-		hitboxEscada2.left = hitboxEscada2.left - hitboxEscada2.width / 2;
-		hitboxBomba.left = hitboxBomba.left + hitboxBomba.width / 2;
-	}
+		sf::FloatRect hitboxEscada1 = escada[bombaEspecialLayer - 1].getEscada1().getGlobalBounds();
+		sf::FloatRect hitboxEscada2 = escada[bombaEspecialLayer - 1].getEscada2().getGlobalBounds();
+		hitboxEscada1.height = hitboxEscada1.height - 30;
+		hitboxEscada2.height = hitboxEscada2.height - 30;
 
-	if (hitboxBomba.intersects(hitboxEscada2)) {
-		bombaEspecialBateuNaEscada[cont] = 1;
+		if (bombaEspecial[cont].getVelX() > 0) {
+			hitboxEscada2.left = hitboxEscada2.left + hitboxEscada2.width / 2;
+			hitboxBomba.left = hitboxBomba.left - hitboxBomba.width / 2;
+		} else {
+			hitboxEscada2.left = hitboxEscada2.left - hitboxEscada2.width / 2;
+			hitboxBomba.left = hitboxBomba.left + hitboxBomba.width / 2;
+		}
+
+		if (hitboxBomba.intersects(hitboxEscada2)) {
+			bombaEspecialBateuNaEscada[cont] = 1;
+		}
 	}
 }
 
