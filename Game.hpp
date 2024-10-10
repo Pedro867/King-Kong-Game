@@ -25,7 +25,6 @@ private:
 	std::vector<Escada> escada;
 
 	//elementos
-	bool iniciouKong,Ganhou;
 	Player &player;
 	std::vector<Bomba> bomba;
 	std::vector<BombaEspecial> bombaEspecial;
@@ -33,6 +32,10 @@ private:
 	Princesa &princesa;
 
 	float alturaLinha, larguraColuna; //determina a altura de cada linha (tamanho y da janela / num de linhas)
+
+	bool iniciouKong;
+	bool temBombaNo8andar;
+	bool temBombaEspecialNo8andar;
 
 	int nasceuBombaNormal;
 	int qntAtualBombaNormal;
@@ -94,7 +97,6 @@ public:
 	void reiniciaKong();
 	bool playerVenceu();
 
-
 	bool getIniciouKong();
 	//---------------------
 };
@@ -107,6 +109,8 @@ Game::Game(Player &player, Princesa &princesa, sf::RenderWindow *window) :
 
 	kong.iniciaKong(larguraColuna, alturaLinha, window);
 	iniciouKong = true; //mudar para testar mais r�pido
+	temBombaNo8andar = false;
+	temBombaEspecialNo8andar = false;;
 
 	iniciaElementos(window);
 
@@ -186,8 +190,7 @@ void Game::desenhaCenario(sf::RenderWindow *window) {
 				playerPodeDescer, playerCaiuNoBuraco, playerBateuNaBomba);
 
 		kong.AnimacaoKong();
-		if(Ganhou == false){
-		princesa.animacaoPrincesa(larguraColuna);}
+		princesa.animacaoPrincesa(larguraColuna);
 		desenhaElementos(window);
 	}
 } //fim func
@@ -291,23 +294,25 @@ void Game::playerTestaColisao(int *playerBateuNoChao, int *playerBateuNaParede,
 		*playerCaiuNoBuraco = 1;
 	}
 
-	for (int cont = 0; cont <= qntAtualBombaNormal; cont++) {
-		HitboxDoPulo = bombaEspecial[cont].getPuloBounds();
+	for (int cont = 0; cont < qntAtualBombaNormal; cont++) {
+		if(cont < qntAtualBombaEspecial){
+			HitboxDoPulo = bombaEspecial[cont].getPuloBounds();
+			hitboxBombaEspecial = bombaEspecial[cont].getBombaEspecialBounds();
+
+			hitboxBombaEspecial.top = hitboxBombaEspecial.top + 10;
+			hitboxBombaEspecial.height = hitboxBombaEspecial.height - 10;
+		}
+
 		hitboxBombaNormal = bomba[cont].getBombaNormalBounds();
-		hitboxBombaEspecial = bombaEspecial[cont].getBombaEspecialBounds();
 
 		hitboxBombaNormal.top = hitboxBombaNormal.top + 10;
 		hitboxBombaNormal.height = hitboxBombaNormal.height - 10;
-
-		hitboxBombaEspecial.top = hitboxBombaEspecial.top + 10;
-		hitboxBombaEspecial.height = hitboxBombaEspecial.height - 10;
 
 		if (hitboxPlayer.intersects(hitboxBombaNormal) || hitboxPlayer.intersects(hitboxBombaEspecial)) {
 			*playerBateuNaBomba = 1;
 		}if (hitboxPlayer.intersects(HitboxDoPulo)) {
 			player.sobe(larguraColuna,alturaLinha);
 		}
-
 	}
 }
 
@@ -320,16 +325,25 @@ void Game::bombasTestaColisao() {
 	vector<int> bombaBateuNoChao(10, 0), bombaBateuNaParede(10, 0),
 				bombaBateuNaEscada(10, 0), bombaBateuNoBuraco(10, 0), ignorarParede(10, 0), bombaSaiuDoMapa(10, 0); //inicializa todos com 0
 
+	this->temBombaNo8andar = false;
+
 
 	for (int cont = 0; cont < qntAtualBombaNormal; cont++) {
 
 		bombaLayer = bomba[cont].getLayer(alturaLinha);
 
-		if(bombaLayer >= 0){
+		if(bombaLayer > 0){
 			formaDeDescer = bomba[cont].getFormaDeDescer();
 
 			if (bombaLayer == 3 || bombaLayer == 5 || bombaLayer == 7) {
 				desceBombaAndares357(&formaDeDescer);
+			}
+
+			if(temBombaNo8andar == false){
+				if(bombaLayer == 8){
+					this->temBombaNo8andar = true;
+					//this->temBombaEspecialNo8andar = false;
+				}
 			}
 
 			if (formaDeDescer == 0) { //0 == seguir reto
@@ -343,9 +357,9 @@ void Game::bombasTestaColisao() {
 			} else if (formaDeDescer == 7 || formaDeDescer == 8) { //7 || 8 == buraco2
 				desce7ou8(bombaBateuNoChao, bombaBateuNoBuraco, bombaLayer, cont);
 			}
-			bombaColisoesNecessarias(bombaBateuNoChao, bombaBateuNaParede,
-					bombaBateuNoBuraco, ignorarParede, bombaSaiuDoMapa, bombaLayer, cont);
 		}
+		bombaColisoesNecessarias(bombaBateuNoChao, bombaBateuNaParede,
+				bombaBateuNoBuraco, ignorarParede, bombaSaiuDoMapa, bombaLayer, cont);
 	} //fim for
 	bombaUpdate(bombaBateuNoChao, bombaBateuNaParede, bombaBateuNaEscada, bombaBateuNoBuraco, bombaSaiuDoMapa);
 }
@@ -358,6 +372,8 @@ void Game::bombasEspeciaisTestaColisao(){
 
 	vector<int> bombaEspecialBateuNoChao(10, 0), bombaEspecialBateuNaParede(10, 0),
 				bombaEspecialBateuNaEscada(10, 0), bombaEspecialBateuNoBuraco(10, 0), ignorarParede(10, 0), bombaEspecialSaiuDoMapa(10, 0); //inicializa todos com 0
+
+	this->temBombaEspecialNo8andar = false;
 
 
 	for (int cont = 0; cont < qntAtualBombaEspecial; cont++) {
@@ -372,6 +388,13 @@ void Game::bombasEspeciaisTestaColisao(){
 				desceBombaEspecialAndares357(&formaDeDescer);
 			}
 
+			if(temBombaEspecialNo8andar == false){
+				if(bombaEspecialLayer == 8){
+					this->temBombaEspecialNo8andar = true;
+					//this->temBombaNo8andar = true;
+				}
+			}
+
 			if (formaDeDescer == 0) { //0 == seguir reto
 				desce0Especial(bombaEspecialBateuNaParede, bombaEspecialLayer, cont);
 			} else if (formaDeDescer == 1 || formaDeDescer == 2) { //1 || 2 == escada1
@@ -383,9 +406,9 @@ void Game::bombasEspeciaisTestaColisao(){
 			} else if (formaDeDescer == 7 || formaDeDescer == 8) { //7 || 8 == buraco2
 				desce7ou8Especial(bombaEspecialBateuNoChao, bombaEspecialBateuNoBuraco, bombaEspecialLayer, cont);
 			}
-			bombaEspecialColisoesNecessarias(bombaEspecialBateuNoChao, bombaEspecialBateuNaParede,
-					bombaEspecialBateuNoBuraco, ignorarParede, bombaEspecialSaiuDoMapa, bombaEspecialLayer, cont);
 		}
+		bombaEspecialColisoesNecessarias(bombaEspecialBateuNoChao, bombaEspecialBateuNaParede,
+				bombaEspecialBateuNoBuraco, ignorarParede, bombaEspecialSaiuDoMapa, bombaEspecialLayer, cont);
 	} //fim for
 	bombaEspecialUpdate(bombaEspecialBateuNoChao, bombaEspecialBateuNaParede, bombaEspecialBateuNaEscada, bombaEspecialBateuNoBuraco, bombaEspecialSaiuDoMapa);
 }
@@ -439,14 +462,14 @@ void Game::bombaUpdate(vector<int> bombaBateuNoChao,
 		vector<int> bombaBateuNaParede, vector<int> bombaBateuNaEscada, vector<int> bombaBateuNoBuraco, vector<int> bombaSaiuDoMapa) {
 
 	for (int cont = 0; cont < qntAtualBombaNormal; cont++) {
-		if(bombaSaiuDoMapa[cont] == 1){
-//			bool podeVoltarAoTopo =
-//					bomba[cont].olhaSePodeSpawnarNormal(
-//							alturaLinha, qntAtualBombaNormal); //so spawna se a ultima bomba nao estiver mais no ultimo andar
-//
-//			if (podeVoltarAoTopo == true) {
-//				bomba[cont].setLayer(alturaLinha, larguraColuna);
-//			}
+		if((bombaSaiuDoMapa[cont] == 1) && (qntAtualBombaNormal == 9)){
+			if((temBombaNo8andar == false) && (temBombaEspecialNo8andar == false)){
+				if(nasceuBombaNormal < 2){
+					bomba[cont].spawnBombaNormal(alturaLinha, larguraColuna); //respawna ela
+					this->temBombaNo8andar = true;
+					this->nasceuBombaNormal++;
+				}
+			}
 		}
 		if (bombaBateuNoChao[cont] > 0) {
 			bomba[cont].setPodeMover(1);
@@ -470,30 +493,11 @@ void Game::bombaUpdate(vector<int> bombaBateuNoChao,
 	}//fim for
 
 	if ((qntAtualBombaNormal < 9) && (nasceuBombaNormal < 2)){
-
-		bool podeSpawnarNormal;
-		bool podeSpawnarEspecial;
-
-		if(qntAtualBombaNormal == 0){
-			podeSpawnarNormal = true;
-			podeSpawnarEspecial = true;
-		}else if(qntAtualBombaEspecial == 0){
-			podeSpawnarNormal = bomba[qntAtualBombaNormal - 1].olhaSePodeSpawnarNormal(alturaLinha,
-										qntAtualBombaNormal); //so spawna se a ultima bomba nao estiver mais no ultimo andar
-			podeSpawnarEspecial = true;
-		}
-		else{
-			podeSpawnarNormal = bomba[qntAtualBombaNormal - 1].olhaSePodeSpawnarNormal(alturaLinha,
-							qntAtualBombaNormal); //so spawna se a ultima bomba nao estiver mais no ultimo andar
-
-			podeSpawnarEspecial = bombaEspecial[qntAtualBombaEspecial - 1].olhaSePodeSpawnarEspecial(alturaLinha, qntAtualBombaEspecial); //so spawna se a ultima bomba nao estiver mais no ultimo andar
-		}
-
-		if (podeSpawnarNormal == true && podeSpawnarEspecial == true) {
-			bomba[qntAtualBombaNormal].iniciarBomba();
+		if(temBombaNo8andar == false && temBombaEspecialNo8andar == false){
 			bomba[qntAtualBombaNormal].spawnBombaNormal(alturaLinha, larguraColuna);
 			this->qntAtualBombaNormal++;
 			this->nasceuBombaNormal++;
+			this->temBombaNo8andar = true;
 		}
 	}
 }
@@ -501,14 +505,14 @@ void Game::bombaEspecialUpdate(vector<int> bombaEspecialBateuNoChao,
 		vector<int> bombaEspecialBateuNaParede, vector<int> bombaEspecialBateuNaEscada, vector<int> bombaEspecialBateuNoBuraco, vector<int> bombaEspecialSaiuDoMapa) {
 
 	for (int cont = 0; cont < qntAtualBombaEspecial; cont++) {
-		if(bombaEspecialSaiuDoMapa[cont] == 1){
-//			bool podeVoltarAoTopo =
-//					bombaEspecial[cont].olhaSePodeSpawnarEspecial(
-//							alturaLinha, qntAtualBombaEspecial); //so spawna se a ultima bomba nao estiver mais no ultimo andar
-//
-//			if (podeVoltarAoTopo == true) {
-//				bombaEspecial[cont].setLayer(alturaLinha, larguraColuna);
-//			}
+		if((bombaEspecialSaiuDoMapa[cont] == 1) && (qntAtualBombaEspecial == 4)){
+			if((temBombaNo8andar == false) && (temBombaEspecialNo8andar == false)){
+				if(nasceuBombaNormal == 2){
+					bombaEspecial[cont].spawnBombaEspecial(alturaLinha, larguraColuna); //respawna ela
+					this->temBombaEspecialNo8andar = true;
+					this->nasceuBombaNormal = 0;
+				}
+			}
 		}
 		if (bombaEspecialBateuNoChao[cont] > 0) {
 			bombaEspecial[cont].setPodeMover(1);
@@ -532,110 +536,98 @@ void Game::bombaEspecialUpdate(vector<int> bombaEspecialBateuNoChao,
 	}//fim for
 
 	if ((qntAtualBombaEspecial < 5) && (nasceuBombaNormal == 2)){
-
-		bool podeSpawnarNormal;
-		bool podeSpawnarEspecial;
-
-		if(qntAtualBombaEspecial == 0){
-			podeSpawnarNormal = bomba[qntAtualBombaNormal - 1].olhaSePodeSpawnarNormal(alturaLinha,
-							qntAtualBombaNormal);
-			podeSpawnarEspecial = true;
-		}else{
-			podeSpawnarNormal = bomba[qntAtualBombaNormal - 1].olhaSePodeSpawnarNormal(alturaLinha,
-							qntAtualBombaNormal); //so spawna se a ultima bomba nao estiver mais no ultimo andar
-
-			podeSpawnarEspecial = bombaEspecial[qntAtualBombaEspecial - 1].olhaSePodeSpawnarEspecial(alturaLinha, qntAtualBombaEspecial); //so spawna se a ultima bomba nao estiver mais no ultimo andar
-		}
-
-		if (podeSpawnarNormal == true && podeSpawnarEspecial == true) {
-			bombaEspecial[qntAtualBombaEspecial].iniciarBombaEspecial();
-				bombaEspecial[qntAtualBombaEspecial].spawnBombaEspecial(alturaLinha, larguraColuna);
-				this->qntAtualBombaEspecial++;
-				this->nasceuBombaNormal = 0;
+		if(temBombaNo8andar == false && temBombaEspecialNo8andar == false){
+			bombaEspecial[qntAtualBombaEspecial].spawnBombaEspecial(alturaLinha, larguraColuna);
+			this->qntAtualBombaEspecial++;
+			this->nasceuBombaNormal = 0;
+			this->temBombaEspecialNo8andar = true;
 		}
 	}
 }
 void Game::bombaColisoesNecessarias(vector<int> &bombaBateuNoChao,
 			vector<int> &bombaBateuNaParede, vector<int> bombaBateuNoBuraco, vector<int> ignorarParede, vector<int> &bombaSaiuDoMapa, int bombaLayer, int cont){
 
-	sf::FloatRect hitboxChao1, hitboxChao2, hitboxChao3, hitboxParede1, hitboxParede2, hitboxBuraco1, hitboxBuraco2;
+	if(bombaLayer > 0){
+		sf::FloatRect hitboxChao1, hitboxChao2, hitboxChao3, hitboxParede1,
+				hitboxParede2, hitboxBuraco1, hitboxBuraco2;
 
-	hitboxChao1 = chao[bombaLayer].getChao1().getGlobalBounds();
-	hitboxChao2 = chao[bombaLayer].getChao2().getGlobalBounds();
-	hitboxChao3 = chao[bombaLayer].getChao3().getGlobalBounds();
-	hitboxParede1 = paredes[bombaLayer].getParede1().getGlobalBounds();
-	hitboxParede2 = paredes[bombaLayer].getParede2().getGlobalBounds();
-	hitboxBuraco1 = buraco[bombaLayer].getBuraco1().getGlobalBounds();
-	hitboxBuraco2 = buraco[bombaLayer].getBuraco2().getGlobalBounds();
+		hitboxChao1 = chao[bombaLayer].getChao1().getGlobalBounds();
+		hitboxChao2 = chao[bombaLayer].getChao2().getGlobalBounds();
+		hitboxChao3 = chao[bombaLayer].getChao3().getGlobalBounds();
+		hitboxParede1 = paredes[bombaLayer].getParede1().getGlobalBounds();
+		hitboxParede2 = paredes[bombaLayer].getParede2().getGlobalBounds();
+		hitboxBuraco1 = buraco[bombaLayer].getBuraco1().getGlobalBounds();
+		hitboxBuraco2 = buraco[bombaLayer].getBuraco2().getGlobalBounds();
 
-	sf::FloatRect hitboxBomba = bomba[cont].getBombaNormalBounds();
-	if(bombaBateuNoBuraco[cont] == 0){
-		if (hitboxBomba.intersects(hitboxChao1)
-				|| hitboxBomba.intersects(hitboxChao2)
-				|| hitboxBomba.intersects(hitboxChao3)) {
-			bombaBateuNoChao[cont] = 1;
-			bomba[cont].sortearFormaDeDescer(bombaLayer, cont);
+		sf::FloatRect hitboxBomba = bomba[cont].getBombaNormalBounds();
+		if (bombaBateuNoBuraco[cont] == 0) {
+			if (hitboxBomba.intersects(hitboxChao1)
+					|| hitboxBomba.intersects(hitboxChao2)
+					|| hitboxBomba.intersects(hitboxChao3)) {
+				bombaBateuNoChao[cont] = 1;
+				bomba[cont].sortearFormaDeDescer(bombaLayer, cont);
+			}
 		}
-	}
 
-	if(ignorarParede[cont] == 0){
-		if (hitboxBomba.intersects(hitboxParede1)
-				|| hitboxBomba.intersects(hitboxParede2)) {
-			bombaBateuNaParede[cont] = 1;
+		if (ignorarParede[cont] == 0) {
+			if (hitboxBomba.intersects(hitboxParede1)
+					|| hitboxBomba.intersects(hitboxParede2)) {
+				bombaBateuNaParede[cont] = 1;
+			}
 		}
-	}
 
-	if(bombaBateuNoBuraco[cont] == 0){
-		if (hitboxBomba.intersects(hitboxBuraco1)
+		if (bombaBateuNoBuraco[cont] == 0) {
+			if (hitboxBomba.intersects(hitboxBuraco1)
 					|| hitboxBomba.intersects(hitboxBuraco2)) {
 				bombaBateuNoChao[cont] = 1;
 			}
 		}
-
-	if(bomba[cont].getBombaNormal().getPosition().y >= 10 * alturaLinha){
+	}else{
 		bombaSaiuDoMapa[cont] = 1;
+		bombaBateuNoChao[cont] = 0;
 	}
 }
 void Game::bombaEspecialColisoesNecessarias(vector<int> &bombaEspecialBateuNoChao,
 			vector<int> &bombaEspecialBateuNaParede, vector<int> bombaEspecialBateuNoBuraco, vector<int> ignorarParede, vector<int> &bombaEspecialSaiuDoMapa, int bombaEspecialLayer, int cont){
 
-	sf::FloatRect hitboxChao1, hitboxChao2, hitboxChao3, hitboxParede1, hitboxParede2, hitboxBuraco1, hitboxBuraco2;
+	if(bombaEspecialLayer > 0){
+		sf::FloatRect hitboxChao1, hitboxChao2, hitboxChao3, hitboxParede1, hitboxParede2, hitboxBuraco1, hitboxBuraco2;
 
-	hitboxChao1 = chao[bombaEspecialLayer].getChao1().getGlobalBounds();
-	hitboxChao2 = chao[bombaEspecialLayer].getChao2().getGlobalBounds();
-	hitboxChao3 = chao[bombaEspecialLayer].getChao3().getGlobalBounds();
-	hitboxParede1 = paredes[bombaEspecialLayer].getParede1().getGlobalBounds();
-	hitboxParede2 = paredes[bombaEspecialLayer].getParede2().getGlobalBounds();
-	hitboxBuraco1 = buraco[bombaEspecialLayer].getBuraco1().getGlobalBounds();
-	hitboxBuraco2 = buraco[bombaEspecialLayer].getBuraco2().getGlobalBounds();
+		hitboxChao1 = chao[bombaEspecialLayer].getChao1().getGlobalBounds();
+		hitboxChao2 = chao[bombaEspecialLayer].getChao2().getGlobalBounds();
+		hitboxChao3 = chao[bombaEspecialLayer].getChao3().getGlobalBounds();
+		hitboxParede1 = paredes[bombaEspecialLayer].getParede1().getGlobalBounds();
+		hitboxParede2 = paredes[bombaEspecialLayer].getParede2().getGlobalBounds();
+		hitboxBuraco1 = buraco[bombaEspecialLayer].getBuraco1().getGlobalBounds();
+		hitboxBuraco2 = buraco[bombaEspecialLayer].getBuraco2().getGlobalBounds();
 
-	sf::FloatRect hitboxBomba = bombaEspecial[cont].getBombaEspecialBounds();
+		sf::FloatRect hitboxBomba = bombaEspecial[cont].getBombaEspecialBounds();
 
-	if(bombaEspecialBateuNoBuraco[cont] == 0){
-		if (hitboxBomba.intersects(hitboxChao1)
-				|| hitboxBomba.intersects(hitboxChao2)
-				|| hitboxBomba.intersects(hitboxChao3)) {
-			bombaEspecialBateuNoChao[cont] = 1;
-			bombaEspecial[cont].sortearFormaDeDescer(bombaEspecialLayer, cont);
-		}
-	}
-
-	if(ignorarParede[cont] == 0){
-		if (hitboxBomba.intersects(hitboxParede1)
-				|| hitboxBomba.intersects(hitboxParede2)) {
-			bombaEspecialBateuNaParede[cont] = 1;
-		}
-	}
-
-	if(bombaEspecialBateuNoBuraco[cont] == 0){
-		if (hitboxBomba.intersects(hitboxBuraco1)
-					|| hitboxBomba.intersects(hitboxBuraco2)) {
+		if(bombaEspecialBateuNoBuraco[cont] == 0){
+			if (hitboxBomba.intersects(hitboxChao1)
+					|| hitboxBomba.intersects(hitboxChao2)
+					|| hitboxBomba.intersects(hitboxChao3)) {
 				bombaEspecialBateuNoChao[cont] = 1;
+				bombaEspecial[cont].sortearFormaDeDescer(bombaEspecialLayer, cont);
 			}
 		}
 
-	if(bombaEspecial[cont].getBombaEspecial().getPosition().y >= 10 * alturaLinha){
+		if(ignorarParede[cont] == 0){
+			if (hitboxBomba.intersects(hitboxParede1)
+					|| hitboxBomba.intersects(hitboxParede2)) {
+				bombaEspecialBateuNaParede[cont] = 1;
+			}
+		}
+
+		if(bombaEspecialBateuNoBuraco[cont] == 0){
+			if (hitboxBomba.intersects(hitboxBuraco1)
+						|| hitboxBomba.intersects(hitboxBuraco2)) {
+					bombaEspecialBateuNoChao[cont] = 1;
+				}
+			}
+	}else{
 		bombaEspecialSaiuDoMapa[cont] = 1;
+		bombaEspecialBateuNoChao[cont] = 0;
 	}
 }
 void Game::desce0Especial(vector<int> &bombaEspecialBateuNaParede, int bombaEspecialLayer, int cont){
@@ -897,11 +889,8 @@ bool Game::playerVenceu() {
 	sf::FloatRect hitboxPlayer = player.bounds();
 	sf::FloatRect hitboxPrincesa = princesa.getPrincesa().getGlobalBounds();
 	if(hitboxPlayer.intersects(hitboxPrincesa)){
-		princesa.pararDemover();
-		Ganhou = true;
 		return true;
 	}
 	return false;
 }
-
 #endif /* GAME_HPP_ */
