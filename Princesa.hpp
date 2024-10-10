@@ -25,6 +25,8 @@ public:
 	sf::Sprite getPrincesa();
 	void setLayer(float alturaLinha, float larguraColuna);
 	void setPosXPosY(float x, float y);
+
+	void pararDemover();
 };
 
 Princesa::Princesa(sf::RenderWindow &window) : window(window) {
@@ -93,6 +95,10 @@ void Princesa::setPosXPosY(float x, float y) {
 	posX = x;
 	posY = y;
 	princesa.setPosition(posX, posY);
+}
+
+inline void Princesa::pararDemover() {
+	princesa.move(0,0);
 }
 
 #endif /* PRINCESA_HPP_ */

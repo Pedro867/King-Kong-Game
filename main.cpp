@@ -117,10 +117,14 @@ int main(int argc, char **argv) {
 	sf::Sound somDoJogo;
 	sf::SoundBuffer bufferSomDaMorte;
 	sf::Sound somDaMorte;
+	sf::SoundBuffer bufferSomDaVitoria;
+		sf::Sound SomDaVitoria;
 	bufferSomDoJogo.loadFromFile("assets/musicaJogo.ogg");
 	somDoJogo.setBuffer(bufferSomDoJogo);
 	bufferSomDaMorte.loadFromFile("assets/SomDeGameOver.ogg");
 	somDaMorte.setBuffer(bufferSomDaMorte);
+	bufferSomDaVitoria.loadFromFile("assets/SomDeVitoria.ogg");
+	SomDaVitoria.setBuffer(bufferSomDaVitoria);
 
 	//Elementos
 	Player player(window);
@@ -128,7 +132,7 @@ int main(int argc, char **argv) {
 	Game Game(player, princesa, &window);
 
 	//Booleanos de controle
-	bool morreu = false, iniciouJogo = false;
+	bool morreu = false, iniciouJogo = false, ganhou = false;
 
 	while (window.isOpen()) {
 
@@ -191,6 +195,12 @@ int main(int argc, char **argv) {
 			continue;
 		}
 		if(Game.playerVenceu()){
+			if(!ganhou){
+				ganhou = true;
+				somDoJogo.pause();
+				SomDaVitoria.play();
+
+			}
 			veceuJogo(window);
 			continue;
 		}

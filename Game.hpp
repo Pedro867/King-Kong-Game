@@ -25,7 +25,7 @@ private:
 	std::vector<Escada> escada;
 
 	//elementos
-	bool iniciouKong;
+	bool iniciouKong,Ganhou;
 	Player &player;
 	std::vector<Bomba> bomba;
 	std::vector<BombaEspecial> bombaEspecial;
@@ -186,7 +186,8 @@ void Game::desenhaCenario(sf::RenderWindow *window) {
 				playerPodeDescer, playerCaiuNoBuraco, playerBateuNaBomba);
 
 		kong.AnimacaoKong();
-		princesa.animacaoPrincesa(larguraColuna);
+		if(Ganhou == false){
+		princesa.animacaoPrincesa(larguraColuna);}
 		desenhaElementos(window);
 	}
 } //fim func
@@ -896,6 +897,8 @@ bool Game::playerVenceu() {
 	sf::FloatRect hitboxPlayer = player.bounds();
 	sf::FloatRect hitboxPrincesa = princesa.getPrincesa().getGlobalBounds();
 	if(hitboxPlayer.intersects(hitboxPrincesa)){
+		princesa.pararDemover();
+		Ganhou = true;
 		return true;
 	}
 	return false;
