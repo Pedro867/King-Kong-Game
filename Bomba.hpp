@@ -60,7 +60,7 @@ public:
 };
 
 void Bomba::iniciarVelocidadeEEscalaBomba(sf::RenderWindow *window){
-	velX = window->getSize().x / 100.0f; //velocidade responsiva
+	velX = window->getSize().x / 250.0f; //velocidade responsiva
 	velY = window->getSize().y / 190.0f; //um pouco maior que a gravidade
 
 	escala = window->getSize().y / 400.0f; //escala responsiva
