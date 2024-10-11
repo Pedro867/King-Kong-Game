@@ -11,9 +11,7 @@ private:
 
 	sf::IntRect hitbox;
 	sf::Sprite bombaNormal;
-	//Projeto futuro sf::Sprite bombaEspecial;
 	sf::Texture texturaBombaNormal;
-	//Projeto futuro sf::Texture texturaBombaEspecial;
 
 	float velX, velY;
 	float posX, posY;
